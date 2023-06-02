@@ -67,7 +67,7 @@ def test_visibility_receive_in_low(assign_resources_test_exec_settings):
 
 
 @pytest.fixture
-def k8s_element_manager(sut_settings: conftest.SutTestSettings):
+def k8s_element_manager():
     """
     Allow easy creation, and later automatic destruction, of k8s elements
 
@@ -188,19 +188,19 @@ def check_rec_adds(configured_subarray: fxt_types.configured_subarray):
 
 @when("SDP is commanded to capture data from a scan")
 def run_scan(
-    check_rec_adds,
-    k8s_element_manager: K8sElementManager,
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
+    check_rec_adds,
+    k8s_element_manager: K8sElementManager,
 ):
     """
     Run a scan.
 
-    :param check_rec_adds: fixture to wait for Receiver to run and to
-                check receive addresses are correctly set
-    :param k8s_element_manager: Kubernetes element manager
     :param configured_subarray: skallop configured_subarray fixture
     :param integration_test_exec_settings: test specific execution settings
+    :param check_rec_adds: fixture to wait for Receiver to run and to
+            check receive addresses are correctly set
+    :param k8s_element_manager: Kubernetes element manager
     """  # noqa: DAR401
     LOG.info("Running scan step.")
     tel = names.TEL()
@@ -250,6 +250,10 @@ def run_scan(
         # so that ReleaseAllResource can work
         raise err
 
+    # stop automatic teardown from READY to IDLE,
+    # since we're doing that manually below
+    configured_subarray.disable_automatic_clear()
+
     # execute End() to make sure MS is fully written to disk
     sdp_subarray.command_inout("End")
     obs_state = sdp_subarray.read_attribute("obsState").value
@@ -271,16 +275,16 @@ def dataproduct_directory(entry_point: fxt_types.entry_point):
 
 @then("the data received matches with the data sent")
 def check_measurement_set(
+    sut_settings: conftest.SutTestSettings,
     dataproduct_directory,
     k8s_element_manager: K8sElementManager,
-    sut_settings: conftest.SutTestSettings,
 ):
     """
     Check the data received are same as the data sent.
 
+    :param sut_settings: SUT settings fixture
     :param dataproduct_directory: The directory where outputs are written
     :param k8s_element_manager: Kubernetes element manager
-    :param sut_settings: SUT settings fixture
     """
     # Wait 10 seconds before checking the measurement set.
     # This gives enough time for the receiver for finish writing the data.
@@ -315,7 +319,8 @@ def retrieve_data_products():
     Check the data products are available
     """
 
-    response = requests.get(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/dataproductlist")
+    response = requests.get(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/dataproductlist", stream=True)
+    LOG.info(f"REQUESTS LOOKS AT THIS IP: {response.raw._connection.sock.getsockname()}")
     assert response.status_code == 200
 
 

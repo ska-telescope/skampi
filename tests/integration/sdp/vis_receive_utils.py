@@ -117,13 +117,8 @@ class K8sElementManager:
         # completely deleted before the deletion of the next one could start
         to_wait = []
 
-        LOG.info(f"OBJECTS to be removed: {self.to_remove[::-1]}")
         for cleanup_function, data in self.to_remove[::-1]:
-            LOG.info(f"BEING DELETED: {data}")
-            start = time.monotonic()
             cleanup_function(*data)
-            finished = time.monotonic() - start
-            LOG.info(f"DELETE FINISHED IN {finished} seconds")
 
             if cleanup_function == self.delete_pod:
                 to_wait.append(data)

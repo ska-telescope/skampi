@@ -45,7 +45,7 @@ pytest_plugins = ["unit.test_cluster_k8s"]
 
 LOG = logging.getLogger(__name__)
 
-INGRESS = os.environ.get("INGRESS_HOST")
+INGRESS = os.environ.get("LOADBALANCER_IP")
 NAMESPACE = os.environ.get("KUBE_NAMESPACE")
 NAMESPACE_SDP = os.environ.get("KUBE_NAMESPACE_SDP")
 PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
@@ -318,9 +318,7 @@ def retrieve_data_products():
     """
     Check the data products are available
     """
-
-    response = requests.get(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/dataproductlist", stream=True)
-    LOG.info(f"REQUESTS LOOKS AT THIS IP: {response.raw._connection.sock.getsockname()}")
+    response = requests.get(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/dataproductlist")
     assert response.status_code == 200
 
 

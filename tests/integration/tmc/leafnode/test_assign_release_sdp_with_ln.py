@@ -12,7 +12,7 @@ from ...conftest import SutTestSettings
 
 @pytest.mark.skalow
 @pytest.mark.assign
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario(
     "features/sdpln_assign_release.feature",
     "Assign resources to sdp low subarray using TMC leaf node",

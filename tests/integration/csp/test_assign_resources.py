@@ -37,7 +37,7 @@ def test_assign_resources_to_csp_low_subarray():
 @pytest.mark.skamid
 @pytest.mark.csp
 @pytest.mark.assign
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario(
     "features/csp_assign_resources.feature",
     "Assign resources to CSP mid subarray",
@@ -100,7 +100,7 @@ def test_abort_in_resourcing_mid(
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.assign
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario("features/csp_assign_resources.feature", "Abort assigning CSP Low")
 def test_abort_in_resourcing_low(
     set_restart_after_abort: None, composition: conf_types.Composition

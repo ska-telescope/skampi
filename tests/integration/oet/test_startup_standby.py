@@ -24,7 +24,7 @@ EXECUTOR = ScriptExecutor()
 @pytest.mark.skamid
 @pytest.mark.startup
 @pytest.mark.k8s
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario("features/oet_startup_standby_telescope.feature", "Starting up telescope")
 def test_telescope_startup():
     """Telescope startup test."""
@@ -35,7 +35,7 @@ def test_telescope_startup():
 @pytest.mark.skalow
 @pytest.mark.startup
 @pytest.mark.k8s
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario(
     "features/oet_startup_standby_telescope.feature",
     "Starting up low telescope",
@@ -49,7 +49,7 @@ def test_telescope_startup_low():
 @pytest.mark.skamid
 @pytest.mark.standby
 @pytest.mark.k8s
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario(
     "features/oet_startup_standby_telescope.feature",
     "Setting telescope to stand-by",

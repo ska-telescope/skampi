@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.startup
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario(
     "features/tmc_alarm_handler.feature",
     "Configure Alarm for IDLE Observation State",

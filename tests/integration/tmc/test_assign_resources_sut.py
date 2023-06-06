@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario(
     "features/tmc_assign_resources_sut.feature",
     "Assign resources to subarray - happy flow",

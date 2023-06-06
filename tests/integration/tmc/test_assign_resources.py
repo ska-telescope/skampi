@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.assign
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario("features/tmc_assign_resources.feature", "Assign resources to low subarray")
 def test_assign_resources_to_tmc_subarray_in_low():
     """Assign resources to tmc subarray in low."""
@@ -32,7 +32,7 @@ def test_assign_resources_to_tmc_subarray_in_low():
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario(
     "features/tmc_assign_resources.feature",
     "Release resources from low subarray",
@@ -46,7 +46,7 @@ def test_release_resources_from_tmc_subarray_in_low():
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.assign
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
 def test_assign_resources_to_tmc_subarray_in_mid():
     """Assign resources to tmc subarray in mid."""
@@ -105,7 +105,7 @@ def fxt_setup_context_monitoring_for_abort_test(
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.assign
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario("features/tmc_assign_resources.feature", "Abort assigning")
 def test_abort_in_resourcing_mid(
     set_restart_after_abort: None,
@@ -147,7 +147,7 @@ def test_abort_in_resourcing_low(
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario(
     "features/tmc_assign_resources.feature",
     "Release resources from mid subarray",

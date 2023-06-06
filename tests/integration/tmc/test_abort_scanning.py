@@ -26,7 +26,7 @@ def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.scan
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario("features/tmc_abort_scanning.feature", "Abort scanning")
 def test_tmc_abort_scanning_on_mid_subarray(disable_clear_and_tear_down: None):
     """

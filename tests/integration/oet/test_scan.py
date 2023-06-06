@@ -26,7 +26,7 @@ Tests to Run a scan on low subarray from OET (XTP-19865)
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.scan
-@pytest.mark.xfail(reason="intermittent")
+
 @scenario("features/oet_scan.feature", "Run a scan on low subarray from OET")
 def test_oet_scan_on_low_subarray():
     """Run a scan on OET low telescope subarray."""

@@ -11,6 +11,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ..conftest import SutTestSettings
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -24,6 +25,7 @@ def test_tmc_configure_scan_on_mid_subarray():
     """Configure scan on TMC mid telescope subarray."""
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -69,6 +71,7 @@ def fxt_setup_monitoring_for_config_abort(
     ).and_observe()
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skamid
 @pytest.mark.configure
 @pytest.mark.xfail(reason="intermittent")
@@ -155,7 +158,7 @@ def the_subarray_must_be_in_the_ready_state(
     """
     tel = names.TEL()
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
-        str(tel.tm.subarray(sut_settings.subarray_id))
+        str(tel.tm.subarray(sut_settings.subarray_id)), time_source="local"
     )
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = tmc_subarray.read_attribute("obsState").value

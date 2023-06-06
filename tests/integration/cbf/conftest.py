@@ -89,7 +89,7 @@ def fxt_set_cbf_online_from_cbf(
             CBFEntryPoint.nr_of_subarrays = nr_of_subarrays
             entry_point = CBFEntryPoint()
             set_subsystem_online(entry_point)
-            online.set_true()
+            # online.set_true()
 
 
 # log checking

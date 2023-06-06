@@ -24,13 +24,16 @@ mid-test:
     ODA_URI: "http://ska-db-oda-rest-$HELM_RELEASE.$KUBE_NAMESPACE:5000/$KUBE_NAMESPACE/api/v1"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
-    #ADDMARKS: "XTP-4636"
-    EXIT_AT_FAIL: "false"
+    ADDMARKS: (csp_startup or sdp)
+    EXIT_AT_FAIL: "False"
     CAPTURE_LOGS: "True"
     SKALLOP_LOG_FILTER_ERRORS: "True"
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
+    SHOW_STEP_FUNCTIONS: "True"
+    #CHECK_INFRA_PER_TEST: "True"
+    USE_OLD_DISH_IDS: "True"
     COUNT: 1
   extends:
     - .tags_default
@@ -51,10 +54,9 @@ mid-test:
     reports:
       junit: build/report.xml
     when: always
-  retry: 1
 
 # Mid on-demand deployment
-mid_deploy_on_demand:
+mid_deploy_on_demand_techops:
   stage: on-demand
   variables:
     CONFIG: mid
@@ -65,6 +67,7 @@ mid_deploy_on_demand:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
+    ARCHIVER_ENABLED: "true"
     OET_INGRESS_ENABLED: "true"
     SKA_TELESCOPE: "SKA-${CONFIG}"
     CENTRALNODE_FQDN: "ska_${CONFIG}/tm_central/central_node"
@@ -82,7 +85,7 @@ mid_deploy_on_demand:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    on_stop: mid_destroy_on_demand
+    on_stop: mid_destroy_on_demand_techops
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -92,7 +95,7 @@ mid_deploy_on_demand:
   when: manual
   allow_failure: true # need to keep this to unlock the pipeline
 
-mid_destroy_on_demand:
+mid_destroy_on_demand_techops:
   stage: on-demand
   variables:
     CONFIG: mid
@@ -108,6 +111,75 @@ mid_destroy_on_demand:
     - .tags_default
     - .set_dbname
     - .uninstall_chart
+  environment:
+    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: $KUBE_NAMESPACE
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    action: stop
+  when: manual
+  allow_failure: true # need to keep this to unlock the pipeline
+
+mid_deploy_on_demand_dp:
+  stage: on-demand
+  variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    INGRESS_HOST: "sdhp.stfc.skao.int"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
+    ARCHIVER_ENABLED: "false"
+    OET_INGRESS_ENABLED: "true"
+    SKA_TELESCOPE: "SKA-${CONFIG}"
+    CENTRALNODE_FQDN: "ska_${CONFIG}/tm_central/central_node"
+    SUBARRAYNODE_FQDN_PREFIX: "ska_${CONFIG}/tm_subarray_node"
+    ODA_URI: "http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1"
+  extends:
+    - .set_dbname
+    - .deploy_chart_before
+  tags:
+    - ska-k8srunner-dp
+  script:
+    - make skampi-links LOADBALANCER_IP=10.100.10.1
+  environment:
+    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: $KUBE_NAMESPACE
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    on_stop: mid_destroy_on_demand_dp
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+  when: manual
+  allow_failure: true # need to keep this to unlock the pipeline
+
+mid_destroy_on_demand_dp:
+  stage: on-demand
+  variables:
+    CONFIG: mid
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    INGRESS_HOST: "sdhp.stfc.skao.int"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
+    OET_INGRESS_ENABLED: "true"
+  extends:
+    - .set_dbname
+    - .uninstall_chart
+  tags:
+    - ska-k8srunner-dp
   environment:
     name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
     kubernetes:

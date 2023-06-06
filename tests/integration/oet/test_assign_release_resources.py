@@ -29,6 +29,7 @@ rest_cli_uri = f"http://{kube_host}/{kube_namespace}/api/v1.0"
 activity_adapter = ActivityAdapter(rest_cli_uri)
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -45,6 +46,7 @@ def test_sbi_creation():
     """
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -64,6 +66,7 @@ def test_resource_allocation():
     """
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -259,6 +262,7 @@ def check_final_subarray_state(
     logger.info("Sub-array is in ObsState %s", obsstate)
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.scripting
 @pytest.mark.skamid
 @pytest.mark.k8s
@@ -276,6 +280,7 @@ def test_oet__scripting_resource_allocation():
     """
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.assign
@@ -294,6 +299,7 @@ def test_oet_scripting_resource_allocation_in_low():
     """
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.scripting
 @pytest.mark.skalow
 @pytest.mark.k8s

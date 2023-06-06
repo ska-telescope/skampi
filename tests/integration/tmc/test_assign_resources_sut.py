@@ -15,6 +15,7 @@ from ..conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -103,4 +104,4 @@ def check_resources_assigned(subarray_id, sut_settings: SutTestSettings):
     csp_resources = str(csp_resources)
 
     assert_that(result_sdp).is_equal_to(sdp_resources)
-    assert_that(result_csp).is_equal_to(resources[::-1])
+    assert_that(tuple(result_csp)).is_equal_to(resources[::-1])

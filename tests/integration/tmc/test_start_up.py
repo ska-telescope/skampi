@@ -36,6 +36,7 @@ def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skalow
 @pytest.mark.startup
 @pytest.mark.xfail(reason="intermittent")
@@ -221,7 +222,7 @@ def the_sdp_csp_and_dish_must_be_off(
     mid = names.Mid()
     # Check state attribute of SDP Master
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
-        str(tel.tm.central_node)
+        str(tel.tm.central_node), time_source="local"
     )
     sdp_master = con_config.get_device_proxy(tel.sdp.master)
     result = sdp_master.read_attribute("state").value

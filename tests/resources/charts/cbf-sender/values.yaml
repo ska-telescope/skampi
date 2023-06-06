@@ -3,7 +3,7 @@
 
 cbf_sdp_emulator:
   container: artefact.skao.int/ska-sdp-cbf-emulator
-  version: 4.0.1
+  version: 4.4.0
   imagePullPolicy: IfNotPresent
   restartPolicy: Never
 

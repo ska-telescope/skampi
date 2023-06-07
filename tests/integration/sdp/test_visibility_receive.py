@@ -54,7 +54,6 @@ PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
 @pytest.mark.visibility
 @pytest.mark.skalow
 @pytest.mark.sdp
-@pytest.mark.xfail(reason="intermittent")
 @scenario(
     "features/sdp_visibility_receive.feature",
     "Execute visibility receive script for a single scan",

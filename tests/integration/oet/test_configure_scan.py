@@ -32,7 +32,6 @@ EXECUTOR = ScriptExecutor()
 @pytest.mark.oet
 @pytest.mark.skamid
 @pytest.mark.k8s
-
 @scenario("features/oet_configure_scan.feature", "Observing a Scheduling Block")
 def test_observing_sbi():
     """
@@ -50,7 +49,6 @@ def test_observing_sbi():
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.configure
-
 @scenario(
     "features/oet_configure_scan.feature",
     "Configure the low telescope subarray using OET",

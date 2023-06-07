@@ -99,7 +99,6 @@ def test_abort_in_resourcing_mid(
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.assign
-
 @scenario("features/csp_assign_resources.feature", "Abort assigning CSP Low")
 def test_abort_in_resourcing_low(
     set_restart_after_abort: None, composition: conf_types.Composition

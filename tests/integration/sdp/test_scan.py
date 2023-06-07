@@ -11,7 +11,6 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.sdp
-
 @scenario("features/sdp_scan.feature", "Run a scan on sdp subarray in low")
 def test_run_a_scan_on_sdp_subarray_in_low():
     """CRun a scan on sdp subarray in low."""
@@ -20,7 +19,6 @@ def test_run_a_scan_on_sdp_subarray_in_low():
 @pytest.mark.skamid
 @pytest.mark.scan
 @pytest.mark.sdp
-
 @scenario("features/sdp_scan.feature", "Run a scan on sdp subarray in mid")
 def test_run_a_scan_on_sdp_subarray_in_mid():
     """Run a scan on sdp subarray in mid."""
@@ -29,7 +27,6 @@ def test_run_a_scan_on_sdp_subarray_in_mid():
 @pytest.mark.skamid
 @pytest.mark.scan
 @pytest.mark.sdp
-
 @scenario("features/sdp_scan.feature", "Abort SDP scanning")
 def test_abort_scanning(disable_clear):
     """
@@ -41,7 +38,6 @@ def test_abort_scanning(disable_clear):
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.sdp
-
 @scenario("features/sdp_scan.feature", "Abort scanning SDP Low")
 def test_abort_scanning_low(disable_clear):
     """

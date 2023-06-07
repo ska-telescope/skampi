@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 @pytest.mark.sdp
 @pytest.mark.skamid
 @pytest.mark.startup
-
 @scenario(
     "features/sdpln_start_up_telescope.feature",
     "Start up the sdp in mid using the leaf node",
@@ -28,7 +27,6 @@ def test_sdpln_start_up_telescope_mid():
 @pytest.mark.sdp
 @pytest.mark.skalow
 @pytest.mark.startup
-
 @scenario(
     "features/sdpln_start_up_telescope.feature",
     "Start up the sdp in low using the leaf node",

@@ -10,7 +10,6 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 @pytest.mark.csp_related
 @pytest.mark.skamid
-
 @scenario(
     "features/tmc_cspln_configure.feature",
     "Configure the csp mid using csp leaf node",

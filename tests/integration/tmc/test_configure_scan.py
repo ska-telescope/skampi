@@ -16,7 +16,6 @@ from ..conftest import SutTestSettings
 @pytest.mark.k8sonly
 @pytest.mark.skamid
 @pytest.mark.configure
-
 @scenario(
     "features/tmc_configure_scan.feature",
     "Configure the mid telescope subarray using TMC",
@@ -30,7 +29,6 @@ def test_tmc_configure_scan_on_mid_subarray():
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @pytest.mark.configure
-
 @scenario(
     "features/tmc_configure_scan.feature",
     "Configure the low telescope subarray using TMC",
@@ -74,7 +72,6 @@ def fxt_setup_monitoring_for_config_abort(
 @pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skamid
 @pytest.mark.configure
-
 @scenario("features/tmc_configure_scan.feature", "Abort configuring")
 def test_abort_configuring_on_mid_tmc_subarray(
     disable_clear_and_tear_down: None,

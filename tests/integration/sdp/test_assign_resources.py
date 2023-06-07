@@ -40,7 +40,6 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp
-
 @scenario(
     "features/sdp_assign_resources.feature",
     "Assign resources to sdp subarray in low",
@@ -57,7 +56,6 @@ def test_assign_resources_to_sdp_subarray_in_low(
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
-
 @scenario(
     "features/sdp_assign_resources.feature",
     "Assign resources to sdp subarray in mid",
@@ -75,7 +73,6 @@ def test_assign_resources_to_sdp_subarray_in_mid(
 @pytest.mark.skamid
 @pytest.mark.assign
 @pytest.mark.sdp
-
 @scenario("features/sdp_assign_resources.feature", "Abort assigning SDP")
 def test_abort_in_resourcing_sdp_subarray_in_mid(
     set_restart_after_abort: None, composition: conf_types.Composition
@@ -91,7 +88,6 @@ def test_abort_in_resourcing_sdp_subarray_in_mid(
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp
-
 @scenario("features/sdp_assign_resources.feature", "Abort assigning SDP Low")
 def test_abort_in_resourcing_sdp_subarray_in_low(
     set_restart_after_abort: None, composition: conf_types.Composition

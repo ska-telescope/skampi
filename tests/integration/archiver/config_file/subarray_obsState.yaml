@@ -1,6 +1,6 @@
-db: <TANGO_HOST>.<KUBE_NAMESPACE>.svc.cluster.local:10000
-manager: <Configuration Manager FQDN>
-archiver:  <EventSubscriber FQDN>
+db: databaseds-tango-base.ci-ska-skampi-hm-213-mid.svc.cluster.local:10000
+manager: mid-eda/cm/01
+archiver: mid-eda/es/01
 configuration:
 - class: SubarrayNodeMid
   attributes:

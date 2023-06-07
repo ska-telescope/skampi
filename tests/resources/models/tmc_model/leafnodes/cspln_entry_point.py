@@ -203,6 +203,7 @@ class CSPLnScanStep(CspScanStep):
         self._log(f"Commanding {csp_subarray_ln_name} to Scan with" f" {csp_run_scan_config}")
         # we retry this command three times in case there is a transitory race
         # condition
+
         @retry(nr_of_reties=3)
         def command():
             csp_subarray_ln.command_inout("Scan", json.dumps(csp_run_scan_config))

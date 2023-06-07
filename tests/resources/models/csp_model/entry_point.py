@@ -595,9 +595,21 @@ class CSPWaitReadyStep(base.WaitReadyStep, LogEnabled):
         builder = get_message_board_builder()
         for sub_id in range(1, self._nr_of_subarrays + 1):
             subarray = self._tel.csp.subarray(sub_id)
+<<<<<<< HEAD
+<<<<<<< HEAD
             builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
                 ["OFF", "ON"], ignore_first=False
             )
+=======
+            builder.set_waiting_on(subarray).for_attribute(
+                "state"
+            ).to_become_equal_to(["OFF", "ON"], ignore_first=False)
+>>>>>>> 7a778a8d (AT-489: Resolving python lint error)
+=======
+            builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
+                ["OFF", "ON"], ignore_first=False
+            )
+>>>>>>> 6dca09b3 (AT-489: Resolving python lint error)
         return builder
 
 

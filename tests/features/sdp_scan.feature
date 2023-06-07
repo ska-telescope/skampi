@@ -24,4 +24,8 @@ Feature: Run a scan on sdp subarray
 	Scenario: Abort scanning SDP Low
         Given an subarray busy scanning
         When I command it to Abort
+<<<<<<< HEAD
         Then the subarray should go into an aborted state
+=======
+        Then the subarray should go into an aborted state
+>>>>>>> 782fc86e (SAH-1309: Updated Abort scanning test cases.)

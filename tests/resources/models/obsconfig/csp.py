@@ -73,7 +73,7 @@ class CSPconfig(TargetSpecs):
             channel_averaging_map=[(0, 2), (744, 0)],
             output_link_map=[(0, 4), (200, 5)],
             channel_offset=744,
-            zoom_window_tuning=650000,
+            zoom_window_tuning=1050000,
         )
         return CSPConfiguration(
             self.csp_scan_configure_schema,

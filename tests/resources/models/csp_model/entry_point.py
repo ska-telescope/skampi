@@ -405,13 +405,15 @@ class CSPSetOnlineStep(base.SetOnlineStep, LogEnabled):
         """Domain logic for setting devices in csp to online."""
         controller_name = self._tel.csp.controller
         controller = con_config.get_device_proxy(controller_name)
-        self._log(f"Setting adminMode for {controller_name} to '0' (ONLINE)")
-        controller.write_attribute("adminmode", 0)
-        for index in range(1, self.nr_of_subarrays + 1):
-            subarray_name = self._tel.csp.subarray(index)
-            subarray = con_config.get_device_proxy(subarray_name)
-            self._log(f"Setting adminMode for {subarray_name} to '0' (ONLINE)")
-            subarray.write_attribute("adminmode", 0)
+        admin_mode = controller.read_attribute("adminmode").value
+        if (admin_mode != 0):
+            self._log(f"Setting adminMode for {controller_name} to '0' (ONLINE)")
+            controller.write_attribute("adminmode", 0)
+            for index in range(1, self.nr_of_subarrays + 1):
+                subarray_name = self._tel.csp.subarray(index)
+                subarray = con_config.get_device_proxy(subarray_name)
+                self._log(f"Setting adminMode for {subarray_name} to '0' (ONLINE)")
+                subarray.write_attribute("adminmode", 0)
 
     def set_wait_for_do_set_online(self) -> MessageBoardBuilder:
         """

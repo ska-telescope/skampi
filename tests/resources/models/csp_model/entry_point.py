@@ -340,7 +340,7 @@ class CspScanStep(base.ScanStep, LogEnabled):
         if self._tel.skalow:
             scan_config_arg = json.dumps(csp_low_scan)
         elif self._tel.skamid:
-            scan_config_arg = self.observation.generate_run_scan_conf().as_json
+            scan_config_arg = json.dumps(self.observation.generate_csp_run_scan_config())
         scan_duration = Memo().get("scan_duration")
         self._tel = names.TEL()
         subarray_name = self._tel.csp.subarray(sub_array_id)

@@ -58,7 +58,7 @@ class Scan:
         if backwards:
             return {"id": self._instance_count}
         return {
-            "interface": "https://schema.skao.intg/ska-tmc-scan/2.0",
+            "interface": "https://schema.skao.int/ska-tmc-scan/2.0",
             "scan_id": self._instance_count,
         }
 

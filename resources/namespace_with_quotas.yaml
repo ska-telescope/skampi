@@ -7,25 +7,10 @@ spec:
   limits:
     - default:
         memory: 256Mi
-        cpu: 200m
+        cpu: 400m
         ephemeral-storage: 256Mi
       defaultRequest:
         memory: 64Mi
-        cpu: 100m
+        cpu: 200m
         ephemeral-storage: 256Mi
       type: Container
-
----
-apiVersion: v1
-kind: ResourceQuota
-metadata:
-  name: compute-resources
-spec:
-  hard:
-    pods: "250"
-    requests.cpu: 16000m
-    requests.memory: 16Gi
-    requests.ephemeral-storage: 25Gi
-    limits.cpu: 32000m
-    limits.memory: 32Gi
-    limits.ephemeral-storage: 50Gi

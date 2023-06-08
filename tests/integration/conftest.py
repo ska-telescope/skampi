@@ -374,6 +374,7 @@ def assign_resources_with_subarray_id(
             entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
 
+@when("I assign resources to the subarray")
 @when("I assign resources to it")
 def i_assign_resources_to_it(
     running_telescope: fxt_types.running_telescope,

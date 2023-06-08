@@ -94,7 +94,7 @@ class CSPconfig(TargetSpecs):
             CSPrunScanConfig,
             {
                 **config,
-                **{"interface": "https://schema.skao.int/ska-mid-csp-scan/2.0"},
+                **{"interface": "https://schema.skao.int/ska-csp-scan/2.0"},
             },
         )
         return csp_run_scan_config

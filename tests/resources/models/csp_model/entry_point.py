@@ -592,6 +592,10 @@ class CSPWaitReadyStep(base.WaitReadyStep, LogEnabled):
 
     def set_wait_for_sut_ready_for_session(self) -> MessageBoardBuilder:
         builder = get_message_board_builder()
+        csp_controller = self._tel.csp.controller
+        builder.set_waiting_on(csp_controller).for_attribute("state").to_become_equal_to(
+                ["OFF", "ON", "DISABLE"], ignore_first=False
+            )
         for sub_id in range(1, self._nr_of_subarrays + 1):
             subarray = self._tel.csp.subarray(sub_id)
             builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(

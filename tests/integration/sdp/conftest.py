@@ -13,7 +13,6 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
-from .vis_receive_utils import K8sElementManager
 
 
 @pytest.fixture(name="update_sut_settings")

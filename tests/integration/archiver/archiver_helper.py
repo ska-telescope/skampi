@@ -4,22 +4,24 @@ from tango import AttributeProxy, DeviceProxy
 
 
 class ArchiverHelper:
-    def __init__(self, conf_manager="mid-eda/cm/01", eventsubscriber="mid-eda/es/01"):
+    def __init__(self, conf_manager, eventsubscriber):
         self.conf_manager = conf_manager
         self.eventsubscriber = eventsubscriber
         self.conf_manager_proxy = DeviceProxy(self.conf_manager)
         self.evt_subscriber_proxy = DeviceProxy(self.eventsubscriber)
 
-    def attribute_add(self, fqdn, polling_period=1000, period_event=3000):
+    def attribute_add(self, fqdn, strategy, polling_period, value):
         """
         Adds the specified attribute to the archive configuration.
 
         :param fqdn: Fully qualified domain name of the attribute to be added.
         :type fqdn: str
-        :param polling_period: Polling period in milliseconds. Default is 1000.
+        :param polling_period: Polling period in milliseconds.
         :type polling_period: int
-        :param period_event: Period event in milliseconds. Default is 3000.
-        :type period_event: int
+        :param strategy: strategy for archiving.
+        :type strategy: str
+        :param value: value for  strategy specified.
+        :type value: Union[ int , bool]
         :return: True or False
         """
         if not self.is_already_archived(fqdn):
@@ -27,8 +29,9 @@ class ArchiverHelper:
             self.conf_manager_proxy.write_attribute("SetAttributeName", fqdn)
             self.conf_manager_proxy.write_attribute("SetArchiver", self.eventsubscriber)
             self.conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
-            self.conf_manager_proxy.write_attribute("SetPollingPeriod", int(polling_period))
-            self.conf_manager_proxy.write_attribute("SetPeriodEvent", int(period_event))
+            self.conf_manager_proxy.write_attribute(strategy, value)
+            if polling_period:
+                self.conf_manager_proxy.write_attribute("SetPollingPeriod", int(polling_period))
             self.conf_manager_proxy.AttributeAdd()
             return True
         return False
@@ -39,7 +42,8 @@ class ArchiverHelper:
 
         :return: Attribute list
         """
-        return self.evt_subscriber_proxy.read_attribute("AttributeList").value
+
+        return self.evt_subscriber_proxy.AttributeList
 
     def is_already_archived(self, fqdn):
         """
@@ -55,20 +59,22 @@ class ArchiverHelper:
                     return True
         return False
 
-    def start_archiving(self, fqdn=None, polling_period=1000, period_event=3000):
+    def start_archiving(self, fqdn=None, strategy=None, polling_period=1000, value=None):
         """
         A method for initializing archiving process
         :param fqdn: Fully qualified domain name of the attribute to be added.
         :type fqdn: str
         :param polling_period: Polling period in milliseconds. Default is 1000.
         :type polling_period: int
-        :param period_event: Period event in milliseconds. Default is 3000.
-        :type period_event: int
+        :param strategy: strategy for archiving.
+        :type strategy: str
+        :param value: value for given strategy.
+        :type value : Union[ int, bool]
         :return: Start on archiver
 
         """
         if fqdn is not None:
-            self.attribute_add(fqdn, polling_period, period_event)
+            self.attribute_add(fqdn, strategy, polling_period, value)
         return self.evt_subscriber_proxy.Start()
 
     def stop_archiving(self, fqdn):
@@ -118,8 +124,7 @@ class ArchiverHelper:
         :return: total sleep time
         """
         total_sleep_time = 0
-        while max_retries > 0:
-            max_retries -= 1
+        for _ in range(0, max_retries):
             try:
                 if "Archiving          : Started" in self.conf_manager_attribute_status(fqdn):
                     break

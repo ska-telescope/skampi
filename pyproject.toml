@@ -28,7 +28,9 @@ ska-tmc-cdm = "7.3.1"
 ska-oso-scripting = "7.2.0"
 ska-oso-oet-client = "^1.0.0"
 ska-db-oda = "^1.6.1"
-ska-oso-oet="^5.1.1"
+ska-oso-oet="5.0.0"
+httpx ="0.24.0"
+psycopg2-binary ="2.9.5"
 
 [[tool.poetry.source]]
 name = 'ska'

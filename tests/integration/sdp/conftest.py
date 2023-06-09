@@ -38,6 +38,7 @@ def fxt_update_sut_settings(sut_settings: conftest.SutTestSettings):
     tel = names.TEL()
     if tel.skalow:
         sut_settings.nr_of_subarrays = 1
+    sut_settings.test_case = None
 
 
 @pytest.fixture(name="set_sdp_entry_point", autouse=True)
@@ -59,6 +60,8 @@ def fxt_set_entry_point(
         SDPEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
         if sut_settings.test_case == "vis-receive":
             SDPEntryPoint.obs_to_use = VisRecObservation()
+        if sut_settings.test_case is None:
+            SDPEntryPoint.obs_to_use = None
         exec_env.entrypoint = SDPEntryPoint
     else:
         exec_env.entrypoint = "mock"

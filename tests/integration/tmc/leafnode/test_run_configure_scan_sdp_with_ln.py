@@ -8,6 +8,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 
+@pytest.mark.sdpln
 @pytest.mark.skamid
 @pytest.mark.configure
 @scenario(
@@ -18,6 +19,7 @@ def test_configure_scan_on_sdp_subarray_in_mid():
     """Configure scan on sdp subarray in mid using the leaf node."""
 
 
+@pytest.mark.sdpln
 @pytest.mark.skalow
 @pytest.mark.configure
 @scenario(

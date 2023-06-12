@@ -5,11 +5,7 @@ metadata:
   name: limit-range
 spec:
   limits:
-    - default:
-        memory: 512Mi
-        cpu: 1000m
-        ephemeral-storage: 256Mi
-      defaultRequest:
+    - defaultRequest:
         memory: 64Mi
         cpu: 65m
         ephemeral-storage: 256Mi

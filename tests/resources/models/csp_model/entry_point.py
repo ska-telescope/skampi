@@ -426,7 +426,7 @@ class CSPSetOnlineStep(base.SetOnlineStep, LogEnabled):
         controller_name = self._tel.csp.controller
         controller = con_config.get_device_proxy(controller_name)
         admin_mode = controller.read_attribute("adminmode").value
-        if (admin_mode != 0):
+        if admin_mode != 0:
             self._log(f"Setting adminMode for {controller_name} to '0' (ONLINE)")
             controller.write_attribute("adminmode", 0)
             for index in range(1, self.nr_of_subarrays + 1):
@@ -614,8 +614,8 @@ class CSPWaitReadyStep(base.WaitReadyStep, LogEnabled):
         builder = get_message_board_builder()
         csp_controller = self._tel.csp.controller
         builder.set_waiting_on(csp_controller).for_attribute("state").to_become_equal_to(
-                ["OFF", "ON", "DISABLE"], ignore_first=False
-            )
+            ["OFF", "ON", "DISABLE"], ignore_first=False
+        )
         for sub_id in range(1, self._nr_of_subarrays + 1):
             subarray = self._tel.csp.subarray(sub_id)
             builder.set_waiting_on(subarray).for_attribute("state").to_become_equal_to(
@@ -659,76 +659,52 @@ csp_mid_assign_resources_template = {
 
 csp_mid_configure_scan_template = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
-    "subarray": {
-      "subarray_name": "science period 23"
-    },
+    "subarray": {"subarray_name": "science period 23"},
     "common": {
-      "config_id": "sbi-mvp01-20200325-00001-science_A",
-      "frequency_band": "1",
-      "subarray_id": 1
+        "config_id": "sbi-mvp01-20200325-00001-science_A",
+        "frequency_band": "1",
+        "subarray_id": 1,
     },
     "cbf": {
-      "delay_model_subscription_point": "ska_mid/tm_leaf_node/csp_subarray_01/delayModel",
-      "fsp": [
-          {
-            "fsp_id": 1,
-            "function_mode": "CORR",
-            "frequency_slice_id": 1,
-            "integration_factor": 1,
-            "zoom_factor": 0,
-            "channel_averaging_map": [
-              [0, 2],
-              [744, 0]
-            ],
-            "channel_offset": 0,
-            "output_link_map": [
-              [0, 0],
-              [200, 1]
-            ]
-          },
-          {
-            "fsp_id": 2,
-            "function_mode": "CORR",
-            "frequency_slice_id": 2,
-            "integration_factor": 1,
-            "zoom_factor": 1,
-            "zoom_window_tuning": 650000,
-            "channel_averaging_map": [
-              [0, 2],
-              [744, 0]
-            ],
-            "channel_offset": 744,
-            "output_link_map": [
-              [0, 4],
-              [200, 5]
-            ],
-            "output_host": [
-              [0, "192.168.1.1"]
-            ],
-            "output_port": [
-              [0, 9744, 1]
-            ]
-          }
+        "delay_model_subscription_point": "ska_mid/tm_leaf_node/csp_subarray_01/delayModel",
+        "fsp": [
+            {
+                "fsp_id": 1,
+                "function_mode": "CORR",
+                "frequency_slice_id": 1,
+                "integration_factor": 1,
+                "zoom_factor": 0,
+                "channel_averaging_map": [[0, 2], [744, 0]],
+                "channel_offset": 0,
+                "output_link_map": [[0, 0], [200, 1]],
+            },
+            {
+                "fsp_id": 2,
+                "function_mode": "CORR",
+                "frequency_slice_id": 2,
+                "integration_factor": 1,
+                "zoom_factor": 1,
+                "zoom_window_tuning": 650000,
+                "channel_averaging_map": [[0, 2], [744, 0]],
+                "channel_offset": 744,
+                "output_link_map": [[0, 4], [200, 5]],
+                "output_host": [[0, "192.168.1.1"]],
+                "output_port": [[0, 9744, 1]],
+            },
         ],
-        "vlbi": {
-
+        "vlbi": {},
+    },
+    "pss": {},
+    "pst": {},
+    "pointing": {
+        "target": {
+            "system": "ICRS",
+            "target_name": "Polaris Australis",
+            "ra": "21:08:47.92",
+            "dec": "-88:57:22.9",
         }
     },
-    "pss": {
-       
-    },
-    "pst": {
-       
-    },
-    "pointing": {
-      "target": {
-        "system": "ICRS",
-        "target_name": "Polaris Australis",
-        "ra": "21:08:47.92",
-        "dec": "-88:57:22.9"
-      }
-    }
-  }
+}
 
 
 csp_low_assign_resources = {

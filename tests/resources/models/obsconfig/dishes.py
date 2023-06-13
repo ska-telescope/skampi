@@ -6,7 +6,7 @@ from ska_tmc_cdm.messages.subarray_node.configure.core import (
     PointingConfiguration,
 )
 
-from .target_spec import TargetSpecs
+from .target_spec import TargetSpecs, BaseTargetSpec, ArraySpec
 
 ReceptorName = Literal[
     "SKA001",
@@ -20,15 +20,31 @@ ReceptorName = Literal[
     "SKA009",
 ]
 
+MeerkatDishHame = Literal[
+    "MKT001",
+    "MKT002",
+    "MKT003",
+    "MKT004"
+]
+
+
+TempLow = Literal[
+    "C10", "C136", "C1", "C217", "C13", "C42"
+]
+
 
 class ResourceConfiguration(TypedDict):
-    receptors: list[ReceptorName]
+    receptors: list[str]
 
 
 class Dishes(TargetSpecs):
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.dish_specs: dict[str, list[ReceptorName]] = {
+    def __init__(
+        self,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
+    ) -> None:
+        TargetSpecs.__init__(self, base_target_specs, array)
+        self.dish_specs: dict[str, list[ReceptorName | MeerkatDishHame | TempLow]] = {
             "two": ["SKA001", "SKA002"],
             "three": ["SKA001", "SKA002", "SKA003"],
             "four": ["SKA001", "SKA002", "SKA003", "SKA004"],
@@ -43,14 +59,14 @@ class Dishes(TargetSpecs):
         }
 
     @property
-    def dishes(self) -> list[ReceptorName]:
-        return list(
-            {
-                dish
-                for target in self.target_specs.values()
-                for dish in self.dish_specs[target.dishes]
-            }
-        )
+    def dishes(self) -> list[ReceptorName | TempLow | TempLow]:
+        dish_list = []
+        for target in self.target_specs.values():
+            if isinstance(target.dishes, list):
+                dish_list = list(set([*dish_list, *target.dishes]))
+            elif dishes :=self.dish_specs.get(target.dishes):
+                dish_list = list(set([*dish_list, *dishes]))
+        return dish_list
 
     @property
     def dish_allocation(self):

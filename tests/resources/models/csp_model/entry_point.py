@@ -12,6 +12,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import CompositeEntryPoint
 from ska_ser_skallop.utils.singleton import Memo
+from ska_ser_skallop.event_handling.handlers import WaitForLRCComplete
 
 from ..mvp_model.states import ObsState
 from ..obsconfig.config import Observation
@@ -33,6 +34,22 @@ class LogEnabled:
     def _log(self, mssage: str):
         if self._live_logging:
             logger.info(mssage)
+
+
+class WithCommandID:
+
+    def __init__(self) -> None:
+        self._long_running_command_subscriber  = None
+
+    @property
+    def long_running_command_subscriber(self) -> WaitForLRCComplete | None:
+        return Memo().get("long_running_command_subscriber")
+    
+
+    @long_running_command_subscriber.setter
+    def long_running_command_subscriber(self, subscriber: WaitForLRCComplete):
+        Memo(long_running_command_subscriber = subscriber)
+
 
 
 class StartUpStep(base.StartUpStep, LogEnabled):
@@ -106,7 +123,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         self.csp_controller.command_inout("Off", [])
 
 
-class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
+class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled, WithCommandID):
     """Implementation of Assign Resources Step for CSP."""
 
     def __init__(self, observation: Observation) -> None:
@@ -137,6 +154,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param composition: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
         """
+        assert self.long_running_command_subscriber
         if self._tel.skalow:
             subarray_name = self._tel.skalow.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
@@ -145,14 +163,16 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
                 f"commanding {subarray_name} with AssignResources:" f" {csp_low_configuration} "
             )
             subarray.set_timeout_millis(6000)
-            subarray.command_inout("AssignResources", csp_low_configuration)
+            command_id = subarray.command_inout("AssignResources", csp_low_configuration)
+            self.long_running_command_subscriber.set_command_id(command_id)
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
             config = json.dumps(csp_mid_assign_resources_template)
             self._log(f"commanding {subarray_name} with AssignResources: {config} ")
             subarray.set_timeout_millis(6000)
-            subarray.command_inout("AssignResources", config)
+            command_id = subarray.command_inout("AssignResources", config)
+            self.long_running_command_subscriber.set_command_id(command_id)
 
     def undo_assign_resources(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in csp.
@@ -179,7 +199,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         self._tel = names.TEL()
         subarray_name = self._tel.csp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
-
+        self.long_running_command_subscriber = builder.set_wait_for_long_running_command_on(subarray_name)
         return builder
 
     def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:

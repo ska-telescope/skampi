@@ -13,6 +13,14 @@ from .tmc_config import TmcConfig
 
 
 class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
+
+    def __init__(self, **kwargs: Any) -> None:
+        SdpConfig.__init__(self,**kwargs)
+        CSPconfig.__init__(self,**kwargs)
+        Dishes.__init__(self,**kwargs)
+        TmcConfig.__init__(self,**kwargs)
+        MCCSConfig.__init__(self,**kwargs)
+
     assign_resources_schema = "https://schema.skao.int/ska-tmc-assignresources/2.1"
 
     def _generate_assign_resources_config(self, subarray_id: int = 1):

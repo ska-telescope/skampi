@@ -9,6 +9,9 @@ from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     SubarrayConfiguration,
 )
 
+from ska_tmc_cdm.messages.central_node.csp import CSPConfiguration as CSPAssignConfiguration
+
+from tests.resources.models.obsconfig.target_spec import ArraySpec, BaseTargetSpec
 from .base import encoded
 from .target_spec import TargetSpecs
 
@@ -21,6 +24,13 @@ class CSPrunScanConfig(TypedDict):
 class CSPconfig(TargetSpecs):
     csp_subarray_id = "dummy name"
     csp_scan_configure_schema = "https://schema.skao.int/ska-csp-configure/2.0"
+
+    def __init__(
+        self,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
+    ) -> None:
+        TargetSpecs.__init__(self, base_target_specs, array)
 
     def _generate_low_csp_assign_resources_config(self):
         interface = "https://schema.skao.int/ska-low-csp-assignresources/2.0"
@@ -41,7 +51,7 @@ class CSPconfig(TargetSpecs):
                 },
             ]
         }
-        return CSPConfiguration(interface=interface, common=common, lowcbf=lowcbf)
+        return CSPAssignConfiguration(interface=interface, common=common, lowcbf=lowcbf)
 
     @encoded
     def generate_low_csp_assign_resources_config(self):

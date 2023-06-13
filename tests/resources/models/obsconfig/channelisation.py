@@ -1,8 +1,6 @@
-from typing import Any
-
 from ska_tmc_cdm.messages.central_node.sdp import Channel, ChannelConfiguration
 
-from .target_spec import TargetSpecs
+from .target_spec import ArraySpec, BaseTargetSpec, TargetSpecs
 
 DEFAULT_CHANNELS = {
     "vis_channels": ChannelConfiguration(
@@ -25,19 +23,20 @@ DEFAULT_CHANNELS = {
 class Channelization(TargetSpecs):
     def __init__(
         self,
-        additional_channels: list[ChannelConfiguration] | None = None,
-        **kwargs: Any,
+        channels: list[ChannelConfiguration] | None = None,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
     ) -> None:
-        super().__init__(**kwargs)
-        self._channel_configurations = DEFAULT_CHANNELS
-        if additional_channels is not None:
+        TargetSpecs.__init__(self, base_target_specs, array)
+        if channels is not None:
             self._channel_configurations = {
-                **self._channel_configurations,
                 **{
-                    additional_channel.channels_id: additional_channel
-                    for additional_channel in additional_channels
+                    channel.channels_id: channel
+                    for channel in channels
                 },
             }
+        else:
+            self._channel_configurations = DEFAULT_CHANNELS
 
     def add_channel_configuration(self, config_name: str, spectral_windows: list[Channel]):
         assert (
@@ -52,9 +51,7 @@ class Channelization(TargetSpecs):
         return list(self._channel_configurations.keys())
 
     @channel_configurations.setter
-    def channel_configurations(self, new_config):
-        if not isinstance(new_config, dict):
-            raise ValueError("Channel configuration needs to be a dictionary")
+    def channel_configurations(self, new_config: dict[str, ChannelConfiguration]):
         self._channel_configurations = new_config
 
     def get_channel_configuration(self, config_name: str) -> ChannelConfiguration:

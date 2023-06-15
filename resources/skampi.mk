@@ -97,7 +97,6 @@ tango-wait-all:
 ##  and k8s-wait for each one.
 
 skampi-wait-all: helm-install-yq k8s-wait tango-wait-all ## iterate over sub-charts and wait for each one
-	make k8s-wait KUBE_APP=ska-sdp 
 	make k8s-wait KUBE_APP=ska-sdp SKA_TANGO_OPERATOR=false
 
 # Set up of the testing pod. This goes through the following steps:

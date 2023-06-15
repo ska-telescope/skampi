@@ -8,14 +8,14 @@ low-test:
   stage: test
   variables:
     CONFIG: low
-    ADDMARKS: (csp_startup or sdp)
+    ADDMARKS: (csp_startup or sdp or eda)
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     SKA_TELESCOPE: "SKA-${CONFIG}"
     CENTRALNODE_FQDN: "ska_${CONFIG}/tm_central/central_node"
     SUBARRAYNODE_FQDN_PREFIX: "ska_${CONFIG}/tm_subarray_node"
@@ -32,6 +32,7 @@ low-test:
     SHOW_STEP_FUNCTIONS: "True"
   extends:
     - .tags_default
+    - .set_dbname
   script:
     - !reference [.deploy_chart_before, before_script]
     - !reference [.test_deployment, script]
@@ -188,7 +189,7 @@ low_destroy_on_demand_dp:
     KUBE_NAMESPACE_SDP: integration-$CONFIG-sdp
     HELM_RELEASE: $CONFIG
     SERVICE_ACCOUNT: integration-svc-$CONFIG
-    ARCHIVER_DBNAME: integration-$CONFIG-archiver_db
+    ARCHIVER_DBNAME: integration_${CONFIG}_archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
     SKA_TELESCOPE: SKA-$CONFIG
@@ -265,7 +266,7 @@ low-redeploy-integration:
     KUBE_NAMESPACE_SDP: staging-$CONFIG-sdp
     HELM_RELEASE: $CONFIG
     SERVICE_ACCOUNT: staging-svc-$CONFIG
-    ARCHIVER_DBNAME: staging-$CONFIG-archiver_db
+    ARCHIVER_DBNAME: staging_${CONFIG}_archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
     SKA_TELESCOPE: SKA-$CONFIG

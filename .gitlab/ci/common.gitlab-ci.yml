@@ -37,7 +37,7 @@
     - find ./build
     - echo "#####################################"
     - make skampi-upload-test-results
-    # Exit based on the make-k8s-test-runner output which is writting in build/status file
+    # Exit based on the make-k8s-test-runner output which is writing in build/status file
     - '[ -f build/status ] || (echo "Something went wrong with the test (no build/status file); exit 1")'
     - echo "Cleaning the environment"
     - make k8s-uninstall-chart || true

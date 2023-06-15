@@ -169,6 +169,7 @@ tmc-mid:
 ska-tango-archiver:
   legacy_compatibility: true
   enabled: true
+  telescope: SKA-mid
   dbname: default_mvp_archiver_db
 
 ## dishmasters

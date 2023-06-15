@@ -45,12 +45,15 @@ else
 DASHMARK ?= ska$(CONFIG)
 endif
 
+TELESCOPE_ENVIRONMENT = "$(CONFIG)-STFC" # For configurator tool display
 ARCHIVER_ENABLED ?= true
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
+EVENT_SUBSCRIBER = "$(CONFIG)-eda/es/01"
+
 CONFIG_MANAGER= $(CONFIG)-eda/cm/01
 ATTR_CONFIG_FILE = attribute_config_$(CONFIG).yaml
 ARCHWIZARD_CONFIG?= $(ARCHWIZARD_VIEW_DBNAME)=tango://$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.$(CLUSTER_DOMAIN):10000/$(CONFIG_MANAGER)
-
+ARCHIVER_TIMESCALE_HOST_NAME = timescaledb.ska-eda-$(CONFIG)-db.svc.cluster.local#for testing 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
 ifneq ($(TESTCOUNT),)
 # Dashcount is a synthesis of testcount as input user variable and is used to
@@ -94,12 +97,13 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.labels.app=$(KUBE_APP) \
 	--set ska-tango-base.itango.enabled=$(ITANGO_ENABLED) \
 	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
+	--set ska-tango-archiver.hostname=$(ARCHIVER_TIMESCALE_HOST_NAME) \
 	--set ska-tango-archiver.enabled=$(ARCHIVER_ENABLED) \
-	--set ska-tango-archiver.hostname=$(ARCHIVER_HOST_NAME) \
 	--set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
+	--set ska-tango-archiver.telescope_environment=$(TELESCOPE_ENVIRONMENT)\
 	--set global.exposeAllDS=$(EXPOSE_All_DS) \
 	--set ska-tango-archiver.archwizard_config=$(ARCHWIZARD_CONFIG) \
 	--set ska-sdp.ska-sdp-qa.zookeeper.clusterDomain=$(CLUSTER_DOMAIN) \

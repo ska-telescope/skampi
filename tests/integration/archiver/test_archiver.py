@@ -3,29 +3,32 @@
 Test archiver
 """
 import logging
-import sys
-from time import sleep
+import os
 
 import pytest
 
-# pylint: disable=E0401
-from archiver_helper import ArchiverHelper
-from tango import ApiUtil, DevFailed, DeviceProxy
+from .archiver_helper import ArchiverHelper
+
+CONFIG = os.getenv("CONFIG")
+CONF_MANAGER = f"{CONFIG}-eda/cm/01"
+EVENT_SUBSCRIBER = f"{CONFIG}-eda/es/01"
+CM_SERVER = "dserver/hdbppcm-srv/01"
 
 
-@pytest.mark.k8s
-@pytest.mark.k8sonly
+@pytest.mark.post_deployment
 @pytest.mark.skamid
+@pytest.mark.skalow
 def test_init():
-    logging.info("Init test archiver")
-    archiver_helper = ArchiverHelper()
+    logging.info("Init test archiver mid")
+    archiver_helper = ArchiverHelper(CONF_MANAGER, EVENT_SUBSCRIBER)
     archiver_helper.start_archiving()
 
 
-def configure_attribute(attribute):
-    archiver_helper = ArchiverHelper()
-    archiver_helper.attribute_add(attribute, 100, 300)
-    archiver_helper.start_archiving()
+def configure_attribute(
+    attribute, configuration_manager, event_subscriber, strategy, polling_period, value
+):
+    archiver_helper = ArchiverHelper(configuration_manager, event_subscriber)
+    archiver_helper.start_archiving(attribute, strategy, polling_period, value)
     slept_for = archiver_helper.wait_for_start(attribute)
     logging.info("Slept for " + str(slept_for) + "s before archiving started.")
     assert "Archiving          : Started" in archiver_helper.conf_manager_attribute_status(
@@ -37,31 +40,18 @@ def configure_attribute(attribute):
     archiver_helper.stop_archiving(attribute)
 
 
-@pytest.mark.k8s
-@pytest.mark.k8sonly
+@pytest.mark.eda
+@pytest.mark.post_deployment
 @pytest.mark.skamid
-def test_configure_attribute():
-    attribute = "sys/tg_test/1/double_scalar"
-    sleep_time = 20
-    max_retries = 3
-    total_slept = 0
-    for x in range(0, max_retries):
-        try:
-            ApiUtil.cleanup()
-            configure_attribute(attribute)
-            break
-        except DevFailed as df:
-            logging.error(f"configure_attribute exception: {sys.exc_info()}")
-            try:
-                deviceAdm = DeviceProxy("dserver/hdbppcm-srv/01")
-                deviceAdm.RestartServer()
-            except Exception:
-                logging.error(f"reset_conf_manager exception: {sys.exc_info()[0]}")
-            if x == (max_retries - 1):
-                raise df
-
-        sleep(sleep_time)
-        total_slept += 1
-
-    if total_slept > 0:
-        logging.info("Slept for {}s for the test configuration!".format(total_slept * sleep_time))
+@pytest.mark.skalow
+@pytest.mark.parametrize(
+    "attribute, strategy, polling_period, value",
+    [
+        ("sys/tg_test/1/double_scalar", "SetPeriodEvent", 1000, 2000),
+        (f"ska_{CONFIG}/tm_central/central_node/state", "SetCodePushedEvent", None, True),
+        (f"ska_{CONFIG}/tm_central/central_node/healthstate", "SetRelativeEvent", None, 2.0),
+        (f"ska_{CONFIG}/tm_central/central_node/telescopestate", "SetAbsoluteEvent", None, 3.0),
+    ],
+)
+def test_config_attribute(attribute, strategy, polling_period, value):
+    configure_attribute(attribute, CONF_MANAGER, EVENT_SUBSCRIBER, strategy, polling_period, value)

@@ -7,7 +7,7 @@ spec:
   limits:
   - default:
       memory: 256Mi
-      cpu: 2000m
+      cpu: 1200m
       ephemeral-storage: 256Mi
     defaultRequest:
       memory: 64Mi
@@ -26,6 +26,6 @@ spec:
     requests.cpu: 16000m
     requests.memory: 16Gi
     requests.ephemeral-storage: 25Gi
-    limits.cpu: 32000m
+    limits.cpu: 40000m
     limits.memory: 32Gi
     limits.ephemeral-storage: 50Gi

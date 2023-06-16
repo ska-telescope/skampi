@@ -1,6 +1,0 @@
-apiVersion: v2
-name: ska-landingpage
-description: A Helm chart for landingpage to be used with ska mid and ska low charts
-type: application
-version: 0.8.3
-appVersion: 0.8.3

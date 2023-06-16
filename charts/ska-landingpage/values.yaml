@@ -1,6 +1,0 @@
-MVPInstance: mvp-mid
-image: nginx
-basename: false
-ingress:
-    hostname : k8s.stfc.skao.int
-chartInfoSource: chartinfo

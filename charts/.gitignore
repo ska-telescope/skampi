@@ -1,5 +1,0 @@
-# This will make git ignore the subfolders under the products:
-charts
-Chart.lock
-skalow
-skamid

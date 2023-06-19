@@ -3319,6 +3319,11 @@ requests-toolbelt = ">=0.10.1"
 autocompletion = ["argcomplete (>=1.10.0,<3)"]
 yaml = ["PyYaml (>=5.2)"]
 
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
 [[package]]
 name = "python-graphql-client"
 version = "0.4.3"
@@ -3868,14 +3873,14 @@ reference = 'ska'
 
 [[package]]
 name = "ska-ser-skallop"
-version = "2.28.4"
+version = "2.28.7"
 description = "Testing helpers and modules for running end to end tests for SKA MVP, deployed using SKAMPI"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "ska-ser-skallop-2.28.4.tar.gz", hash = "sha256:89aed78284c8708d57b81f5745dbec989e8d318a662ad1a1402179d5a0fb7234"},
-    {file = "ska_ser_skallop-2.28.4-py3-none-any.whl", hash = "sha256:c63509c621d3bd2a8469a8a1d69037cf50d28129697a07c0750e8fb25e2b582c"},
+    {file = "ska-ser-skallop-2.28.7.tar.gz", hash = "sha256:95e839a5f376673b2d7606de4ce915569fce49f29aea5a9f40350a8b7e7b5e26"},
+    {file = "ska_ser_skallop-2.28.7-py3-none-any.whl", hash = "sha256:197d1db8861384c6c67047ac48e54cce908433a763ce62b0c34c86993eacb45c"},
 ]
 
 [package.dependencies]
@@ -3891,6 +3896,7 @@ pytest-bdd = ">=5.0.0,<6.0.0"
 python-graphql-client = ">=0.4.3,<0.5.0"
 pyyaml = ">=6.0.0,<7.0.0"
 requests = ">=2.26.0,<3.0.0"
+ska-control-model = ">=0.3.1,<0.4.0"
 
 [package.extras]
 bit = ["pytango (==9.3.3)"]
@@ -4353,6 +4359,11 @@ docs = ["Sphinx (>=3.4)", "sphinx-rtd-theme (>=0.5)"]
 optional = ["python-socks", "wsaccel"]
 test = ["websockets"]
 
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
 [[package]]
 name = "websockets"
 version = "11.0.3"
@@ -4647,4 +4658,4 @@ reference = 'ska'
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "989f6bfe4ed64bd0f34ad42593d81175d746f2781155e2276244a7e7dd08f640"
+content-hash = "c9a46e27c68d320d2db5c538db6e7831ea755ec186e869ffe81fca859d5927d8"

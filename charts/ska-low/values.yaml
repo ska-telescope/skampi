@@ -19,7 +19,7 @@ global:
       enabled: false
   retry:
     - "--sleep=1"
-    - "--tries=100"
+    - "--tries=6"
   tango_host: databaseds-tango-base:10000
   device_server_port: 45450
   cluster_domain: cluster.local

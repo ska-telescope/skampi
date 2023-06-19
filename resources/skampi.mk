@@ -95,8 +95,8 @@ tango-wait-all:
 ##  Introspects the chosen chart and look for sub-charts.  Iterate over these
 ##  and k8s-wait for each one.
 
-skampi-wait-all: helm-install-yq k8s-wait tango-wait-all ## iterate over sub-charts and wait for each one
-	rt=$$(make k8s-wait KUBE_APP=ska-sdp SKA_TANGO_OPERATOR=false) && exit $$rt
+skampi-wait-all: helm-install-yq k8s-wait ## iterate over sub-charts and wait for each one
+	make k8s-wait KUBE_APP=ska-sdp SKA_TANGO_OPERATOR=false
 
 # Set up of the testing pod. This goes through the following steps:
 # 1. Create the pod, piping the contents of $(k8s_test_folder) in. This is

@@ -26,7 +26,6 @@ skampi-vars: k8s-vars ## Display Skampi deployment context variables
 	@echo "TANGO_HOST:                 $(TANGO_HOST)"
 	@echo "ARCHIVER_DBNAME:            $(ARCHIVER_DBNAME)"
 	@echo "MARK:                       $(MARK)"
-	@echo "PYTHON_VARS_AFTER_PYTEST:   $(PYTHON_VARS_AFTER_PYTEST)"
 	@echo "CONFIG:                     $(CONFIG)"
 	@echo "TEL:                        $(TEL)"
 	@echo "TEST_ENV:                   $(TEST_ENV)"

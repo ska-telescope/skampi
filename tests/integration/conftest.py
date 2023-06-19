@@ -548,7 +548,7 @@ def i_command_it_to_abort(
     sub_array_id = sut_settings.subarray_id
     context_monitoring.builder.set_waiting_on(subarray).for_attribute(
         "obsstate"
-    ).to_become_equal_to("ABORTED")
+    ).to_become_equal_to("ABORTED", ignore_first=False)
     with context_monitoring.context_monitoring():
         with context_monitoring.wait_before_complete(integration_test_exec_settings):
             if sut_settings.restart_after_abort:

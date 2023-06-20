@@ -1,6 +1,5 @@
 """Domain logic for the sdp."""
 import logging
-import os
 from time import sleep
 from typing import Any, List, cast
 
@@ -17,6 +16,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     NoOpStep,
 )
 from ska_ser_skallop.utils.singleton import Memo
+from utils import is_flag_set
 
 from ..mvp_model.states import ObsState
 from ..obsconfig.config import Observation
@@ -28,7 +28,7 @@ class LogEnabled:
     """class that allows for logging if set by env var"""
 
     def __init__(self) -> None:
-        self._live_logging = bool(os.getenv("DEBUG_ENTRYPOINT"))
+        self._live_logging = is_flag_set("DEBUG_ENTRYPOINT")
         self._tel = names.TEL()
 
     def _log(self, mssage: str):

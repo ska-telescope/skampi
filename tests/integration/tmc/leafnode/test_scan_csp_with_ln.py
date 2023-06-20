@@ -1,5 +1,3 @@
-import os
-
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
@@ -7,6 +5,7 @@ from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from utils import is_flag_set
 
 from tests.integration import conftest
 
@@ -22,7 +21,7 @@ def fxt_setup_log_checking(
     :param log_checking: skallop fixture used to set up log checking.
     :param sut_settings: A class representing the settings for the system under test.
     """
-    if os.getenv("CAPTURE_LOGS"):
+    if is_flag_set("CAPTURE_LOGS"):
         tel = names.TEL()
         csp_subarray_leaf_node = str(tel.tm.subarray(sut_settings.subarray_id).csp_leaf_node)
         csp_subarray = str(tel.csp.subarray(sut_settings.subarray_id))

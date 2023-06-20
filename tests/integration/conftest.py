@@ -1,7 +1,6 @@
 """pytest global settings, fixtures and global bdd step implementations for
 integration tests."""
 import logging
-import os
 from types import SimpleNamespace
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
 
@@ -19,6 +18,7 @@ from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.infra_mon.configuration import get_mvp_release
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from utils import is_flag_set
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def fxt_check_infra_per_test(check_infra_per_session: Any) -> Any:
 
     :param check_infra_per_session: reference to session checking
     """
-    if os.getenv("CHECK_INFRA_PER_TEST"):
+    if is_flag_set("CHECK_INFRA_PER_TEST"):
         logger.info("checking infra health before executing test")
         if check_infra_per_session:
             release = check_infra_per_session
@@ -48,7 +48,7 @@ def pytest_bdd_before_step_call(
     step_func: Callable[[Any], Any],
     step_func_args: dict[str, Any],
 ):
-    if os.getenv("SHOW_STEP_FUNCTIONS"):
+    if is_flag_set("SHOW_STEP_FUNCTIONS"):
         logger.info(
             "\n**********************************************************\n"
             f"***** {step.keyword} {step.name} *****\n"
@@ -136,10 +136,9 @@ def fxt_listener() -> Listener:
 def fxt_set_session_exec_settings(
     session_exec_settings: fxt_types.session_exec_settings,
 ):
-    if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
-        # logger.warning("disabled attribute synchronization globally")
+    if is_flag_set("ATTR_SYNCH_ENABLED_GLOBALLY"):
         session_exec_settings.attr_synching = True
-    if os.getenv("LIVE_LOGGING_EXTENDED"):
+    if is_flag_set("LIVE_LOGGING_EXTENDED"):
         session_exec_settings.run_with_live_logging()
     return session_exec_settings
 
@@ -178,10 +177,10 @@ def fxt_set_exec_settings_from_env(exec_settings: fxt_types.exec_settings):
 
     :param exec_settings: The global test execution settings as a fixture.
     """
-    if os.getenv("LIVE_LOGGING_EXTENDED"):
+    if is_flag_set("LIVE_LOGGING_EXTENDED"):
         logger.info("running live logs globally")
         exec_settings.run_with_live_logging()
-    if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
+    if is_flag_set("ATTR_SYNCH_ENABLED_GLOBALLY"):
         logger.warning("enabled attribute synchronization globally")
         exec_settings.attr_synching = True
     exec_settings.time_out = 150
@@ -199,16 +198,16 @@ def fxt_integration_test_exec_settings(
     integration_test_exec_settings = exec_settings.replica()
     integration_test_exec_settings.time_out = 150
 
-    if os.getenv("LIVE_LOGGING"):
+    if is_flag_set("LIVE_LOGGING"):
         integration_test_exec_settings.run_with_live_logging()
         logger.info("running live logs globally")
-    if os.getenv("REPLAY_EVENTS_AFTERWARDS"):
+    if is_flag_set("REPLAY_EVENTS_AFTERWARDS"):
         logger.info("replay log messages after waiting")
         integration_test_exec_settings.replay_events_afterwards()
-    if os.getenv("ATTR_SYNCH_ENABLED"):
+    if is_flag_set("ATTR_SYNCH_ENABLED"):
         logger.warning("enabled attribute synchronization")
         exec_settings.attr_synching = True
-    if os.getenv("ATTR_SYNCH_ENABLED_GLOBALLY"):
+    if is_flag_set("ATTR_SYNCH_ENABLED_GLOBALLY"):
         exec_settings.attr_synching = True
     return integration_test_exec_settings
 

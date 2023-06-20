@@ -1,6 +1,5 @@
 """Start up the cbf feature tests."""
 import logging
-import os
 from typing import List, cast
 
 import pytest
@@ -9,6 +8,7 @@ from pytest_bdd import given, scenario, then
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from utils import is_flag_set
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def fxt_set_up_transit_checking_for_cbf(
     tel = names.TEL()
     # only do this for skamid as no inner devices used for low
     if tel.skamid:
-        if os.getenv("DEVENV"):
+        if is_flag_set("DEVENV"):
             # only do transit checking in dev as timeout problems
             # can lead to false positives
             devices_to_follow = cast(List, [tel.csp.cbf.subarray(1)])
@@ -65,7 +65,7 @@ def fxt_set_up_log_capturing_for_cbf(log_checking: fxt_types.log_checking):
 
     :param log_checking: skallop fixture used to set up log checking.
     """
-    if os.getenv("CAPTURE_LOGS"):
+    if is_flag_set("CAPTURE_LOGS"):
         tel = names.TEL()
         cbf_controller = str(tel.csp.cbf.controller)
         subarray = str(tel.csp.cbf.subarray(1))

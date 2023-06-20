@@ -2,7 +2,6 @@
 Pytest fixtures and bdd step implementations specific to cbf integration tests.
 """
 import logging
-import os
 from typing import Callable
 
 import pytest
@@ -12,6 +11,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from utils import is_flag_set
 
 from .. import conftest
 
@@ -106,7 +106,7 @@ def fxt_set_up_log_checking_for_cbf(
     :param log_checking: The skallop log_checking fixture to use
     :param sut_settings: A class representing the settings for the system under test.
     """
-    if os.getenv("CAPTURE_LOGS"):
+    if is_flag_set("CAPTURE_LOGS"):
         tel = names.TEL()
         cbf_subarray = str(tel.csp.cbf.subarray(sut_settings.subarray_id))
         log_checking.capture_logs_from_devices(cbf_subarray)

@@ -1,6 +1,5 @@
 """Start up the csp feature tests."""
 import logging
-import os
 
 import pytest
 from assertpy import assert_that
@@ -8,6 +7,7 @@ from pytest_bdd import given, scenario, then
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from utils import is_flag_set
 
 from .. import conftest
 
@@ -48,7 +48,7 @@ def fxt_set_up_log_checking_for_csp(
     :param log_checking: skallop fixture used to set up log checking.
     :param sut_settings: A class representing the settings for the system under test.
     """
-    if os.getenv("CAPTURE_LOGS"):
+    if is_flag_set("CAPTURE_LOGS"):
         tel = names.TEL()
         cbf_controller = str(tel.csp.controller)
         subarray = str(tel.csp.subarray(sut_settings.subarray_id))

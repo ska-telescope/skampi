@@ -1,7 +1,6 @@
 """Domain logic for the cbf."""
 import json
 import logging
-import os
 from time import sleep
 from typing import List
 
@@ -15,6 +14,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
 )
+from utils import is_flag_set
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class LogEnabled:
     """class that allows for logging if set by env var"""
 
     def __init__(self) -> None:
-        self._live_logging = bool(os.getenv("DEBUG_ENTRYPOINT"))
+        self._live_logging = is_flag_set("DEBUG_ENTRYPOINT")
         self._tel = names.TEL()
 
     def _log(self, mssage: str):

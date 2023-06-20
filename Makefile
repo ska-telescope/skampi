@@ -95,6 +95,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
 	--set global.device_server_port=$(TANGO_SERVER_PORT) \
 	--set global.labels.app=$(KUBE_APP) \
+	--set global.operator=$(SKA_TANGO_OPERATOR) \
 	--set ska-tango-base.itango.enabled=$(ITANGO_ENABLED) \
 	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
 	--set ska-tango-archiver.hostname=$(ARCHIVER_TIMESCALE_HOST_NAME) \

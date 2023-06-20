@@ -110,6 +110,9 @@ ska-taranta:
 ska-sdp:
   legacy_compatibility: true
   enabled: true
+  dsconfig:
+    image:
+      tag: 1.5.9
   lmc:
     prefix: low
     nsubarray: 3

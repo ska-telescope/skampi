@@ -48,8 +48,8 @@ dependencies:
     version: 0.8.1
     repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-low-cbf
-    version: 0.5.7
-    repository: https://artefact.skao.int/repository/helm-internal
+    version: 0.6.0-dev.c1741c5be
+    repository: https://gitlab.com/api/v4/projects/15856638/packages/helm/dev
   # Commenting it to fix Service Account issue and ska-low-cbf-proc is already defined in low cbf chart.
   # https://gitlab.com/ska-telescope/low-cbf/ska-low-cbf/-/blob/0.5.7/charts/ska-low-cbf/Chart.yaml
   # - name: ska-low-cbf-proc

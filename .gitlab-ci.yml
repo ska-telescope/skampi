@@ -1,101 +1,31 @@
-# TODO: Make this image version dynamic per pipeline as it's hard-coded here
+image: $SKA_K8S_TOOLS_BUILD_DEPLOY
 
 variables:
-  MINIKUBE: "false"
-  VALUES: "pipeline.yaml"
-  CHARTS_TO_PUBLISH: ska-low ska-mid ska-landingpage
-  INGRESS_HOST: "k8s.stfc.skao.int"
   GIT_SUBMODULE_STRATEGY: recursive
   SKALLOP_VERSION: "2.24.2"
-  K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-tango-images-pytango-builder:9.3.3
-  KUBE_BRANCH: $CI_JOB_ID
-  DOMAIN: "branch"
-  EXPOSE_All_DS: "true"
-  CONFIG: "common"
-  CI_IMAGE: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.7
-
-image: $CI_IMAGE
+  K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-tango-images-pytango-builder:9.3.35
 
 stages:
-  - on-demand
-  - build
-  - test
   - lint
-  - clean_test_env
-  - publish
-  - deploy
-  - integration
-  - staging
-  - deploy_integration
-  - clean_integration
+  - build
   - pages
-  - release
-  - deploy_staging
-  - clean_staging
-
-# Globally reused tags declaration for jobs
-.tags_default:
-  tags:
-    - k8srunner
-
-build-base-image:
-  stage: .pre
-  image: $SKA_K8S_TOOLS_BUILD_DEPLOY
-  tags:
-    - k8srunner
-  before_script:
-    - ""
-  rules:
-    - changes:
-        - images/ska-skampi-ci/Dockerfile
-        - images/ska-skampi-ci/release
-    - if: $REBUILD_IMAGES
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-  script:
-    - export TAG=$(cat images/ska-skampi-ci/release)
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:$TAG images/ska-skampi-ci/
-    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:$TAG
+  - test
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
-  # Helm Charts
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/helm-chart.gitlab-ci.yml"
-
-  # Docs - only build as stress tests use 'public'
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/docs-build.gitlab-ci.yml"
-
-  # release steps
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/release.gitlab-ci.yml"
-
-  # integration and staging
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/deploy.integration.gitlab-ci.yml"
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/deploy.staging.gitlab-ci.yml"
-  
-  # Deployments
-  - local: "/.gitlab/ci/common.gitlab-ci.yml"
-  - local: "/.gitlab/ci/ska-low.gitlab-ci.yml"
-  - local: "/.gitlab/ci/ska-mid.gitlab-ci.yml"
-  - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
-  - local: "/.gitlab/ci/psi-mid.gitlab-ci.yml"
-  - local: "/.gitlab/ci/mid-itf.gitlab-ci.yml"
-  - local: "/.gitlab/ci/low-itf.gitlab-ci.yml"
-
-  # .post steps
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
-
   # linting job
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/notebook-lint.gitlab-ci.yml"
 
-python-lint:
-  image: $CI_IMAGE
+  # Tests
+  - local: ".gitlab/ci/test.gitlab-ci.yml"
+
+  # Docs - only build as stress tests use 'public'
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/docs-build.gitlab-ci.yml"
+
+  # .post steps
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"

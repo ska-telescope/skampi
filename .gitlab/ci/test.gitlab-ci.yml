@@ -1,0 +1,42 @@
+test:
+  stage: test
+  variables:  # These should be passed by the upstream pipeline or manually set
+    CONFIG: "common"
+    KUBE_NAMESPACE: "default"
+    KUBE_BRANCH: $CI_JOB_ID
+    EXPOSE_All_DS: "true"
+    PYTEST_MARK: (csp_startup or sdp or eda)
+    INGRESS_HOST: k8s.stfc.skao.int
+    KEEP_NAMESPACE: "true"
+    XRAY_UPLOAD_ENABLED: "false" # TODO: Remove this
+  tags:
+    - k8srunner # TODO: Make this inherited by the parent
+  script:
+    - echo $CI_JOB_NAME - $CI_JOB_STAGE - ska-${CONFIG}
+    - bash scripts/gitlab_section.sh vars "Make config dump" make vars
+    - bash scripts/gitlab_section.sh vars "Get namespace resources" make k8s-get
+    - bash scripts/gitlab_section.sh vars "Wait namespace resources" make k8s-wait
+    - bash scripts/gitlab_section.sh vars "Get SDP namespace resources" make k8s-get KUBE_NAMESPACE=${KUBE_NAMESPACE}-sdp
+    - bash scripts/gitlab_section.sh vars "Wait SDP namespace resources" make k8s-wait KUBE_NAMESPACE=${KUBE_NAMESPACE}-sdp
+    - make k8s-test-runner
+    - find ./build
+    # Exit based on the make-k8s-test-runner output which is writing in build/status file
+    - '[ -f build/status ] || (echo "Something went wrong with the test (no build/status file); exit 1")'
+    - exit $(cat build/status)
+  environment:
+    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: $KUBE_NAMESPACE
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+    when: always
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "parent_pipeline"
+    - when: manual
+

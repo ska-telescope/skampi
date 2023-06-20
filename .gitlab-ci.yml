@@ -12,7 +12,7 @@ variables:
   DOMAIN: "branch"
   EXPOSE_All_DS: "true"
   CONFIG: "common"
-  CI_IMAGE: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.1.1
+  CI_IMAGE: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.1.2
 
 image: $CI_IMAGE
 

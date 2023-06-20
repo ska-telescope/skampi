@@ -55,7 +55,7 @@ VIS_REC_SPEC = OrderedDict(
         ),
     }
 )
-ARRAY_SPEC = ArraySpec(receptors="two")
+ARRAY_SPEC = ArraySpec(receptors="vis-rec")
 
 VIS_REC_CHANNELS = DEFAULT_CHANNELS.copy()
 VIS_REC_CHANNELS["vis_channels"].spectral_windows[0].count = 13824

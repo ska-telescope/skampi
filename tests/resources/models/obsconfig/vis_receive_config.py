@@ -10,7 +10,7 @@ from typing import Any
 from resources.models.obsconfig import Observation
 from resources.models.obsconfig.channelisation import DEFAULT_CHANNELS
 from resources.models.obsconfig.sdp_config import ProcessingSpec
-from resources.models.obsconfig.target_spec import TargetSpec
+from resources.models.obsconfig.target_spec import BaseTargetSpec, ArraySpec
 from ska_tmc_cdm.messages.central_node.sdp import ScriptConfiguration
 from ska_tmc_cdm.messages.subarray_node.configure.core import ReceiverBand, Target
 
@@ -33,7 +33,7 @@ VIS_RECEIVE_SCRIPT = ScriptConfiguration(kind="realtime", name="vis-receive", ve
 #  to the dishes.py file.
 VIS_REC_SPEC = OrderedDict(
     {
-        "target:a": TargetSpec(
+        "target:a": BaseTargetSpec(
             Target("12:29:06.699 degrees", "02:03:08.598 degrees"),
             "target:a",
             ReceiverBand.BAND_2,  # how to set this for low?
@@ -41,9 +41,8 @@ VIS_REC_SPEC = OrderedDict(
             "all",
             "field_a",
             "vis-receive",
-            "vis-rec",
         ),
-        ".default": TargetSpec(
+        ".default": BaseTargetSpec(
             Target("12:29:06.699 degrees", "02:03:08.598 degrees"),
             ".default",
             ReceiverBand.BAND_2,
@@ -53,12 +52,14 @@ VIS_REC_SPEC = OrderedDict(
             "vis-receive",
             # below: the type / number of dishes in
             # tests.resources.models.obsconfig.dishes.Dishes
-            "vis-rec",
         ),
     }
 )
+ARRAY_SPEC = ArraySpec(receptors="two")
+
 VIS_REC_CHANNELS = DEFAULT_CHANNELS.copy()
 VIS_REC_CHANNELS["vis_channels"].spectral_windows[0].count = 13824
+
 
 VIS_PARAMS_FILE = (
     f"{os.path.dirname(os.path.abspath(__file__))}" "/../sdp_model/vis_rec_params.json"
@@ -76,13 +77,16 @@ class VisRecObservation(Observation):
     Observation object for the SDP visibility receive test.
     """
 
-    def __init__(self, **kwargs: Any):
-        super().__init__(**kwargs)
-        self.target_specs = VIS_REC_SPEC
-        self.channel_configurations = VIS_REC_CHANNELS
-        self.processing_specs = {
-            "vis-receive": ProcessingSpec(
+    def __init__(self):
+        super().__init__(
+            base_target_specs=VIS_REC_SPEC,
+            array=ARRAY_SPEC,
+            processing_specs=[
+                ProcessingSpec(
                 script=VIS_RECEIVE_SCRIPT,
                 parameters=_load_json(VIS_PARAMS_FILE),
             )
-        }
+            ],
+            channels=list(VIS_REC_CHANNELS.values())
+        )
+    

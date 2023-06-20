@@ -52,8 +52,7 @@ class WithCommandID:
     def long_running_command_subscriber(self, subscriber: WaitForLRCComplete):
         Memo(long_running_command_subscriber=subscriber)
 
-
-class StartUpStep(base.StartUpStep, LogEnabled):
+class StartUpStep(base.StartUpStep, LogEnabled, WithCommandID):
     """Implementation of Startup step for CSP"""
 
     def __init__(self, nr_of_subarrays: int) -> None:
@@ -66,6 +65,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
 
         This implments the set_telescope_to_running method on the entry_point.
         """
+        assert self.long_running_command_subscriber
         command_id = self.csp_controller.command_inout("On", [])
         if command_success(command_id):
             self.long_running_command_subscriber.set_command_id(command_id)
@@ -80,9 +80,11 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         :return: brd
         """
         brd = get_message_board_builder()
-        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+        csp_controller = str(self._tel.csp.controller)
+        brd.set_waiting_on(csp_controller).for_attribute(
             "state"
         ).to_become_equal_to("ON", ignore_first=False)
+        self.long_running_command_subscriber = brd.set_wait_for_long_running_command_on(csp_controller)
         # Note we do not wait for controller on skalow as
         # it seems it does not change state subarrays
         if self._tel.skamid:
@@ -114,10 +116,12 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         # controller
         # the low telescope does not switch off so there is no wait
         if self._tel.skamid:
-            brd.set_waiting_on(self._tel.csp.controller).for_attribute(
+            csp_controller = str(self._tel.csp.controller)
+            brd.set_waiting_on(csp_controller).for_attribute(
                 "state"
             ).to_become_equal_to("OFF", ignore_first=False)
             # subarrays
+            self.long_running_command_subscriber = brd.set_wait_for_long_running_command_on(csp_controller)
             for index in range(1, self.nr_of_subarrays + 1):
                 brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                     "state"
@@ -126,6 +130,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
 
     def undo_startup(self):
         """Domain logic for switching the csp off."""
+        assert self.long_running_command_subscriber
         command_id = self.csp_controller.command_inout("Off", [])
         if command_success(command_id):
             self.long_running_command_subscriber.set_command_id(command_id)

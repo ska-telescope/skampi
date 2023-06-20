@@ -66,7 +66,12 @@ class StartUpStep(base.StartUpStep, LogEnabled):
 
         This implments the set_telescope_to_running method on the entry_point.
         """
-        self.csp_controller.command_inout("On", [])
+        command_id = self.csp_controller.command_inout("On", [])
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
 
     def set_wait_for_do_startup(self) -> MessageBoardBuilder:
         """
@@ -121,7 +126,13 @@ class StartUpStep(base.StartUpStep, LogEnabled):
 
     def undo_startup(self):
         """Domain logic for switching the csp off."""
-        self.csp_controller.command_inout("Off", [])
+        command_id = self.csp_controller.command_inout("Off", [])
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
+
 
 
 class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled, WithCommandID):

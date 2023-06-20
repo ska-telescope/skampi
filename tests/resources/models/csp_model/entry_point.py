@@ -17,6 +17,7 @@ from ska_ser_skallop.utils.singleton import Memo
 from tests.resources.utils.validation import CommandException, command_success
 
 from ..mvp_model.states import ObsState
+from ..mvp_model.object_with_obsconfig import HasObservation
 from ..obsconfig.config import Observation
 
 logger = logging.getLogger(__name__)
@@ -140,10 +141,10 @@ class StartUpStep(base.StartUpStep, LogEnabled, WithCommandID):
             raise CommandException(command_id)
 
 
-class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled, WithCommandID):
+class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled, WithCommandID, HasObservation):
     """Implementation of Assign Resources Step for CSP."""
 
-    def __init__(self, observation: Observation) -> None:
+    def __init__(self) -> None:
         """
         Init object.
 
@@ -152,7 +153,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled, WithCommandID
 
         """
         super().__init__()
-        self.observation = observation
+        HasObservation.__init__(self)
         self._tel = names.TEL()
 
     def do_assign_resources(
@@ -185,7 +186,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled, WithCommandID
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            config = json.dumps(csp_mid_assign_resources_template)
+            config = self.observation.generate_csp_assign_resources_config(sub_array_id).as_json
             self._log(f"commanding {subarray_name} with AssignResources: {config} ")
             subarray.set_timeout_millis(6000)
             command_id = subarray.command_inout("AssignResources", config)
@@ -265,10 +266,10 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled, WithCommandID
         return builder
 
 
-class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID):
+class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObservation):
     """Implementation of Configure Scan Step for CSP."""
 
-    def __init__(self, observation: Observation) -> None:
+    def __init__(self) -> None:
         """
         Init object.
 
@@ -276,7 +277,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID):
             If None, a new instance of Observation will be created.
         """
         super().__init__()
-        self.observation = observation
+        HasObservation.__init__(self)
         self._tel = names.TEL()
 
     def do_configure(
@@ -389,11 +390,11 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID):
         return builder
 
 
-class CspScanStep(base.ScanStep, LogEnabled, WithCommandID):
+class CspScanStep(base.ScanStep, LogEnabled, WithCommandID, HasObservation):
 
     """Implementation of Scan Step for CBF."""
 
-    def __init__(self, observation: Observation) -> None:
+    def __init__(self) -> None:
         """
         Init object.
 
@@ -401,7 +402,7 @@ class CspScanStep(base.ScanStep, LogEnabled, WithCommandID):
             If None, a new instance of Observation will be created.
         """
         super().__init__()
-        self.observation = observation
+        HasObservation.__init__(self)
         self._tel = names.TEL()
 
     def do_scan(self, sub_array_id: int):
@@ -716,12 +717,12 @@ class CSPWaitReadyStep(base.WaitReadyStep, LogEnabled):
         return builder
 
 
-class CSPEntryPoint(CompositeEntryPoint):
+class CSPEntryPoint(CompositeEntryPoint, HasObservation):
     """Derived Entrypoint scoped to CSP element."""
 
     nr_of_subarrays = 2
 
-    def __init__(self, observation: Observation | None = None) -> None:
+    def __init__(self) -> None:
         """
         Init Object
 
@@ -729,14 +730,12 @@ class CSPEntryPoint(CompositeEntryPoint):
             If None, a new instance of Observation will be created.
         """
         super().__init__()
-        if observation is None:
-            observation = Observation()
-        self.observation = observation
+        HasObservation.__init__(self)
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)
         self.start_up_step = StartUpStep(self.nr_of_subarrays)
-        self.assign_resources_step = CspAssignResourcesStep(observation)
-        self.configure_scan_step = CspConfigureStep(observation)
-        self.scan_step = CspScanStep(observation)
+        self.assign_resources_step = CspAssignResourcesStep()
+        self.configure_scan_step = CspConfigureStep()
+        self.scan_step = CspScanStep()
         self.abort_step = CSPAbortStep()
         self.obsreset_step = CSPObsResetStep()
         self.restart_step = CSPRestart()

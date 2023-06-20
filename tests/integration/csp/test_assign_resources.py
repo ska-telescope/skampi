@@ -4,10 +4,18 @@ import logging
 import pytest
 from pytest_bdd import scenario
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from resources.models.obsconfig.config import Observation
+
 
 from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
+
+@pytest.fixture(name="set_obsconfig")
+def fxt_set_obsconfig(observation_config: Observation):
+    if names.TEL().skamid:
+        observation_config.update_target_specs(dishes="mkt-default")
 
 
 @pytest.fixture(name="composition")
@@ -41,7 +49,7 @@ def test_assign_resources_to_csp_low_subarray():
     "features/csp_assign_resources.feature",
     "Assign resources to CSP mid subarray",
 )
-def test_assign_resources_to_csp_mid_subarray():
+def test_assign_resources_to_csp_mid_subarray(set_obsconfig: None):
     """Assign resources to CSP mid subarray."""
 
 

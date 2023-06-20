@@ -13,7 +13,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
+#@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.skamid
 @pytest.mark.cbf
 @pytest.mark.startup

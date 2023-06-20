@@ -2,14 +2,23 @@ import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
 from resources.models.mvp_model.states import ObsState
+from resources.models.obsconfig.config import Observation
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
+
 from ..conftest import SutTestSettings
 
 
-@pytest.mark.skip("need to update cbf with new api")
+
+@pytest.fixture(name="set_obsconfig")
+def fxt_set_obsconfig(observation_config: Observation):
+    if names.TEL().skamid:
+        observation_config.update_target_specs(dishes="mkt-default")
+
+
+#@pytest.mark.skip("need to update cbf with new api")
 @pytest.mark.csp_related
 @pytest.mark.skamid
 @pytest.mark.cbf
@@ -18,7 +27,7 @@ from ..conftest import SutTestSettings
     "features/cbf_assign_resources.feature",
     "Assign resources to CBF mid subarray",
 )
-def test_assign_resources_to_cbf_mid_subarray():
+def test_assign_resources_to_cbf_mid_subarray(set_obsconfig: None):
     """Assign resources to CBF mid subarray."""
 
 

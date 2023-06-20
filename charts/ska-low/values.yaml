@@ -161,13 +161,13 @@ ska-low-cbf:
   global:
     minikube: false
   ska-low-cbf-proc:
-  deviceServers:
-    processor:
-      instances: ["0", "1"] # Just two processor instances
-      resources:
-        limits:
-          xilinx.com/fpga-xilinx_u55c_gen3x16_xdma_base_3-0: 0 # use no Alveos
-          memory: 512Mi # reduced (20G used when Alveo hardware present)
+    deviceServers:
+      processor:
+        instances: ["0", "1"] # Just two processor instances
+        resources:
+          limits:
+            xilinx.com/fpga-xilinx_u55c_gen3x16_xdma_base_3-0: 0 # use no Alveos
+            memory: 512Mi # reduced (20G used when Alveo hardware present)
 
 ska-low-cbf-proc:
   legacy_compatibility: true

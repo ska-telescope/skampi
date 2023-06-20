@@ -11,10 +11,6 @@ global:
   minikube: true
   operator: true
   exposeAllDS: true
-  annotations:
-    skampi: "true"
-    app.gitlab.com/app: skampi
-    app.gitlab.com/env: ska
   taranta_auth_enabled: false
   taranta_dashboard_enabled: false
   sub-system:

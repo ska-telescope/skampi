@@ -6,10 +6,6 @@ global:
     app: ska-skampi
   minikube: true
   operator: true
-  annotations:
-    skampi: "true"
-    app.gitlab.com/app: skampi
-    app.gitlab.com/env: ska
   sub-system:
     tango-base:
       enabled: false

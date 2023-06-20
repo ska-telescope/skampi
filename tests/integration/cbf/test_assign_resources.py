@@ -9,7 +9,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ..conftest import SutTestSettings
 
 
-@pytest.skip("need to update cbf with new api")
+@pytest.mark.skip("need to update cbf with new api")
 @pytest.mark.csp_related
 @pytest.mark.skamid
 @pytest.mark.cbf

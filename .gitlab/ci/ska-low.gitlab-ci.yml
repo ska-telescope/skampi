@@ -30,7 +30,6 @@ low-test:
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
     SHOW_STEP_FUNCTIONS: "True"
-    CHECK_INFRA_PER_SESSION: "True"
   extends:
     - .tags_default
     - .set_dbname

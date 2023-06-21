@@ -8,12 +8,7 @@
 # by the rest of the file 
 # Members:
 # - All
-* @adb-42 @mmarquar @ben.mort @majashdown @gerhardlr @adam-avison @scpmw @abridger @sonja.vrcic @tjuerges @ska-telescope/ska-dev/skao-team-system 
-
-# Other
-# Members:
-# - Owner: Gerhard LeRoux
-/charts/ska-landingpage/ @gerhardlr 
+* @adb-42 @mmarquar @ben.mort @majashdown @gerhardlr @adam-avison @scpmw @abridger @sonja.vrcic @tjuerges @ska-telescope/ska-dev/skao-team-system
 
 ## Grouped Changes
 ## Groups and Descriptions ar defined below and the codes will be commented for the file assignments
@@ -89,22 +84,14 @@
 
 ## Assignments
 # A1
-/charts/ @adb-42 @mmarquar @ben.mort @gerhardlr @majashdown @adam-avison 
 .release @adb-42 @mmarquar @ben.mort @gerhardlr @majashdown @adam-avison 
-
-# H1
-/charts/ska-mid/values.yaml @adb-42 @mmarquar @ben.mort @gerhardlr @adam-avison
-/charts/ska-low/values.yaml @adb-42 @mmarquar @ben.mort @gerhardlr @adam-avison
-pipeline.yaml @adb-42 @mmarquar @ben.mort @gerhardlr @adam-avison
 
 # A2
 /tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
 /scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
-/images/testing/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
 
 # H2 and H3
-/resources/ @piersharding @flyingfrog81 @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @ska-telescope/ska-dev/skao-team-system 
-tests/Makefile @ska-telescope/ska-dev/skao-team-system @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
+/resources/ @piersharding @flyingfrog81 @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @ska-telescope/ska-dev/skao-team-system
 
 # A3
 .gitlab-ci.yml @ska-telescope/ska-dev/skao-team-system 
@@ -123,4 +110,3 @@ pyproject.toml @piersharding @flyingfrog81 @piersharding @ska-telescope/ska-dev/
 # A4
 /docs/ @piersharding @vla22 @adb-42 @mmarquar @ska-telescope/ska-dev/skao-team-system
 README.md @piersharding @vla22 @adb-42 @mmarquar @ska-telescope/ska-dev/skao-team-system
-

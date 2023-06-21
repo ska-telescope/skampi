@@ -29,6 +29,8 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 P = ParamSpec("P")
 
+# pylint: disable=too-many-function-args
+
 
 class StartUpLnStep(StartUpStep):
     """Implementation of Startup step for CSP LN"""

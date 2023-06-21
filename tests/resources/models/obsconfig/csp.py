@@ -1,5 +1,6 @@
 from typing import TypedDict, cast
 
+from resources.models.obsconfig.target_spec import ArraySpec, BaseTargetSpec
 from ska_tmc_cdm.messages.central_node.csp import CSPConfiguration as CSPAssignConfiguration
 from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     CBFConfiguration,
@@ -9,8 +10,6 @@ from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     FSPFunctionMode,
     SubarrayConfiguration,
 )
-
-from tests.resources.models.obsconfig.target_spec import ArraySpec, BaseTargetSpec
 
 from .base import encoded
 from .dishes import Dishes

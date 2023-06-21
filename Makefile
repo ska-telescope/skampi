@@ -38,10 +38,6 @@ ifeq ($(strip $(KUBE_NAMESPACE)),)
 $(error `KUBE_NAMESPACE` must be provided)
 endif
 
-ifeq ($(strip $(HELM_RELEASE)),)
-$(error `HELM_RELEASE` must be provided)
-endif
-
 endif
 
 TANGO_DATABASE_DS ?= databaseds-tango-base
@@ -137,6 +133,8 @@ SKALLOP_VERSION ?= 2.24.2
 K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:$(SKALLOP_VERSION)
 K8S_TEST_RUNNER = test-runner-$(CI_JOB_ID)
 
+SECRET_VARS = TARANTA_PASSWORD JIRA_AUTH JIRA_PASSWORD CAR_RAW_PASSWORD ARCHIVER_PWD
+
 PYTHON_VARS_BEFORE_PYTEST ?= \
 	KUBE_HOST=$(KUBE_HOST) \
 	KUBE_APP=$(KUBE_APP) \
@@ -151,6 +149,8 @@ PYTHON_VARS_BEFORE_PYTEST ?= \
 	TARANTA_USER=$(TARANTA_USER) \
 	TARANTA_PASSWORD=$(TARANTA_PASSWORD) \
 	JIRA_AUTH=$(JIRA_AUTH) \
+	JIRA_USERNAME=$(JIRA_USERNAME) \
+	JIRA_PASSWORD=$(JIRA_PASSWORD) \
 	CAR_RAW_USERNAME=$(CAR_RAW_USERNAME) \
 	CAR_RAW_PASSWORD=$(CAR_RAW_PASSWORD) \
 	CAR_RAW_REPOSITORY_URL=$(CAR_RAW_REPOSITORY_URL) \
@@ -176,13 +176,31 @@ PYTHON_VARS_BEFORE_PYTEST ?= \
 	CAPTURE_LOGS=$(CAPTURE_LOGS) \
 	DEVENV=$(DEVENV)
 
+VARS := \
+	$(foreach pair,$(shell echo $(PYTHON_VARS_BEFORE_PYTEST)),\
+		$(eval key_value := $(subst =, ,$(pair)))\
+		$(eval key := $(word 1,$(key_value)))\
+		$(eval value := $(word 2,$(key_value)))\
+		$(if $(filter $(key),$(SECRET_VARS)),\
+			$(if $(value),\
+				VAR_$(key)=***,\
+				VAR_$(key)=\
+			),\
+			VAR_$(key)=$(value)\
+		)\
+	)
+
 -include .make/python.mk
 -include .make/k8s.mk
 
 -include PrivateRules.mak
 
+vars:
+	$(info ##### SKAMPI test vars)
+	@echo "$(VARS)" | sed "s#VAR_#\n#g"
+
 k8s-pre-test:
-	$(info Running SKAMPI tests)
+	$(info ##### Running SKAMPI tests)
 	$(info ** CONFIG=$(CONFIG))
 	$(info ** KUBE_NAMESPACE=$(KUBE_NAMESPACE))
 	$(info ** HELM_RELEASE=$(HELM_RELEASE))

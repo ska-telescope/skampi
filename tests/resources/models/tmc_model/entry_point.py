@@ -685,7 +685,7 @@ class TMCEntryPoint(CompositeEntryPoint, HasObservation):
     nr_of_receptors = 4
     receptors = [1, 2, 3, 4]
 
-    def __init__(self, observation: Observation | None = None) -> None:
+    def __init__(self) -> None:
         """
         Init Object
 
@@ -693,6 +693,7 @@ class TMCEntryPoint(CompositeEntryPoint, HasObservation):
             If None, a new instance of Observation will be created.
         """
         super().__init__()
+        HasObservation.__init__(self)
         observation = self.observation
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
         self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)

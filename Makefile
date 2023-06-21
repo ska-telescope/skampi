@@ -137,8 +137,6 @@ SKALLOP_VERSION ?= 2.24.2
 K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-ser-skallop:$(SKALLOP_VERSION)
 K8S_TEST_RUNNER = test-runner-$(CI_JOB_ID)
 
-
-
 PYTHON_VARS_BEFORE_PYTEST ?= \
 	KUBE_HOST=$(KUBE_HOST) \
 	KUBE_APP=$(KUBE_APP) \

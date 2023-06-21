@@ -13,19 +13,6 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 from .. import conftest
-from .vis_receive_utils import K8sElementManager
-
-
-@pytest.fixture(scope="module")
-def k8s_element_manager():
-    """
-    Allow easy creation, and later automatic destruction, of k8s elements
-
-    :yields: K8sElementManager object
-    """
-    manager = K8sElementManager()
-    yield manager
-    manager.cleanup()
 
 
 @pytest.fixture(name="update_sut_settings")

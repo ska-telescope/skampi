@@ -8,13 +8,14 @@ low-test:
   stage: test
   variables:
     CONFIG: low
+    ADDMARKS: (csp_startup or sdp or eda)
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
     KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG"
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_JOB_ID-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_JOB_ID"
-    ARCHIVER_DBNAME: "$CI_JOB_ID-$CONFIG_archiver_db"
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
     SKA_TELESCOPE: "SKA-${CONFIG}"
     CENTRALNODE_FQDN: "ska_${CONFIG}/tm_central/central_node"
     SUBARRAYNODE_FQDN_PREFIX: "ska_${CONFIG}/tm_subarray_node"
@@ -22,14 +23,16 @@ low-test:
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     COUNT: 1
-    EXIT_AT_FAIL: "false"
+    EXIT_AT_FAIL: "true"
     CAPTURE_LOGS: "True"
     SKALLOP_LOG_FILTER_ERRORS: "True"
     DEBUG_ENTRYPOINT: "True"
     DEBUG_ENTRYPOINT_EXTENDED: "True"
     LIVE_LOGGING_EXTENDED: "True"
+    SHOW_STEP_FUNCTIONS: "True"
   extends:
     - .tags_default
+    - .set_dbname
   script:
     - !reference [.deploy_chart_before, before_script]
     - !reference [.test_deployment, script]
@@ -46,10 +49,9 @@ low-test:
     reports:
       junit: build/report.xml
     when: always
-  retry: 1
 
 # Low on-demand deployment
-low_deploy_on_demand:
+low_deploy_on_demand_techops:
   stage: on-demand
   variables:
     CONFIG: low
@@ -60,6 +62,7 @@ low_deploy_on_demand:
     KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
     SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
     ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
+    ARCHIVER_ENABLED: "false"
     SKA_TELESCOPE: "SKA-${CONFIG}"
     CENTRALNODE_FQDN: "ska_${CONFIG}/tm_central/central_node"
     SUBARRAYNODE_FQDN_PREFIX: "ska_${CONFIG}/tm_subarray_node"
@@ -75,7 +78,7 @@ low_deploy_on_demand:
       # This repetition is needed for gitlab to parse the namespace correctly
       namespace: $KUBE_NAMESPACE
     url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
-    on_stop: low_destroy_on_demand
+    on_stop: low_destroy_on_demand_techops
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
@@ -85,7 +88,7 @@ low_deploy_on_demand:
   when: manual
   allow_failure: true
 
-low_destroy_on_demand:
+low_destroy_on_demand_techops:
   stage: on-demand
   variables:
     CONFIG: low
@@ -110,6 +113,72 @@ low_destroy_on_demand:
   when: manual
   allow_failure: true
 
+low_deploy_on_demand_dp:
+  stage: on-demand
+  variables:
+    CONFIG: low
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    INGRESS_HOST: "sdhp.stfc.skao.int"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
+    ARCHIVER_ENABLED: "false"
+    SKA_TELESCOPE: "SKA-${CONFIG}"
+    CENTRALNODE_FQDN: "ska_${CONFIG}/tm_central/central_node"
+    SUBARRAYNODE_FQDN_PREFIX: "ska_${CONFIG}/tm_subarray_node"
+  extends:
+    - .set_dbname
+    - .deploy_chart_before
+  tags:
+    - ska-k8srunner-dp
+  script:
+    - make skampi-links LOADBALANCER_IP=10.100.10.1
+  environment:
+    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: $KUBE_NAMESPACE
+    url: "http://$INGRESS_HOST/$KUBE_NAMESPACE/taranta"
+    on_stop: low_destroy_on_demand_dp
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+  when: manual
+  allow_failure: true
+
+low_destroy_on_demand_dp:
+  stage: on-demand
+  variables:
+    CONFIG: low
+    DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
+    K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
+    HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
+    INGRESS_HOST: "sdhp.stfc.skao.int"
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG"
+    KUBE_NAMESPACE_SDP: "ci-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG-$CONFIG-sdp"
+    SERVICE_ACCOUNT: "ci-svc-$CI_PROJECT_NAME-$CI_COMMIT_REF_SLUG"
+    ARCHIVER_DBNAME: "${CONFIG}_archiver_db"
+  extends:
+    - .set_dbname
+    - .uninstall_chart
+  tags:
+    - ska-k8srunner-dp
+  environment:
+    name: test/ska-$CONFIG-$CI_COMMIT_REF_SLUG
+    kubernetes:
+      # This repetition is needed for gitlab to parse the namespace correctly
+      namespace: $KUBE_NAMESPACE
+    url: "http://$INGRESS_HOST_DP/$KUBE_NAMESPACE/taranta"
+    action: stop
+  when: manual
+  allow_failure: true
+
 # Low integration
 .low-integration-config:
   variables:
@@ -120,7 +189,7 @@ low_destroy_on_demand:
     KUBE_NAMESPACE_SDP: integration-$CONFIG-sdp
     HELM_RELEASE: $CONFIG
     SERVICE_ACCOUNT: integration-svc-$CONFIG
-    ARCHIVER_DBNAME: integration-$CONFIG-archiver_db
+    ARCHIVER_DBNAME: integration_${CONFIG}_archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
     SKA_TELESCOPE: SKA-$CONFIG
@@ -197,7 +266,7 @@ low-redeploy-integration:
     KUBE_NAMESPACE_SDP: staging-$CONFIG-sdp
     HELM_RELEASE: $CONFIG
     SERVICE_ACCOUNT: staging-svc-$CONFIG
-    ARCHIVER_DBNAME: staging-$CONFIG-archiver_db
+    ARCHIVER_DBNAME: staging_${CONFIG}_archiver_db
     INGRESS_HOST: k8s.stfc.skao.int
     KEEP_NAMESPACE: "true"
     SKA_TELESCOPE: SKA-$CONFIG

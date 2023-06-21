@@ -2,7 +2,10 @@ display: ":0"
 xauthority: "~/.Xauthority"
 
 global:
+  labels:
+    app: ska-skampi
   minikube: true
+  operator: true
   annotations:
     skampi: "true"
     app.gitlab.com/app: skampi
@@ -35,10 +38,12 @@ global:
       pullPolicy: IfNotPresent
 
 ska-landingpage:
+  legacy_compatibility: true
   enabled: true
   MVPInstance: ska-low
 
 ska-ser-skuid:
+  legacy_compatibility: true
   enabled: true
   skuid:
     use_pv: false
@@ -86,6 +91,7 @@ ska-tango-base:
 #       pullPolicy: IfNotPresent
 
 ska-taranta:
+  legacy_compatibility: true
   enabled: true
   ingress:
     enabled: true
@@ -102,6 +108,7 @@ ska-taranta:
         memory: 1024Mi # 1024Mi = 1 GB mem
 
 ska-sdp:
+  legacy_compatibility: true
   enabled: true
   lmc:
     prefix: low
@@ -134,10 +141,13 @@ ska-sdp:
     enabled: false
 
 ska-tango-archiver:
-  enabled: false
+  enabled: true
+  legacy_compatibility: true
+  telescope: SKA-low
   dbname: default_mvp_archiver_db
 
 ska-tmc-centralnode:
+  legacy_compatibility: true
   enabled: false
   telescope: SKA-low
   deviceServers:
@@ -145,17 +155,21 @@ ska-tmc-centralnode:
       enabled: true
 
 ska-low-cbf:
+  legacy_compatibility: true
   enabled: true
   ska-low-cbf-conn:
     enabled: false
 
 ska-low-cbf-proc:
+  legacy_compatibility: true
   enabled: true
 
 ska-csp-lmc-low:
+  legacy_compatibility: true
   enabled: true
 
 ## tmc
 ska-tmc-low:
+  legacy_compatibility: true
   enabled: true
   telescope: SKA-low

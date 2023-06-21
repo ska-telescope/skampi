@@ -12,13 +12,32 @@ from pytest_bdd import given, parsers, then, when
 from pytest_bdd.parser import Feature, Scenario, Step
 from resources.models.mvp_model.env import Observation, init_observation_config
 from resources.models.mvp_model.states import ObsState
+from resources.models.tmc_model.leafnodes.utils import Listener, get_listener
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_control.infra_mon.configuration import get_mvp_release
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(name="check_infra_per_test", autouse=True)
+def fxt_check_infra_per_test(check_infra_per_session: Any) -> Any:
+    """Set a fixture to automatically check infra per test.
+
+    :param check_infra_per_session: reference to session checking
+    """
+    if os.getenv("CHECK_INFRA_PER_TEST"):
+        logger.info("checking infra health before executing test")
+        if check_infra_per_session:
+            release = check_infra_per_session
+        else:
+            release = get_mvp_release()
+        if release.devices_health != "READY":
+            devices = release.get_devices_not_ready()
+            logger.exception(f"the following devices are not ready:\n: {devices}")
 
 
 def pytest_bdd_before_step_call(
@@ -106,6 +125,11 @@ class OnlineFlag:
 @pytest.fixture(name="online", autouse=True, scope="session")
 def fxt_online():
     return OnlineFlag()
+
+
+@pytest.fixture(name="listener")
+def fxt_listener() -> Listener:
+    return get_listener()
 
 
 @pytest.fixture(name="set_session_exec_settings", autouse=True, scope="session")
@@ -350,6 +374,7 @@ def assign_resources_with_subarray_id(
             entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
 
+@when("I assign resources to the subarray")
 @when("I assign resources to it")
 def i_assign_resources_to_it(
     running_telescope: fxt_types.running_telescope,
@@ -468,7 +493,9 @@ def i_release_all_resources_assigned_to_it(
 
 
 @given("an subarray busy configuring")
-def an_subarray_busy_configuring(allocated_subarray: fxt_types.allocated_subarray):
+def an_subarray_busy_configuring(
+    allocated_subarray: fxt_types.allocated_subarray,
+):
     """
     an subarray busy configuring
 

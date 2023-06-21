@@ -12,3 +12,5 @@ Here you can find instructions to test SKAMPI software using different methods a
 
    testing/testing_infrastructure
    testing/testing_locally
+   testing/skampi_fixtures
+

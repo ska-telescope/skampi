@@ -16,9 +16,8 @@ from ska_ser_skallop.utils.singleton import Memo
 
 from tests.resources.utils.validation import CommandException, command_success
 
-from ..mvp_model.states import ObsState
 from ..mvp_model.object_with_obsconfig import HasObservation
-from ..obsconfig.config import Observation
+from ..mvp_model.states import ObsState
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +50,7 @@ class WithCommandID:
     def long_running_command_subscriber(self, subscriber: WaitForLRCComplete):
         Memo(long_running_command_subscriber=subscriber)
 
+
 class StartUpStep(base.StartUpStep, LogEnabled, WithCommandID):
     """Implementation of Startup step for CSP"""
 
@@ -63,6 +63,7 @@ class StartUpStep(base.StartUpStep, LogEnabled, WithCommandID):
         """Domain logic for starting up a telescope on the interface to csp.
 
         This implments the set_telescope_to_running method on the entry_point.
+        :raises CommandException: when the command returned as failed
         """
         assert self.long_running_command_subscriber
         command_id = self.csp_controller.command_inout("On", [])
@@ -79,9 +80,9 @@ class StartUpStep(base.StartUpStep, LogEnabled, WithCommandID):
         :return: brd
         """
         brd = get_message_board_builder()
-        brd.set_waiting_on(self._tel.csp.controller).for_attribute(
-            "state"
-        ).to_become_equal_to("ON", ignore_first=False)
+        brd.set_waiting_on(self._tel.csp.controller).for_attribute("state").to_become_equal_to(
+            "ON", ignore_first=False
+        )
         self.long_running_command_subscriber = brd.set_wait_for_long_running_command_on(
             self._tel.csp.controller
         )
@@ -117,9 +118,9 @@ class StartUpStep(base.StartUpStep, LogEnabled, WithCommandID):
         # the low telescope does not switch off so there is no wait
         if self._tel.skamid:
             csp_controller = str(self._tel.csp.controller)
-            brd.set_waiting_on(csp_controller).for_attribute(
-                "state"
-            ).to_become_equal_to("OFF", ignore_first=False)
+            brd.set_waiting_on(csp_controller).for_attribute("state").to_become_equal_to(
+                "OFF", ignore_first=False
+            )
             # subarrays
             for index in range(1, self.nr_of_subarrays + 1):
                 brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
@@ -131,7 +132,10 @@ class StartUpStep(base.StartUpStep, LogEnabled, WithCommandID):
         return brd
 
     def undo_startup(self):
-        """Domain logic for switching the csp off."""
+        """Domain logic for switching the csp off.
+
+        :raises CommandException: when the command returned as failed
+        """
         assert self.long_running_command_subscriber
         command_id = self.csp_controller.command_inout("Off", [])
         if command_success(command_id):
@@ -145,13 +149,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled, WithCommandID
     """Implementation of Assign Resources Step for CSP."""
 
     def __init__(self) -> None:
-        """
-        Init object.
-
-        :param observation: An instance of the Observation class or None.
-            If None, a new instance of Observation will be created.
-
-        """
+        """Init object."""
         super().__init__()
         HasObservation.__init__(self)
         self._tel = names.TEL()
@@ -171,6 +169,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled, WithCommandID
         :param dish_ids: this dish indices (in case of mid) to control
         :param composition: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
+        :raises CommandException: when the command returned as failed
         """
         assert self.long_running_command_subscriber
         if self._tel.skalow:
@@ -202,6 +201,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled, WithCommandID
         This implments the tear_down_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :raises CommandException: when the command returned as failed
         """
         assert self.long_running_command_subscriber
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -270,12 +270,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObserva
     """Implementation of Configure Scan Step for CSP."""
 
     def __init__(self) -> None:
-        """
-        Init object.
-
-        :param observation: An instance of the Observation class or None.
-            If None, a new instance of Observation will be created.
-        """
+        """Init object."""
         super().__init__()
         HasObservation.__init__(self)
         self._tel = names.TEL()
@@ -295,6 +290,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObserva
         :param configuration: The assign resources configuration paramaters
         :param sb_id: a generic ide to identify a sb to assign resources
         :param duration: duration of scan
+        :raises CommandException: when the command returned as failed
         """
         # scan duration needs to be a memorised for
         # future objects that mnay require it
@@ -327,6 +323,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObserva
         This implments the clear_configuration method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :raises CommandException: when the command returned as failed
         """
         assert self.long_running_command_subscriber
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
@@ -395,12 +392,7 @@ class CspScanStep(base.ScanStep, LogEnabled, WithCommandID, HasObservation):
     """Implementation of Scan Step for CBF."""
 
     def __init__(self) -> None:
-        """
-        Init object.
-
-        :param observation: An instance of the Observation class or None.
-            If None, a new instance of Observation will be created.
-        """
+        """Init object."""
         super().__init__()
         HasObservation.__init__(self)
         self._tel = names.TEL()
@@ -413,6 +405,7 @@ class CspScanStep(base.ScanStep, LogEnabled, WithCommandID, HasObservation):
         :param sub_array_id: The index id of the subarray to control
 
         :raises Exception: Raise exception in do method of scan command
+        :raises CommandException: when the command returned as failed
         """
         assert self.long_running_command_subscriber
         if self._tel.skalow:
@@ -579,6 +572,7 @@ class CSPAbortStep(base.AbortStep, LogEnabled, WithCommandID):
         This implments the scan method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :raises CommandException: when the command returned as failed
         """
         assert self.long_running_command_subscriber
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -635,6 +629,7 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         Domain logic specifying what needs to be waited for obsreset is done.
 
         :param sub_array_id: The index id of the subarray to control
+        :raises CommandException: when the command returned as failed
         """
         assert self.long_running_command_subscriber
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -653,6 +648,7 @@ class CSPObsResetStep(base.ObsResetStep, LogEnabled):
         This implments the tear_down_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :raises CommandException: when the command returned as failed
         """
         assert self.long_running_command_subscriber
         subarray_name = self._tel.csp.subarray(sub_array_id)
@@ -723,12 +719,7 @@ class CSPEntryPoint(CompositeEntryPoint, HasObservation):
     nr_of_subarrays = 2
 
     def __init__(self) -> None:
-        """
-        Init Object
-
-        :param observation: An instance of the Observation class or None.
-            If None, a new instance of Observation will be created.
-        """
+        """Init Object"""
         super().__init__()
         HasObservation.__init__(self)
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)

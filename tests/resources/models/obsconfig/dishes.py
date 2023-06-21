@@ -1,4 +1,4 @@
-from typing import Any, Literal, TypedDict
+from typing import Literal, TypedDict
 
 from ska_tmc_cdm.messages.central_node.common import DishAllocation
 from ska_tmc_cdm.messages.subarray_node.configure.core import (
@@ -6,7 +6,7 @@ from ska_tmc_cdm.messages.subarray_node.configure.core import (
     PointingConfiguration,
 )
 
-from .target_spec import TargetSpecs, BaseTargetSpec, ArraySpec
+from .target_spec import ArraySpec, BaseTargetSpec, TargetSpecs
 
 ReceptorName = Literal[
     "SKA001",
@@ -20,17 +20,10 @@ ReceptorName = Literal[
     "SKA009",
 ]
 
-MeerkatDishHame = Literal[
-    "MKT001",
-    "MKT002",
-    "MKT003",
-    "MKT004"
-]
+MeerkatDishHame = Literal["MKT001", "MKT002", "MKT003", "MKT004"]
 
 
-TempLow = Literal[
-    "C10", "C136", "C1", "C217", "C13", "C42"
-]
+TempLow = Literal["C10", "C136", "C1", "C217", "C13", "C42"]
 
 
 class ResourceConfiguration(TypedDict):
@@ -60,7 +53,7 @@ class Dishes(TargetSpecs):
                 #  distinguish between Mid and Low
                 #  (see tests/resources/models/obsconfig/vis_receive_config.py)
                 "vis-rec": ["C10", "C136", "C1", "C217", "C13", "C42"],
-                "mkt-default": ["MKT001", "MKT002"]
+                "mkt-default": ["MKT001", "MKT002"],
             }
             self._dishes_initialized = True
 
@@ -70,7 +63,7 @@ class Dishes(TargetSpecs):
         for target in self.target_specs.values():
             if isinstance(target.dishes, list):
                 dish_list = list(set([*dish_list, *target.dishes]))
-            elif dishes :=self.dish_specs.get(target.dishes):
+            elif dishes := self.dish_specs.get(target.dishes):
                 dish_list = list(set([*dish_list, *dishes]))
         return dish_list
 

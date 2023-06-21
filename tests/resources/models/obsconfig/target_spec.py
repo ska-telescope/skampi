@@ -1,15 +1,14 @@
 from collections import OrderedDict
 
-
 from ska_tmc_cdm.messages.subarray_node.configure.core import ReceiverBand, Target
 
 from .base import SchedulingBlock
 
 
-class BaseTargetSpec():
-
+class BaseTargetSpec:
     def __init__(
-        self, target: Target,
+        self,
+        target: Target,
         scan_type: str,
         band: ReceiverBand,
         channelisation: str,
@@ -27,10 +26,9 @@ class BaseTargetSpec():
 
 
 class TargetSpec(BaseTargetSpec):
-
-
     def __init__(
-        self, target: Target,
+        self,
+        target: Target,
         scan_type: str,
         band: ReceiverBand,
         channelisation: str,
@@ -42,7 +40,10 @@ class TargetSpec(BaseTargetSpec):
         super().__init__(target, scan_type, band, channelisation, polarisation, field, processing)
         self.dishes = dishes
 
-def upgrade_base_target_spec(base_target_spec: BaseTargetSpec, dishes: str | list[str]) ->TargetSpec:
+
+def upgrade_base_target_spec(
+    base_target_spec: BaseTargetSpec, dishes: str | list[str]
+) -> TargetSpec:
     return TargetSpec(
         base_target_spec.target,
         base_target_spec.scan_type,
@@ -78,12 +79,14 @@ DEFAULT_TARGET_SPECS = OrderedDict(
     }
 )
 
-class ArraySpec:
 
+class ArraySpec:
     def __init__(self, receptors: str | list[str]) -> None:
         self.receptors = receptors
 
+
 DEFAULT_ARRAY_SPEC = ArraySpec(receptors="two")
+
 
 class Scan:
     def __init__(self) -> None:
@@ -108,7 +111,11 @@ class Scan:
 class TargetSpecs(SchedulingBlock, Scan):
     _target_spec_initialized = False
 
-    def __init__(self, base_target_specs: dict[str, BaseTargetSpec] | None = None, array: ArraySpec | None = None) -> None:
+    def __init__(
+        self,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
+    ) -> None:
         if not self._target_spec_initialized:
             self._target_spec_initialized = True
             SchedulingBlock.__init__(self)
@@ -129,11 +136,12 @@ class TargetSpecs(SchedulingBlock, Scan):
         if base_target_specs:
             self._base_target_specs = base_target_specs
 
-
     @property
     def target_specs(self) -> dict[str, TargetSpec]:
-        return { key: upgrade_base_target_spec(spec,self._array.receptors) for key, spec in self._base_target_specs.items()}
-
+        return {
+            key: upgrade_base_target_spec(spec, self._array.receptors)
+            for key, spec in self._base_target_specs.items()
+        }
 
     def add_target_specs(self, base_target_specs: dict[str, BaseTargetSpec]):
         self._target_specs = OrderedDict({**self.target_specs, **base_target_specs})
@@ -146,12 +154,11 @@ class TargetSpecs(SchedulingBlock, Scan):
     @property
     def next_target_id(self) -> str:
         return list(self.target_specs.keys())[self._next_index]
-    
+
     @property
     def next_target(self) -> TargetSpec:
         key = list(self.target_specs.keys())[self._next_index]
         return self.target_specs[key]
-    
 
     def update_target_specs(
         self,
@@ -162,7 +169,7 @@ class TargetSpecs(SchedulingBlock, Scan):
         polarisation: str | None = None,
         field: str | None = None,
         processing: str | None = None,
-        dishes: str | list[str] | None = None
+        dishes: str | list[str] | None = None,
     ):
         for key in self._base_target_specs.keys():
             if band:
@@ -181,5 +188,3 @@ class TargetSpecs(SchedulingBlock, Scan):
                 self._base_target_specs[key].field = field
         if dishes:
             self._array.receptors = dishes
-            
-    

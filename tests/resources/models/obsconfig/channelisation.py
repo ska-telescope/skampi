@@ -30,10 +30,7 @@ class Channelization(TargetSpecs):
         TargetSpecs.__init__(self, base_target_specs, array)
         if channels is not None:
             self._channel_configurations = {
-                **{
-                    channel.channels_id: channel
-                    for channel in channels
-                },
+                **{channel.channels_id: channel for channel in channels},
             }
         else:
             self._channel_configurations = DEFAULT_CHANNELS

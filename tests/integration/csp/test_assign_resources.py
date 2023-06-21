@@ -3,14 +3,14 @@ import logging
 
 import pytest
 from pytest_bdd import scenario
-from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from resources.models.obsconfig.config import Observation
-
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
+
 
 @pytest.fixture(name="set_obsconfig")
 def fxt_set_obsconfig(observation_config: Observation):
@@ -50,7 +50,10 @@ def test_assign_resources_to_csp_low_subarray():
     "Assign resources to CSP mid subarray",
 )
 def test_assign_resources_to_csp_mid_subarray(set_obsconfig: None):
-    """Assign resources to CSP mid subarray."""
+    """Assign resources to CSP mid subarray.
+
+    :param set_obsconfig: sets the observation config
+    """
 
 
 @pytest.mark.csp_related
@@ -87,7 +90,7 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
     sut_settings.restart_after_abort = True
 
 
-#@pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
+# @pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -102,7 +105,7 @@ def test_abort_in_resourcing_mid(
     """
 
 
-#@pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
+# @pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

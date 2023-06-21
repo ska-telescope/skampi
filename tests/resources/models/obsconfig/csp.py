@@ -1,5 +1,6 @@
 from typing import TypedDict, cast
 
+from ska_tmc_cdm.messages.central_node.csp import CSPConfiguration as CSPAssignConfiguration
 from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     CBFConfiguration,
     CommonConfiguration,
@@ -9,12 +10,11 @@ from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     SubarrayConfiguration,
 )
 
-from ska_tmc_cdm.messages.central_node.csp import CSPConfiguration as CSPAssignConfiguration
-
 from tests.resources.models.obsconfig.target_spec import ArraySpec, BaseTargetSpec
+
 from .base import encoded
-from .target_spec import TargetSpecs
 from .dishes import Dishes
+from .target_spec import TargetSpecs
 
 
 class CSPrunScanConfig(TypedDict):
@@ -98,13 +98,13 @@ class CSPconfig(Dishes, TargetSpecs):
     @encoded
     def generate_csp_scan_config(self, target_id: str | None = None, subarray_id: int = 1):
         return self._generate_csp_scan_config(target_id, subarray_id)
-    
+
     @encoded
     def generate_csp_assign_resources_config(self, subarray_id: int = 1):
         return {
-                "interface": self.csp_assign_resources_schema,
-                "subarray_id": subarray_id,
-                "dish": {"receptor_ids": self.dish_allocation.receptor_ids},
+            "interface": self.csp_assign_resources_schema,
+            "subarray_id": subarray_id,
+            "dish": {"receptor_ids": self.dish_allocation.receptor_ids},
         }
 
     def generate_csp_run_scan_config(

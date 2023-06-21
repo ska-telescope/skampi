@@ -5,12 +5,11 @@ SDP visibility receive script
 import json
 import os
 from collections import OrderedDict
-from typing import Any
 
 from resources.models.obsconfig import Observation
 from resources.models.obsconfig.channelisation import DEFAULT_CHANNELS
 from resources.models.obsconfig.sdp_config import ProcessingSpec
-from resources.models.obsconfig.target_spec import BaseTargetSpec, ArraySpec
+from resources.models.obsconfig.target_spec import ArraySpec, BaseTargetSpec
 from ska_tmc_cdm.messages.central_node.sdp import ScriptConfiguration
 from ska_tmc_cdm.messages.subarray_node.configure.core import ReceiverBand, Target
 
@@ -83,10 +82,9 @@ class VisRecObservation(Observation):
             array=ARRAY_SPEC,
             processing_specs=[
                 ProcessingSpec(
-                script=VIS_RECEIVE_SCRIPT,
-                parameters=_load_json(VIS_PARAMS_FILE),
-            )
+                    script=VIS_RECEIVE_SCRIPT,
+                    parameters=_load_json(VIS_PARAMS_FILE),
+                )
             ],
-            channels=list(VIS_REC_CHANNELS.values())
+            channels=list(VIS_REC_CHANNELS.values()),
         )
-    

@@ -26,6 +26,7 @@ def load_next_sb():
 class SchedulingBlock:
 
     _sb_initialized = False
+
     def __init__(self) -> None:
         if not self._sb_initialized:
             logging.info("initialising scheduling block")

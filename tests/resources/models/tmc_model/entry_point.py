@@ -20,8 +20,9 @@ from ska_ser_skallop.utils.singleton import Memo
 
 from ..csp_model.entry_point import CSPWaitReadyStep
 from ..mvp_model.env import Observation
-from ..mvp_model.states import ObsState
 from ..mvp_model.object_with_obsconfig import HasObservation
+from ..mvp_model.states import ObsState
+
 logger = logging.getLogger(__name__)
 
 
@@ -686,12 +687,7 @@ class TMCEntryPoint(CompositeEntryPoint, HasObservation):
     receptors = [1, 2, 3, 4]
 
     def __init__(self) -> None:
-        """
-        Init Object
-
-        :param observation: An instance of the Observation class or None.
-            If None, a new instance of Observation will be created.
-        """
+        """Init Object"""
         super().__init__()
         HasObservation.__init__(self)
         observation = self.observation

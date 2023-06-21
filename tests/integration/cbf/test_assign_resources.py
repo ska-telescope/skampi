@@ -7,9 +7,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
-
 from ..conftest import SutTestSettings
-
 
 
 @pytest.fixture(name="set_obsconfig")
@@ -18,7 +16,7 @@ def fxt_set_obsconfig(observation_config: Observation):
         observation_config.update_target_specs(dishes="mkt-default")
 
 
-#@pytest.mark.skip("need to update cbf with new api")
+# @pytest.mark.skip("need to update cbf with new api")
 @pytest.mark.csp_related
 @pytest.mark.skamid
 @pytest.mark.cbf
@@ -28,7 +26,10 @@ def fxt_set_obsconfig(observation_config: Observation):
     "Assign resources to CBF mid subarray",
 )
 def test_assign_resources_to_cbf_mid_subarray(set_obsconfig: None):
-    """Assign resources to CBF mid subarray."""
+    """Assign resources to CBF mid subarray.
+
+    :param set_obsconfig: sets the observation config
+    """
 
 
 @pytest.mark.csp_related

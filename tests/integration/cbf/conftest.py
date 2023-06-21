@@ -112,7 +112,7 @@ def fxt_set_up_log_checking_for_cbf(
 
 
 @pytest.fixture(name="cbf_base_composition")
-def fxt_csp_base_composition(tmp_path) -> conf_types.Composition:
+def fxt_cbf_base_composition(tmp_path) -> conf_types.Composition:
     """Setup a base composition configuration to use for csp/cbf.
 
     :param tmp_path: a temporary path for sending configuration as a file.

@@ -20,7 +20,7 @@ ReceptorName = Literal[
     "SKA009",
 ]
 
-MeerkatDishHame = Literal["MKT001", "MKT002", "MKT003", "MKT004"]
+MeerkatDishHame = Literal["MKT000", "MKT001", "MKT002", "MKT003"]
 
 
 TempLow = Literal["C10", "C136", "C1", "C217", "C13", "C42"]

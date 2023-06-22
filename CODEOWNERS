@@ -110,6 +110,7 @@ tests/Makefile @ska-telescope/ska-dev/skao-team-system @adb-42 @mmarquar @scpmw 
 .gitlab-ci.yml @ska-telescope/ska-dev/skao-team-system 
 /.gitlab/ @ska-telescope/ska-dev/skao-team-system 
 Makefile @ska-telescope/ska-dev/skao-team-system 
+Dockerfile @ska-telescope/ska-dev/skao-team-system 
 
 # H3
 /.make/ @ska-telescope/ska-dev/skao-team-system 

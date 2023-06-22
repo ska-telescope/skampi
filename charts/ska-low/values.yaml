@@ -159,6 +159,10 @@ ska-low-cbf:
   enabled: true
   ska-low-cbf-conn:
     enabled: false
+  image: 
+    registry: registry.gitlab.com/ska-telescope/low-cbf/ska-low-cbf
+    image: ska-low-cbf
+    tag: 0.5.7-dev.cb7162029
 
 ska-low-cbf-proc:
   legacy_compatibility: true

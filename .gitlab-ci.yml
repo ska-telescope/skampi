@@ -4,6 +4,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   SKALLOP_VERSION: "2.24.2"
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-tango-images-pytango-builder:9.3.35
+  SKAMPI_TESTS_TRIGGER: "" # Meant to be set by upstream pipelines
 
 stages:
   - lint

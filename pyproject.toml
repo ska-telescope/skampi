@@ -5,7 +5,6 @@ description = "Integration tests to be used on ska low and ska mid software"
 authors = ["Your Name <you@example.com>"]
 license = "BSD"
 readme = "README.md"
-packages = [{include = "tests/integration"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"

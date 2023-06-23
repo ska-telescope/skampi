@@ -95,5 +95,5 @@ include:
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
 
-# python-lint:
-#   image: $CI_IMAGE
+python-lint:
+  image: $CI_IMAGE

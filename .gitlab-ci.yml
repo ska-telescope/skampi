@@ -94,6 +94,8 @@ include:
   # linting job
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/notebook-lint.gitlab-ci.yml"
 
 python-lint:
   image: $CI_IMAGE

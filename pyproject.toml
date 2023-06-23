@@ -31,6 +31,7 @@ psycopg2-binary ="2.9.5"
 ska-oso-oet = "^5.1.1"
 ska-oso-scripting = "^7.4.0"
 itango = "^0.1.9"
+ipykernel = "^6.23.2"
 
 [[tool.poetry.source]]
 name = 'ska'
@@ -45,6 +46,9 @@ black = "^22.8.0"
 ipython = "^7.30.1"
 pylint = "^2.12.2"
 pylint-junit = "^0.3.2"
+
+[tool.poetry.group.dev.dependencies]
+nbqa = "^1.7.0"
 
 [tool.flake8]
 rst-directives = "literalinclude"

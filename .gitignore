@@ -55,6 +55,7 @@ ansible-playbooks
 *__pycache__
 *.swp
 *.ipynb
+!notebooks/*.ipynb
 .pytest_cache/*
 cucumber.json
 junit-report.xml

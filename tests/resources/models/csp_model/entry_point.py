@@ -824,12 +824,12 @@ csp_low_configure_scan = {
             "stn_beams": [
                 {
                     "beam_id": 1,
-                    "freq_ids": [64, 65, 66, 67, 68, 68, 70, 71],
+                    "freq_ids": [64, 65, 66, 67, 68, 69, 70, 71],
                     "boresight_dly_poly": "url",
                 }
             ],
         },
-        "timing_beams": {},
+        "timing_beams": {[]},
         "search_beams": "tbd",
         "zooms": "tbd",
     },

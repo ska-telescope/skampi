@@ -1,23 +1,24 @@
 # template jobs
 .mid_itf_base:
   tags:
-    - ska-k8srunner-za-itf
+    - ska-k8srunner-za-itf-dish-lmc
   variables:
     TANGO_HOST: tango-databaseds:10000 # try to sync with Mid ITF Tests value
     CONFIG: mid
     VALUES: "charts/ska-$CONFIG/$CONFIG-itf-values.yaml" #TODO: Use CONFIG in shared definitions.
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-    INGRESS_HOST: "k8s.miditf.internal.skao.int"
-    CLUSTER_DOMAIN: "miditf.internal.skao.int" ## Domain used for naming Tango Device Servers
-    K8S_EXTRA_PARMS: "--set global.ska-tango-archiver.enabled=false  --set ska-tango-archiver.enabled=false"
+    INGRESS_HOST: "10.164.0.44"
+    CLUSTER_DOMAIN: "za-dish-lmc.skao.int" ## Domain used for naming Tango Device Servers
+    ARCHIVER_HOST_NAME: "timescaledb-0.ska-tango-archiver.svc.za-dish-lmc.skao.int"
+
   when: manual
 
 .mid_itf_deploy:
   extends:
     - .deploy_chart_before
   script:
-    - LOADBALANCER_IP=10.164.10.1 make skampi-links
+    - LOADBALANCER_IP=10.164.254.2 make skampi-links
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:

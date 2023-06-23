@@ -87,13 +87,13 @@ include:
   - local: "/.gitlab/ci/mid-itf.gitlab-ci.yml"
   - local: "/.gitlab/ci/low-itf.gitlab-ci.yml"
 
-  # # .post steps
-  # - project: "ska-telescope/templates-repository"
-  #   file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
+  # .post steps
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
 
-  # # linting job
-  # - project: "ska-telescope/templates-repository"
-  #   file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
+  # linting job
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
 
 # python-lint:
 #   image: $CI_IMAGE

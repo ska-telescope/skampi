@@ -302,20 +302,17 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObserva
             subarray = con_config.get_device_proxy(subarray_name)
             cbf_low_configuration = json.dumps(csp_low_configure_scan)
             self._log(f"commanding {subarray_name} with Configure:" f" {cbf_low_configuration} ")
-            subarray.set_timeout_millis(6000)
-            subarray.command_inout("Configure", cbf_low_configuration)
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
             csp_mid_configuration = self.observation.generate_csp_scan_config().as_json
             self._log(f"commanding {subarray_name} with Configure:" f" {csp_mid_configuration} ")
-            subarray.set_timeout_millis(6000)
-            command_id = subarray.command_inout("Configure", csp_mid_configuration)
-            if command_success(command_id):
-                self.long_running_command_subscriber.set_command_id(command_id)
-            else:
-                self.long_running_command_subscriber.unsubscribe_all()
-                raise CommandException(command_id)
+        command_id = subarray.command_inout("Configure", csp_mid_configuration)
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
 
     def undo_configure(self, sub_array_id: int):
         """

@@ -829,7 +829,7 @@ csp_low_configure_scan = {
                 }
             ],
         },
-        "timing_beams": {[]},
+        "timing_beams": {"beams":[]},
         "search_beams": "tbd",
         "zooms": "tbd",
     },

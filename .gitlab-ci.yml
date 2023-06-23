@@ -38,45 +38,45 @@ stages:
   tags:
     - k8srunner
 
-build-base-image:
-  stage: .pre
-  image: $SKA_K8S_TOOLS_BUILD_DEPLOY
-  tags:
-    - k8srunner
-  before_script:
-    - ""
-  rules:
-    - changes:
-        - images/ska-skampi-ci/Dockerfile
-        - images/ska-skampi-ci/release
-    - if: $REBUILD_IMAGES
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-  script:
-    - export TAG=$(cat images/ska-skampi-ci/release)
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:$TAG images/ska-skampi-ci/
-    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:$TAG
+# build-base-image:
+#   stage: .pre
+#   image: $SKA_K8S_TOOLS_BUILD_DEPLOY
+#   tags:
+#     - k8srunner
+#   before_script:
+#     - ""
+#   rules:
+#     - changes:
+#         - images/ska-skampi-ci/Dockerfile
+#         - images/ska-skampi-ci/release
+#     - if: $REBUILD_IMAGES
+#     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+#       when: never
+#   script:
+#     - export TAG=$(cat images/ska-skampi-ci/release)
+#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#     - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:$TAG images/ska-skampi-ci/
+#     - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:$TAG
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
-  # Helm Charts
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/helm-chart.gitlab-ci.yml"
+  # # Helm Charts
+  # - project: "ska-telescope/templates-repository"
+  #   file: "gitlab-ci/includes/helm-chart.gitlab-ci.yml"
 
-  # Docs - only build as stress tests use 'public'
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/docs-build.gitlab-ci.yml"
+  # # Docs - only build as stress tests use 'public'
+  # - project: "ska-telescope/templates-repository"
+  #   file: "gitlab-ci/includes/docs-build.gitlab-ci.yml"
 
-  # release steps
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/release.gitlab-ci.yml"
+  # # release steps
+  # - project: "ska-telescope/templates-repository"
+  #   file: "gitlab-ci/includes/release.gitlab-ci.yml"
 
-  # integration and staging
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/deploy.integration.gitlab-ci.yml"
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/deploy.staging.gitlab-ci.yml"
+  # # integration and staging
+  # - project: "ska-telescope/templates-repository"
+  #   file: "gitlab-ci/includes/deploy.integration.gitlab-ci.yml"
+  # - project: "ska-telescope/templates-repository"
+  #   file: "gitlab-ci/includes/deploy.staging.gitlab-ci.yml"
   
   # Deployments
   - local: "/.gitlab/ci/common.gitlab-ci.yml"
@@ -87,13 +87,13 @@ include:
   - local: "/.gitlab/ci/mid-itf.gitlab-ci.yml"
   - local: "/.gitlab/ci/low-itf.gitlab-ci.yml"
 
-  # .post steps
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
+  # # .post steps
+  # - project: "ska-telescope/templates-repository"
+  #   file: "gitlab-ci/includes/finaliser.gitlab-ci.yml"
 
-  # linting job
-  - project: "ska-telescope/templates-repository"
-    file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
+  # # linting job
+  # - project: "ska-telescope/templates-repository"
+  #   file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
 
-python-lint:
-  image: $CI_IMAGE
+# python-lint:
+#   image: $CI_IMAGE

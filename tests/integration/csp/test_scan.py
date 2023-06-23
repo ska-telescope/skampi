@@ -11,7 +11,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from .. import conftest
 
 
-@pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
+#@pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
 @pytest.mark.skalow
 @pytest.mark.scan
 @scenario("features/csp_scan.feature", "Run a scan on csp subarray in low")
@@ -38,7 +38,7 @@ def test_abort_scanning(disable_clear):
     """
 
 
-@pytest.mark.skip(reason="This functionality not tested at CSP/CBF, raised SKB-221.")
+#@pytest.mark.skip(reason="This functionality not tested at CSP/CBF, raised SKB-221.")
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.csplmc

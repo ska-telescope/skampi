@@ -18,7 +18,7 @@ def test_abort_configuring(set_up_subarray_log_checking_for_csp: None):
     """
 
 
-#@pytest.mark.skip(reason="This functionality not tested at CSP/CBF, raised SKB-221")
+@pytest.mark.skip(reason="This functionality not tested at CSP/CBF, raised SKB-221")
 @pytest.mark.skalow
 @pytest.mark.configure
 @pytest.mark.csplmc

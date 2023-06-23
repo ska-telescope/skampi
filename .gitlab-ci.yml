@@ -14,7 +14,7 @@ variables:
   CONFIG: "common"
   CI_IMAGE: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.7
 
-image: $CI_IMAGE
+image: artefact.skao.int/ska-cicd-k8s-tools-build-deploy:0.8.6
 
 stages:
   - on-demand

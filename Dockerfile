@@ -8,7 +8,7 @@ LABEL \
       int.skao.version="1.0.0" \
       int.skao.repository="https://gitlab.com/ska-telescope/ska-skampi"
 
-RUN apt update && apt install -y --no-install-recommends nodejs npm jq git bash
+RUN apt update && apt install -y --no-install-recommends nodejs npm jq git bash vim
 RUN npm install -g configurable-http-proxy
 RUN python3 -m pip install --no-cache-dir jupyterhub jupyterlab notebook
 
@@ -25,5 +25,6 @@ RUN curl -L "https://github.com/mikefarah/yq/releases/download/v4.33.3/yq_linux_
 COPY --chown=tango:tango poetry.lock pyproject.toml ./
 RUN poetry config virtualenvs.create false && poetry install
 COPY --chown=tango:tango ./ ./
-RUN git config --global --add safe.directory /app
+RUN git config --global --add safe.directory /app && \
+    chown -R tango:tango /app
 

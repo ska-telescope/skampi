@@ -7,24 +7,26 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   SKALLOP_VERSION: "2.24.2"
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-tango-images-pytango-builder:9.3.35
+  KEEP_NAMESPACE: "true"
   SKAMPI_TESTS_TRIGGER: "" # Meant to be set by upstream pipelines
+  KUBE_NAMESPACE: ""
 
 stages:
   - lint
+  - test
   - build
   - pages
-  - test
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
-  # linting job
+  # Linting
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/notebook-lint.gitlab-ci.yml"
 
   # Tests
-  - local: ".gitlab/ci/test.gitlab-ci.yml"
+  - local: "/.gitlab/ci/test.gitlab-ci.yml"
 
   # Docs - only build as stress tests use 'public'
   - project: "ska-telescope/templates-repository"

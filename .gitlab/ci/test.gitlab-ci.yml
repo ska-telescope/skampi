@@ -1,12 +1,11 @@
 .test:
   stage: test
   variables:  # These should be passed by the upstream pipeline or manually set
-    KUBE_NAMESPACE: "default"
     KUBE_BRANCH: $CI_JOB_ID
     PYTEST_MARK: (csp_startup or sdp or eda)
-    KEEP_NAMESPACE: "true"
-    XRAY_UPLOAD_ENABLED: "false" # TODO: Remove this
+    XRAY_UPLOAD_ENABLED: "true"
     TRIGGER_ID: none
+    SKAMPI_TESTS_TRIGGER: ""
   script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE - ska-${CONFIG}
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
@@ -27,10 +26,12 @@
       junit: build/report.xml
     when: always
   rules:
-    - if: $CI_PIPELINE_SOURCE == "parent_pipeline" && $SKAMPI_TESTS_TRIGGER == $TRIGGER_ID
-    - if: $CI_PIPELINE_SOURCE == "parent_pipeline" && $SKAMPI_TESTS_TRIGGER != $TRIGGER_ID
+    - if: $CI_PIPELINE_SOURCE == "pipeline" && $SKAMPI_TESTS_TRIGGER == $TRIGGER_ID
+      allow_failure: false
+    - if: $CI_PIPELINE_SOURCE == "pipeline" && $SKAMPI_TESTS_TRIGGER != $TRIGGER_ID
       when: never
     - when: manual
+      allow_failure: true
 
 test-low:
   extends:

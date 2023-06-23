@@ -90,9 +90,9 @@ SKALLOP_SET_FLAGS := $(foreach var," $(SKALLOP_FLAGS) ", $(if $(filter $($(var))
 # Tests variables
 SDP_DATA_PVC_NAME ?= shared
 ARCHIVER_DBNAME ?= $(shell echo ${CONFIG}_archiver_db_$(SANITIZED_GIT_BRANCH) | cut -c -50)
-ARCHIVER_DB_USER ?=
+ARCHIVER_PORT ?= 5432
+ARCHIVER_DB_USER ?= admin
 ARCHIVER_PWD ?=
-ARCHIVER_PORT ?=
 TEST_ENV ?= BUILD_IN
 
 # Tests flags
@@ -207,12 +207,14 @@ k8s-pre-test:
 	$(info ** MARKS=$(MARKS))
 	$(info )
 
-k8s-post-test: # post test hook for processing received reports
+check-pod-throttling:  # check if pods in a namespace have been throttled
+	@KUBE_NAMESPACE=$(KUBE_NAMESPACE) source scripts/check_pod_throttling.sh;
+
+upload-test-results:  # uploads tests results
 	@if ! [[ -f build/status ]]; then \
 		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
 		exit 1; \
 	fi;
-	@KUBE_NAMESPACE=$(KUBE_NAMESPACE) source scripts/check_pod_throttling.sh;
 	@\
 	if [ "$(XRAY_UPLOAD_ENABLED)" = "true" ]; then \
 		echo "Processing XRay uploads using $(TEST_EXEC_FILE_PATH)"; \
@@ -226,6 +228,8 @@ k8s-post-test: # post test hook for processing received reports
 			fi; \
 		done; \
 	fi
+
+k8s-post-test: check-pod-throttling upload-test-results
 
 itango:
 	@echo "## Connecting to TANGO at '$(TANGO_HOST)'"

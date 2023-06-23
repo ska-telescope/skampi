@@ -1,11 +1,11 @@
 # Further information on how the assignment are based
-# could be found here: 
+# could be found here:
 # https://confluence.skatelescope.org/display/SWSI/Skampi+Change+Management
 
 # Overall Default Reviewers
 # This covers all the files that are not part of the above and will be used to orchestrate those parts of the repository.
 # Files are matched as the last statement in order so this will act like a filter that catches any file that's been left out
-# by the rest of the file 
+# by the rest of the file
 # Members:
 # - All
 * @adb-42 @mmarquar @ben.mort @majashdown @gerhardlr @adam-avison @scpmw @abridger @sonja.vrcic @tjuerges @ska-telescope/ska-dev/skao-team-system
@@ -14,19 +14,19 @@
 ## Groups and Descriptions ar defined below and the codes will be commented for the file assignments
 # ---------------------------------------- #
 # Products (Helm charts) Reviewers, A1, and Product Organisation Reviewers, H1
-# Description: 
+# Description:
 # -- A1 --
 # Change to the SKA-Low or SKA-Mid chart, including:
-# - Changing the version number of a chart it depends on (aka a sub-chart), 
+# - Changing the version number of a chart it depends on (aka a sub-chart),
 #   one of the subsystem or support charts;
 # - Adding a new sub-chart;
 # - Removing a sub-chart;
 # - Changing the default values that significantly affects the deployment.
 # This typically occurs as a result of a new feature or fix on a subsystem
-# (or one of its components) that is part of SKA-Low or SKA-Mid. 
-# There should always be a reference to a specific capability/feature/story 
+# (or one of its components) that is part of SKA-Low or SKA-Mid.
+# There should always be a reference to a specific capability/feature/story
 # or bug that resulted in this change. The change may result in a change
-# in behaviour, in which case there should also be changes in acceptance 
+# in behaviour, in which case there should also be changes in acceptance
 # tests that verify the new behaviour (see next type of change).
 # -- H1 --
 # Cosmetic changes to the way Helm charts
@@ -39,32 +39,32 @@
 # Description:
 # -- A2 --
 # Change in a test, or addition or removal of a test.
-# Tests are typically created alongside a specific change 
-# in the behaviour of SKA-Low or SKA-Mid. This should form part of the work 
-# done on a particular feature/story or bug that results in an update to 
+# Tests are typically created alongside a specific change
+# in the behaviour of SKA-Low or SKA-Mid. This should form part of the work
+# done on a particular feature/story or bug that results in an update to
 # a product (see above).
 # -- H2 --
-# Nonfunctional changes to the tests and test dependencies used 
-# to verify the products. For example, removing a test that has become 
-# obsolete or redundant, change the way tests are marked/tagged and 
+# Nonfunctional changes to the tests and test dependencies used
+# to verify the products. For example, removing a test that has become
+# obsolete or redundant, change the way tests are marked/tagged and
 # reported to Jira, etc.
 # Members (POs/PMs, stewards):
 # - AIV Low: Malte Marquarding
-# - AIV Mid: Adriaan De Beer 
+# - AIV Mid: Adriaan De Beer
 # - Stewards: Peter Wortmann, Alan Bridger, Sonja Vrcic, Thomas Juerges, Gerhard LeRoux, Matteo Di Carlo
 # ---------------------------------------- #
 # CI/CD Reviewers, A3, and Housekeeping CI Reviewers, H3
 # Description:
 # -- A3 --
-# Change in the way the continuous integration pipeline is 
-# run as a consequence of GitLab triggers (commits, merges, manual pipeline 
-# runs/deployments and staging releases). This change may result from 
-# improvements or fixing problems. This type of change is specialised and 
-# typically involves the System team or other people with 
+# Change in the way the continuous integration pipeline is
+# run as a consequence of GitLab triggers (commits, merges, manual pipeline
+# runs/deployments and staging releases). This change may result from
+# improvements or fixing problems. This type of change is specialised and
+# typically involves the System team or other people with
 # the requisite knowledge.
 # -- H3 --
 # Nonfunctional changes to the CI pipeline to ensure it is up to date and
-# continuously improved. 
+# continuously improved.
 # For example, removing deprecated makefile targets, or removing unused scripts
 # Members(POs, ST, marshalls):
 # - System Team
@@ -72,8 +72,8 @@
 # ---------------------------------------- #
 # Docs Reviewers, A4
 # Description:
-# Changes to documentation about the verification and CI processes related to 
-# product integration (e.g. update in the readme on new env variables) 
+# Changes to documentation about the verification and CI processes related to
+# product integration (e.g. update in the readme on new env variables)
 # Since these changes are typical as a result of A2 or A3 they should be combined
 # as separate stories within the same feature used for A2 or A3.
 # Members(POs, marshalls):
@@ -84,24 +84,24 @@
 
 ## Assignments
 # A1
-.release @adb-42 @mmarquar @ben.mort @gerhardlr @majashdown @adam-avison 
+.release @adb-42 @mmarquar @ben.mort @gerhardlr @majashdown @adam-avison
 
 # A2
 /tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
-/scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+/scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981
 
 # H2 and H3
 /resources/ @piersharding @flyingfrog81 @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @ska-telescope/ska-dev/skao-team-system
 
 # A3
-.gitlab-ci.yml @ska-telescope/ska-dev/skao-team-system 
-/.gitlab/ @ska-telescope/ska-dev/skao-team-system 
-Makefile @ska-telescope/ska-dev/skao-team-system 
-Dockerfile @ska-telescope/ska-dev/skao-team-system 
+.gitlab-ci.yml @ska-telescope/ska-dev/skao-team-system
+/.gitlab/ @ska-telescope/ska-dev/skao-team-system
+Makefile @ska-telescope/ska-dev/skao-team-system
+Dockerfile @ska-telescope/ska-dev/skao-team-system
 
 # H3
-/.make/ @ska-telescope/ska-dev/skao-team-system 
-.readthedocs.yaml @ska-telescope/ska-dev/skao-team-system 
+/.make/ @ska-telescope/ska-dev/skao-team-system
+.readthedocs.yaml @ska-telescope/ska-dev/skao-team-system
 LICENSE @piersharding @flyingfrog81  @ska-telescope/ska-dev/skao-team-system
 .gitignore @piersharding @flyingfrog81 @ska-telescope/ska-dev/skao-team-system
 .gitmodules @piersharding @flyingfrog81 @ska-telescope/ska-dev/skao-team-system

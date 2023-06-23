@@ -18,14 +18,6 @@
             "default": "Skampi branch Test Execution"
         }
     },
-    "chart_info": {
-        "env": "DEPLOYMENT_CONFIGURATION",
-        "maps_to": {
-            "ska-mid": "charts/ska-mid/Chart.yaml",
-            "ska-low": "charts/ska-low/Chart.yaml",
-            "default": "charts/ska-mid/Chart.yaml"
-        }
-    },
     "test_report": "build/report.json",
     "project_id": "XTP",
     "test_environments": [

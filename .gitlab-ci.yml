@@ -60,23 +60,23 @@ stages:
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
-  # # Helm Charts
-  # - project: "ska-telescope/templates-repository"
-  #   file: "gitlab-ci/includes/helm-chart.gitlab-ci.yml"
+  # Helm Charts
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/helm-chart.gitlab-ci.yml"
 
-  # # Docs - only build as stress tests use 'public'
-  # - project: "ska-telescope/templates-repository"
-  #   file: "gitlab-ci/includes/docs-build.gitlab-ci.yml"
+  # Docs - only build as stress tests use 'public'
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/docs-build.gitlab-ci.yml"
 
-  # # release steps
-  # - project: "ska-telescope/templates-repository"
-  #   file: "gitlab-ci/includes/release.gitlab-ci.yml"
+  # release steps
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/release.gitlab-ci.yml"
 
-  # # integration and staging
-  # - project: "ska-telescope/templates-repository"
-  #   file: "gitlab-ci/includes/deploy.integration.gitlab-ci.yml"
-  # - project: "ska-telescope/templates-repository"
-  #   file: "gitlab-ci/includes/deploy.staging.gitlab-ci.yml"
+  # integration and staging
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/deploy.integration.gitlab-ci.yml"
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/deploy.staging.gitlab-ci.yml"
   
   # Deployments
   - local: "/.gitlab/ci/common.gitlab-ci.yml"

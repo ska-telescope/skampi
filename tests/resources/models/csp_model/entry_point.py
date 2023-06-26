@@ -305,7 +305,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObserva
             cbf_configuration = self.observation.generate_csp_scan_config().as_json
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with Configure:" f" {cbf_configuration} ")
-        #set debug logging level to DEBUG
+        # set debug logging level to DEBUG
         subarray.write_attribute("logginglevel", 5)
         command_id = subarray.command_inout("Configure", cbf_configuration)
         if command_success(command_id):
@@ -829,7 +829,7 @@ csp_low_configure_scan = {
                 }
             ],
         },
-        "timing_beams": {"beams":[]},
+        "timing_beams": {"beams": []},
         "search_beams": "tbd",
         "zooms": "tbd",
     },

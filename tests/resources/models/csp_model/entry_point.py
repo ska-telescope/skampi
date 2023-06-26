@@ -417,7 +417,7 @@ class CspScanStep(base.ScanStep, LogEnabled, WithCommandID, HasObservation):
         self._tel = names.TEL()
         subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        self._log(f"Commanding {subarray_name} to Scan with {scan_config_arg}")
+        self._log(f"Commanding {subarray_name} to Scan with {scan_config_arg} with scan_duration {scan_duration}")
         try:
             command_id = subarray.command_inout("Scan", scan_config_arg)
             if command_success(command_id):

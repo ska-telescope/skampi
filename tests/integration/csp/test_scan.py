@@ -38,7 +38,7 @@ def test_abort_scanning(disable_clear):
     """
 
 
-#@pytest.mark.skip(reason="This functionality not tested at CSP/CBF, raised SKB-221.")
+@pytest.mark.skip(reason="This functionality not tested at CSP/CBF, raised SKB-221.")
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.csplmc

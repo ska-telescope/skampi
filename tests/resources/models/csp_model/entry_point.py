@@ -534,6 +534,9 @@ class CSPSetOnlineStep(base.SetOnlineStep, LogEnabled):
             subarray = con_config.get_device_proxy(subarray_name)
             self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
             subarray.write_attribute("adminmode", 1)
+        builder.set_waiting_on(controller).for_attribute("isCommunicating").to_become_equal_to(
+                False, ignore_first=False
+        )
 
     def set_wait_for_undo_set_online(self) -> MessageBoardBuilder:
         """

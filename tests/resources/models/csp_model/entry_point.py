@@ -305,6 +305,8 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObserva
             cbf_configuration = self.observation.generate_csp_scan_config().as_json
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with Configure:" f" {cbf_configuration} ")
+        #set debug logging level to DEBUG
+        subarray.write_attribute("logginglevel", 5)
         command_id = subarray.command_inout("Configure", cbf_configuration)
         if command_success(command_id):
             self.long_running_command_subscriber.set_command_id(command_id)
@@ -346,6 +348,9 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObserva
         self.long_running_command_subscriber = builder.set_wait_for_long_running_command_on(
             subarray_name
         )
+        subarray = con_config.get_device_proxy(subarray_name)
+        lrc = subarray.read_attribute("longrunningcommandstatus")
+        self._log(f"read {subarray_name} LRC {lrc}")
         return builder
 
     def set_wait_for_doing_configure(self, sub_array_id: int) -> MessageBoardBuilder:

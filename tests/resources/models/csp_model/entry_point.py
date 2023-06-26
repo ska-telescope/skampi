@@ -326,13 +326,11 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObserva
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with command GoToIdle")
         command_id = subarray.command_inout("GoToIdle")
-        # version low 0.3.1 does not support LRC for GoToIdle
-        if self._tel.skamid:
-            if command_success(command_id):
-                self.long_running_command_subscriber.set_command_id(command_id)
-            else:
-                self.long_running_command_subscriber.unsubscribe_all()
-                raise CommandException(command_id)
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
 
     def set_wait_for_do_configure(self, sub_array_id: int) -> MessageBoardBuilder:
         """
@@ -379,11 +377,9 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObserva
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.subarray(sub_array_id)
         builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
-        # version low 0.3.1 does not support LRC for GoToIdle
-        if self._tel.skamid:
-            self.long_running_command_subscriber = builder.set_wait_for_long_running_command_on(
-                subarray_name
-            )
+        self.long_running_command_subscriber = builder.set_wait_for_long_running_command_on(
+            subarray_name
+        )
         return builder
 
 
@@ -579,12 +575,10 @@ class CSPAbortStep(base.AbortStep, LogEnabled, WithCommandID):
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with Abort command")
         command_id = subarray.command_inout("Abort")
-        # version low 0.3.1 does not support LRC for Abort
-        if self._tel.skamid:
-            if command_success(command_id):
-                self.long_running_command_subscriber.set_command_id(command_id)
-            else:
-                raise CommandException(command_id)
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            raise CommandException(command_id)
 
     def set_wait_for_do_abort(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited for abort is done.
@@ -597,11 +591,9 @@ class CSPAbortStep(base.AbortStep, LogEnabled, WithCommandID):
         builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
             "ABORTED", ignore_first=False
         )
-        # version low 0.3.1 does not support LRC for Abort
-        if self._tel.skamid:
-            self.long_running_command_subscriber = builder.set_wait_for_long_running_command_on(
-                subarray_name
-            )
+        self.long_running_command_subscriber = builder.set_wait_for_long_running_command_on(
+            subarray_name
+        )
         return builder
 
 

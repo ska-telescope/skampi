@@ -2184,6 +2184,7 @@ category = "main"
 optional = false
 python-versions = "*"
 files = [
+    {file = "parse-1.19.0-py2.py3-none-any.whl", hash = "sha256:6ce007645384a91150cb7cd7c8a9db2559e273c2e2542b508cd1e342508c2601"},
     {file = "parse-1.19.0.tar.gz", hash = "sha256:9ff82852bcb65d139813e2a5197627a94966245c897796760a3a2a8eb66f020b"},
 ]
 
@@ -2986,12 +2987,20 @@ category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
+    {file = "pytango-9.4.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:947c75256efd1c02f59d8b1a5dd5e2b2e0c844fadf6439681f02b71f12f22dec"},
+    {file = "pytango-9.4.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:32372e2e90319d20d2a0ae528efbdce1bd073aca8f7975dc35229b94e1d95033"},
     {file = "pytango-9.4.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a7ebe56ceae2b7e4506e41cdbd59069f5eb534fa3fd535b4d54a78a36dee8a6d"},
     {file = "pytango-9.4.1-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:724cbcffd64453572940be36ff1f4c68ab1c9df476d4c4fe34a2fa203cdc710a"},
     {file = "pytango-9.4.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e021f67c4808a8e9df0a37c8a2aedb018c981a4a2d849d5c91e512b2e1c9962e"},
+    {file = "pytango-9.4.1-cp310-cp310-win32.whl", hash = "sha256:de18e33b498b38bd7fa59d4b9d3c69dd0aeacc4ba0d9e4280781e4fb7fa69a42"},
+    {file = "pytango-9.4.1-cp310-cp310-win_amd64.whl", hash = "sha256:b461dbd917e01f2f8b198f839d2e265f50dfbbf368c052f8fe57d0c14272296b"},
+    {file = "pytango-9.4.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:18a0e5fd08bbc35b15c476d204e18fdea4e0a114c0c3dab035ef7aeb6f2f3f64"},
+    {file = "pytango-9.4.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:a263b3643547c6ee77da583010c79f67d9f2a4f08c598a199bd82f650605ea28"},
     {file = "pytango-9.4.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0a7af4fa1d42d34a7b19813e0f3119b933da09ec180b4e50a17f4e28d6592001"},
     {file = "pytango-9.4.1-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:debcb97e11df24a2df378650251463a19a6c1406a23e5961cfc82ecd929e6f74"},
     {file = "pytango-9.4.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e6a3d3f13a26d91fb405c420e6505b72649ea692ec0e109bd7b89b6a55dccbb5"},
+    {file = "pytango-9.4.1-cp311-cp311-win32.whl", hash = "sha256:fc39cb204f3461bf381287b6299c8216b6058e98a43bd8b34f72c411c801c979"},
+    {file = "pytango-9.4.1-cp311-cp311-win_amd64.whl", hash = "sha256:6f50540e910940f19ba7247259d0b4c1170ac274c4a04abb077b8eb2404686fc"},
     {file = "pytango-9.4.1-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d45fadf901b1582db63d441725fdeb720623723f39451eb4c78ac9ac452bbf7d"},
     {file = "pytango-9.4.1-cp36-cp36m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3774963a750efae336e1c60f270b59d42235636f338c6ee29b16e134fb25058a"},
     {file = "pytango-9.4.1-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d9d651ec79181b9703dd5d3445c08cece05519c9340a082b88e1468941990056"},
@@ -3007,9 +3016,13 @@ files = [
     {file = "pytango-9.4.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:77fa4f7b47b3f5ea74a1e977ec8d9d7a77c28362d22522aa92e0bd87b4d731b3"},
     {file = "pytango-9.4.1-cp38-cp38-win32.whl", hash = "sha256:5ea169973a6e911227103c9e830e958a2ab40f0564a3c7a9b8ae23c03607b139"},
     {file = "pytango-9.4.1-cp38-cp38-win_amd64.whl", hash = "sha256:163486feae12cf46ba2a4756443da7a91df0e37e29a27ca1512b5d72f1b75c24"},
+    {file = "pytango-9.4.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:6e189213e46389acf82549ad08dd79e157b5b1bb4d78067e40b33c3f014151e7"},
+    {file = "pytango-9.4.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:0710341f02036990fff86b2db1aec45fcc6eaaed62d76bd9392ded5f52d51a28"},
     {file = "pytango-9.4.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d9f576180d7f117c9f44d424c33cdabe8e5b35ca24966f6c59f627622d671c87"},
     {file = "pytango-9.4.1-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a0f929ac79071a71672b5eb0d6f3d2fbbb8753afe46dd1fdc29c42c445b1d613"},
     {file = "pytango-9.4.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:456ad94d755081080ece3c0761980114bab3f61b0704db778df56ee81014a68d"},
+    {file = "pytango-9.4.1-cp39-cp39-win32.whl", hash = "sha256:5418ec2cab46dee3d921a8f5effadd20e51b41599ba1c122bad5affc0a0a9779"},
+    {file = "pytango-9.4.1-cp39-cp39-win_amd64.whl", hash = "sha256:ed3f5dddd2ef63aaae6c02178ab79853135a93377756be36bf8aead584d851ee"},
     {file = "pytango-9.4.1.tar.gz", hash = "sha256:f00198e9d150a222a9711fafebbee7c688c79814128956e6c92f8c0e7f1605b7"},
 ]
 

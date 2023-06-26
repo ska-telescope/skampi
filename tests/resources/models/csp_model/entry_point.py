@@ -324,7 +324,7 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObserva
         :raises CommandException: when the command returned as failed
         """
         assert self.long_running_command_subscriber
-        subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
+        subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
         self._log(f"commanding {subarray_name} with command GoToIdle")
         command_id = subarray.command_inout("GoToIdle")

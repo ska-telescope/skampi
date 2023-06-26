@@ -154,6 +154,7 @@ ska-tmc-centralnode:
     centralnode:
       enabled: true
 
+
 ska-low-cbf:
   legacy_compatibility: true
   enabled: true
@@ -172,6 +173,14 @@ ska-low-cbf-proc:
 ska-csp-lmc-low:
   legacy_compatibility: true
   enabled: true
+  deviceServers:
+    cspcontroller:
+      instances: ["controller"]
+      file: "data/controller_cbf_only.yaml"
+    cspsubarray:
+      instances: ["subarray1", "subarray2", "subarray3", "subarray4"]
+      file: "data/subarray_cbf_only.yaml"
+
 
 ## tmc
 ska-tmc-low:

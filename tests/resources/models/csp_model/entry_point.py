@@ -346,7 +346,6 @@ class CspConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID, HasObserva
         self.long_running_command_subscriber = builder.set_wait_for_long_running_command_on(
             subarray_name
         )
-        subarray = con_config.get_device_proxy(subarray_name)
         return builder
 
     def set_wait_for_doing_configure(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -413,7 +412,10 @@ class CspScanStep(base.ScanStep, LogEnabled, WithCommandID, HasObservation):
         self._tel = names.TEL()
         subarray_name = self._tel.csp.subarray(sub_array_id)
         subarray = con_config.get_device_proxy(subarray_name)
-        self._log(f"Commanding {subarray_name} to Scan with {scan_config_arg} with scan_duration {scan_duration}")
+        self._log(
+            f"Commanding {subarray_name} to Scan with {scan_config_arg}"
+            f" with scan_duration {scan_duration}"
+        )
         try:
             command_id = subarray.command_inout("Scan", scan_config_arg)
             if command_success(command_id):
@@ -530,9 +532,6 @@ class CSPSetOnlineStep(base.SetOnlineStep, LogEnabled):
             subarray = con_config.get_device_proxy(subarray_name)
             self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
             subarray.write_attribute("adminmode", 1)
-        builder.set_waiting_on(controller).for_attribute("isCommunicating").to_become_equal_to(
-                False, ignore_first=False
-        )
 
     def set_wait_for_undo_set_online(self) -> MessageBoardBuilder:
         """

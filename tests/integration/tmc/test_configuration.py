@@ -33,7 +33,6 @@ DB_HOST = f"timescaledb.ska-eda-{CONFIG}-db.svc.cluster.local"
 TANGO_DATABASE_DS = "databaseds-tango-base"
 
 
-@pytest.mark.skip(reason="Raised bug SKB-226")
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -43,7 +42,6 @@ def test_archiver_configuration_in_mid():
     """Configure an EDA database instance for Mid"""
 
 
-@pytest.mark.skip(reason="Raised bug SKB-226")
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly

@@ -12,10 +12,15 @@ RUN apt update && apt install -y --no-install-recommends nodejs npm jq git bash 
 RUN npm install -g configurable-http-proxy
 RUN python3 -m pip install --no-cache-dir jupyterhub jupyterlab notebook
 
-RUN curl -L "https://github.com/mikefarah/yq/releases/download/v4.33.3/yq_linux_amd64" -o /usr/bin/yq && \
-    curl -L "https://dl.k8s.io/release/v1.26.3/bin/linux/amd64/kubectl" -o /usr/bin/kubectl && \
-    curl -L "https://get.helm.sh/helm-v3.11.2-linux-amd64.tar.gz" -o /tmp/helm.tar.gz && \
-    curl -L "https://github.com/derailed/k9s/releases/download/v0.27.3/k9s_linux_amd64.tar.gz" -o /tmp/k9s.tar.gz && \
+ARG YQ_VERSION=4.33.3
+ARG KUBECTL_VERSION=1.26.3
+ARG HELM_VERSION=3.11.2
+ARG K9S_VERSION=0.27.3
+
+RUN curl -L "https://github.com/mikefarah/yq/releases/download/v$YQ_VERSION/yq_linux_amd64" -o /usr/bin/yq && \
+    curl -L "https://dl.k8s.io/release/v$KUBECTL_VERSION/bin/linux/amd64/kubectl" -o /usr/bin/kubectl && \
+    curl -L "https://get.helm.sh/helm-v$HELM_VERSION-linux-amd64.tar.gz" -o /tmp/helm.tar.gz && \
+    curl -L "https://github.com/derailed/k9s/releases/download/v$K9S_VERSION/k9s_linux_amd64.tar.gz" -o /tmp/k9s.tar.gz && \
     cd /tmp && \
     tar -xvf /tmp/helm.tar.gz && cp linux-amd64/helm /usr/bin/helm && \
     tar -xvf /tmp/k9s.tar.gz && cp k9s /usr/bin/k9s && \

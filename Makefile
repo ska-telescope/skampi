@@ -109,17 +109,20 @@ DEVENV ?= false
 # Pytest variables
 PYTHON_VARS_AFTER_PYTEST ?=## Aruguments for pytest
 PYTEST_MARK ?=## Add custom mark expression
-PYTEST_COUNT ?=## Number of times test should run
-MARKS = not infra and ska$(CONFIG)
+PYTEST_COUNT ?= 1## Number of times test should run
+MARK = not infra and ska$(CONFIG)
 ifneq ($(PYTEST_MARK),)
-MARKS += and $(PYTEST_MARK)
+MARK += and $(PYTEST_MARK)
 endif
 
 ifneq ($(strip $(TARANTA_ENABLED)),true)
-MARKS += and not taranta
+MARK += and not taranta
 endif
 
-PYTHON_VARS_AFTER_PYTEST += -m "$(MARKS)"
+stuff:
+	@echo $(MARK)
+
+PYTHON_VARS_AFTER_PYTEST += -m "$(MARK)"
 
 ifneq ($(PYTEST_COUNT),)
 PYTHON_VARS_AFTER_PYTEST += --count=$(PYTEST_COUNT)
@@ -204,7 +207,7 @@ k8s-pre-test:
 	$(info ** CONFIG=$(CONFIG))
 	$(info ** KUBE_NAMESPACE=$(KUBE_NAMESPACE))
 	$(info ** HELM_RELEASE=$(HELM_RELEASE))
-	$(info ** MARKS=$(MARKS))
+	$(info ** MARK=$(MARK))
 	$(info )
 
 check-pod-throttling:  # check if pods in a namespace have been throttled

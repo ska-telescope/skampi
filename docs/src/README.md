@@ -6,10 +6,10 @@ That means, anyone is also welcome to contribute to this documentation.
 
 ## Guidelines
 
-* Do not document your own API in Skampi. Skampi is not a product, it is an integration environment. Add links to your subsystem API docs and basic usage guidelines only.
+* Do not document your own API in SKAMPI. SKAMPI is not a product, it is an integration environment. Add links to your subsystem API docs and basic usage guidelines only.
 * Try to minimise outward facing links that may become deprecated over time. Add an entry-point to your own documentation space that can remain stable.
 * Have the end-user of your documentation in mind when writing it.
 
 ## Readthedocs themes
 
-Refer to the submodule ska-ser-sphinx-templates. This repo has been cloned into the Skampi docs/src repo but the steps given there (using `bootstrap.sh` to set up your repo) is not applicable to this one. Cherry-picking is strongly advised.
+Refer to the submodule ska-ser-sphinx-templates. This repo has been cloned into the SKAMPI docs/src repo but the steps given there (using `bootstrap.sh` to set up your repo) is not applicable to this one. Cherry-picking is strongly advised.

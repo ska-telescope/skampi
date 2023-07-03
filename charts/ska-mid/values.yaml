@@ -125,6 +125,8 @@ ska-mid-cbf-mcs:
 ska-csp-lmc-mid:
   legacy_compatibility: true
   enabled: true
+  dsconfig:
+    configuration_file: data/midcspconfigAA05.json
 
 ## sdp
 ska-sdp:

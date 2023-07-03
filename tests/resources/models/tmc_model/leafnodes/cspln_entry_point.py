@@ -271,9 +271,9 @@ class CSPLnEntryPoint(CompositeEntryPoint):
             observation = Observation()
         self.set_online_step = NoOpStep()
         self.start_up_step = StartUpLnStep(self.nr_of_subarrays)
-        self.assign_resources_step = CspLnAssignResourcesStep(observation)
-        self.configure_scan_step = CspLnConfigureStep(observation)
-        self.scan_step = CSPLnScanStep(observation)
+        self.assign_resources_step = CspLnAssignResourcesStep()
+        self.configure_scan_step = CspLnConfigureStep()
+        self.scan_step = CSPLnScanStep()
 
 
 assignresources_csp = {

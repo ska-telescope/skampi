@@ -8,6 +8,7 @@ SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-
 
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 PYTHON_LINT_TARGET ?= tests/
+NOTEBOOK_LINT_TARGET ?= notebooks/
 INGRESS_HOST ?= k8s.stfc.skao.int## default ingress host
 KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used

@@ -74,6 +74,12 @@ ska-tango-base:
     hostname: k8s.stfc.skao.int
   tangodb:
     use_pv: false
+  databaseds:
+    image:
+      registry: registry.gitlab.com/ska-telescope/ska-tango-images
+      image: ska-tango-images-tango-cpp
+      tag: 5185c546
+      pullPolicy: IfNotPresent
 
 # mccs:
 #   ska-tango-base:

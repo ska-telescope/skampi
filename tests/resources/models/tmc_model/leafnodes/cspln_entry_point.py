@@ -2,12 +2,15 @@
 import copy
 import json
 import logging
+import os
 from time import sleep
 from typing import List, ParamSpec, TypeVar
 
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ska_ser_skallop.mvp_control.configuration import types
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
+from ska_ser_skallop.mvp_control.entry_points import base
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
@@ -15,12 +18,6 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
-from ...csp_model.entry_point import (
-    CspAssignResourcesStep,
-    CspConfigureStep,
-    CspScanStep,
-    StartUpStep,
-)
 from ...obsconfig.config import Observation
 from .utils import retry
 
@@ -32,7 +29,19 @@ P = ParamSpec("P")
 # pylint: disable=too-many-function-args
 
 
-class StartUpLnStep(StartUpStep):
+class LogEnabled:
+    """class that allows for logging if set by env var"""
+
+    def __init__(self) -> None:
+        self._live_logging = bool(os.getenv("DEBUG_ENTRYPOINT"))
+        self._tel = names.TEL()
+
+    def _log(self, mssage: str):
+        if self._live_logging:
+            logger.info(mssage)
+
+
+class StartUpLnStep(base.StartUpStepi, LogEnabled):
     """Implementation of Startup step for CSP LN"""
 
     def __init__(self, nr_of_subarrays: int) -> None:
@@ -48,6 +57,45 @@ class StartUpLnStep(StartUpStep):
         csp_master_ln = con_config.get_device_proxy(self._csp_master_ln_name)
         csp_master_ln.command_inout("On")
 
+    def set_wait_for_do_startup(self) -> MessageBoardBuilder:
+        """
+        Domain logic specifying what needs to be waited
+        for before startup of csp leaf node is done.
+        :return: brd
+        """
+        brd = get_message_board_builder()
+        brd.set_waiting_on(self._csp_master_ln_name).for_attribute("state").to_become_equal_to(
+            "ON", ignore_first=False
+        )
+        # wait on all subarrays to become ON
+        # !!Check if this step necessary!!
+        for index in range(1, self.nr_of_subarrays + 1):
+            brd.set_waiting_on(self._tel.tm.subarray(index)).for_attribute(
+                "state"
+            ).to_become_equal_to("ON", ignore_first=False)
+        return brd
+
+    def set_wait_for_undo_startup(self) -> MessageBoardBuilder:
+        """
+        Domain logic for what needs to be waited for switching the csp
+        leaf node off.
+        :return: brd
+        """
+        brd = get_message_board_builder()
+        # controller
+        # the low telescope does not switch off so there is no wait
+        if self._tel.skamid:
+            brd.set_waiting_on(self._csp_master_ln_name).for_attribute("state").to_become_equal_to(
+                "OFF", ignore_first=False
+            )
+            # wait on all subarrays to become OFF
+            # !!Check if this step necessary!!
+            for index in range(1, self.nr_of_subarrays + 1):
+                brd.set_waiting_on(self._tel.tm.subarray(index)).for_attribute(
+                    "state"
+                ).to_become_equal_to("OFF", ignore_first=False)
+        return brd
+
     def undo_startup(self):
         """Domain logic for switching the CSP LN off."""
         self._log(f"commanding {self._csp_master_ln_name} to Off")
@@ -55,8 +103,19 @@ class StartUpLnStep(StartUpStep):
         csp_master_ln.command_inout("Off")
 
 
-class CspLnAssignResourcesStep(CspAssignResourcesStep):
+class CspLnAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
     """Implementation of Assign Resources Step for CSP LN."""
+
+    def __init__(self, observation: Observation) -> None:
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
+        super().__init__()
+        self._tel = names.TEL()
+        self.observation = observation
 
     def do_assign_resources(
         self,
@@ -121,8 +180,19 @@ class CspLnAssignResourcesStep(CspAssignResourcesStep):
         command()
 
 
-class CspLnConfigureStep(CspConfigureStep):
+class CspLnConfigureStep(base.ConfigureStep, LogEnabled):
     """Implementation of Configure Scan Step for CSP LN."""
+
+    def __init__(self, observation: Observation) -> None:
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
+        super().__init__()
+        self._tel = names.TEL()
+        self.observation = observation
 
     def do_configure(
         self,
@@ -180,8 +250,19 @@ class CspLnConfigureStep(CspConfigureStep):
         command()
 
 
-class CSPLnScanStep(CspScanStep):
+class CSPLnScanStep(base.ScanStep, LogEnabled):
     """Implementation of Scan Step for CSP LN."""
+
+    def __init__(self, observation: Observation) -> None:
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
+        super().__init__()
+        self._tel = names.TEL()
+        self.observation = observation
 
     def do_scan(self, sub_array_id: int):
         """Domain logic for running a scan on subarray in csp.
@@ -271,9 +352,9 @@ class CSPLnEntryPoint(CompositeEntryPoint):
             observation = Observation()
         self.set_online_step = NoOpStep()
         self.start_up_step = StartUpLnStep(self.nr_of_subarrays)
-        self.assign_resources_step = CspLnAssignResourcesStep()
-        self.configure_scan_step = CspLnConfigureStep()
-        self.scan_step = CSPLnScanStep()
+        self.assign_resources_step = CspLnAssignResourcesStep(observation)
+        self.configure_scan_step = CspLnConfigureStep(observation)
+        self.scan_step = CSPLnScanStep(observation)
 
 
 assignresources_csp = {

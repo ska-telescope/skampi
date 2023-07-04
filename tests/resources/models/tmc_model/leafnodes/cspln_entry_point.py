@@ -45,7 +45,8 @@ class StartUpLnStep(base.StartUpStep, LogEnabled):
     """Implementation of Startup step for CSP LN"""
 
     def __init__(self, nr_of_subarrays: int) -> None:
-        super().__init__(nr_of_subarrays)
+        super().__init__()
+        self.nr_of_subarrays = nr_of_subarrays
         self._csp_master_ln_name = self._tel.tm.csp_leaf_node
 
     def do_startup(self):

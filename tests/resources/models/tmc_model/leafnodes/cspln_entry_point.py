@@ -71,7 +71,7 @@ class StartUpLnStep(base.StartUpStep, LogEnabled):
         # wait on all subarrays to become ON
         # !!Check if this step necessary!!
         for index in range(1, self.nr_of_subarrays + 1):
-            brd.set_waiting_on(self._tel.tm.subarray(index)).for_attribute(
+            brd.set_waiting_on(self._tel.tm.subarray(index).csp_leaf_node).for_attribute(
                 "state"
             ).to_become_equal_to("ON", ignore_first=False)
         return brd
@@ -92,7 +92,7 @@ class StartUpLnStep(base.StartUpStep, LogEnabled):
             # wait on all subarrays to become OFF
             # !!Check if this step necessary!!
             for index in range(1, self.nr_of_subarrays + 1):
-                brd.set_waiting_on(self._tel.tm.subarray(index)).for_attribute(
+                brd.set_waiting_on(self._tel.tm.subarray(index).csp_leaf_node).for_attribute(
                     "state"
                 ).to_become_equal_to("OFF", ignore_first=False)
         return brd
@@ -160,6 +160,32 @@ class CspLnAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         except Exception as exception:
             logger.exception(exception)
             raise exception
+
+    def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
+        """
+        Domain logic specifying what needs to be waited
+        for subarray assign resources is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: builder
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
+        return builder
+
+    def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
+        """
+        Domain logic specifying what needs to be waited for
+        subarray releasing resources is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: builder
+        """
+        builder = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY")
+        return builder
 
     def undo_assign_resources(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in csp.
@@ -250,6 +276,36 @@ class CspLnConfigureStep(base.ConfigureStep, LogEnabled):
 
         command()
 
+    def set_wait_for_do_configure(self, sub_array_id: int) -> MessageBoardBuilder:
+        """
+        Domain logic specifying what needs to be waited
+        for configuring a scan is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: builder
+        """
+        builder = get_message_board_builder()
+        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
+        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("obsState").to_become_equal_to(
+            "READY"
+        )
+        return builder
+
+    def set_wait_for_undo_configure(self, sub_array_id: int) -> MessageBoardBuilder:
+        """
+        Domain logic specifying what needs to be waited for
+        subarray clear scan config is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: builder
+        """
+        builder = get_message_board_builder()
+        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
+        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("obsState").to_become_equal_to(
+            "IDLE"
+        )
+        return builder
+
 
 class CSPLnScanStep(base.ScanStep, LogEnabled):
     """Implementation of Scan Step for CSP LN."""
@@ -322,8 +378,8 @@ class CSPLnScanStep(base.ScanStep, LogEnabled):
         :return: builder
         """
         builder = get_message_board_builder()
-        subarray_name = self._tel.csp.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
+        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("obsState").to_become_equal_to(
             "SCANNING", ignore_first=True
         )
         return builder

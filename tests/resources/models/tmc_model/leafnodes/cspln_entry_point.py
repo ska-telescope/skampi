@@ -41,7 +41,7 @@ class LogEnabled:
             logger.info(mssage)
 
 
-class StartUpLnStep(base.StartUpStepi, LogEnabled):
+class StartUpLnStep(base.StartUpStep, LogEnabled):
     """Implementation of Startup step for CSP LN"""
 
     def __init__(self, nr_of_subarrays: int) -> None:

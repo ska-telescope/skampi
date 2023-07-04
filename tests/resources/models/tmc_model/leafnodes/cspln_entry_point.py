@@ -171,7 +171,7 @@ class CspLnAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
+        builder.set_waiting_on(subarray_name).for_attribute("cspSubarrayObsState").to_become_equal_to("IDLE")
         return builder
 
     def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -184,7 +184,7 @@ class CspLnAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY")
+        builder.set_waiting_on(subarray_name).for_attribute("cspSubarrayObsState").to_become_equal_to("EMPTY")
         return builder
 
     def undo_assign_resources(self, sub_array_id: int):
@@ -286,7 +286,7 @@ class CspLnConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
-        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("obsState").to_become_equal_to(
+        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("cspSubarrayObsState").to_become_equal_to(
             "READY"
         )
         return builder
@@ -301,7 +301,7 @@ class CspLnConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
-        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("obsState").to_become_equal_to(
+        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("cspSubarrayObsState").to_become_equal_to(
             "IDLE"
         )
         return builder
@@ -379,7 +379,7 @@ class CSPLnScanStep(base.ScanStep, LogEnabled):
         """
         builder = get_message_board_builder()
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
-        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("obsState").to_become_equal_to(
+        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("cspSubarrayObsState").to_become_equal_to(
             "SCANNING", ignore_first=True
         )
         return builder

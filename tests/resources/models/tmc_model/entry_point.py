@@ -90,7 +90,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         if self._tel.skamid:
             for dish in self._tel.skamid.dishes(self.receptors):
                 brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
-                    "STANDBY", ignore_first=False
+                    "ON", ignore_first=False
                 )
         # set centralnode telescopeState waited before startup completes
         brd.set_waiting_on(self._tel.tm.central_node).for_attribute(

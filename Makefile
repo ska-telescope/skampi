@@ -61,14 +61,18 @@ CAR_RAW_USERNAME ?=
 CAR_RAW_PASSWORD ?=
 CAR_RAW_REPOSITORY_URL ?=
 DOMAIN ?= branch
+KUBE_APP ?= ska-skampi
+
 ifdef CI_COMMIT_REF_NAME
 	GIT_BRANCH = $(CI_COMMIT_REF_NAME)
 else
 	GIT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 endif
-SANITIZED_GIT_BRANCH=$(shell echo $(GIT_BRANCH) | tr '-' '_'| tr '.' '_')
-KUBE_BRANCH = $(GIT_BRANCH)
-KUBE_APP ?= ska-skampi
+ifdef CI_COMMIT_REF_SLUG
+	GIT_BRANCH_SLUG = $(CI_COMMIT_REF_SLUG)
+else
+	GIT_BRANCH_SLUG = $(shell echo $(GIT_BRANCH) | tr '[:upper:]' '[:lower:]' | tr '-' '_'| tr '.' '_')
+endif
 
 # Skallop flags
 SKALLOP_LOG_FILTER_ERRORS ?= true
@@ -89,7 +93,9 @@ SKALLOP_SET_FLAGS := $(foreach var," $(SKALLOP_FLAGS) ", $(if $(filter $($(var))
 
 # Tests variables
 SDP_DATA_PVC_NAME ?= shared
-ARCHIVER_DBNAME ?= $(shell echo ${CONFIG}_archiver_db_$(SANITIZED_GIT_BRANCH) | cut -c -50)
+ARCHIVER_DBNAME ?= $(shell echo $(CONFIG)_archiver_db_$(GIT_BRANCH_SLUG) | head -c 59)
+# Sanitize ARCHIVER_DBNAME: Postgres DB name maxes at 59 chars
+ARCHIVER_DBNAME := $(shell echo $(ARCHIVER_DBNAME) | tr '-' '_'| tr '.' '_' | head -c 59)
 ARCHIVER_PORT ?= 5432
 ARCHIVER_DB_USER ?= admin
 ARCHIVER_PWD ?=
@@ -118,9 +124,6 @@ endif
 ifneq ($(strip $(TARANTA_ENABLED)),true)
 MARK += and not taranta
 endif
-
-stuff:
-	@echo $(MARK)
 
 PYTHON_VARS_AFTER_PYTEST += -m "$(MARK)"
 

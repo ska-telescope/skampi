@@ -6,6 +6,7 @@ import os
 from time import sleep
 from typing import List, ParamSpec, TypeVar
 
+from resources.utils.validation import CommandException, command_success
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
 from ska_ser_skallop.mvp_control.configuration import types
@@ -18,6 +19,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
+from ...csp_model.entry_point import WithCommandID
 from ...obsconfig.config import Observation
 from .utils import retry
 
@@ -104,7 +106,7 @@ class StartUpLnStep(base.StartUpStep, LogEnabled):
         csp_master_ln.command_inout("Off")
 
 
-class CspLnAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
+class CspLnAssignResourcesStep(base.AssignResourcesStep, LogEnabled, WithCommandID):
     """Implementation of Assign Resources Step for CSP LN."""
 
     def __init__(self, observation: Observation) -> None:
@@ -133,33 +135,28 @@ class CspLnAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param dish_ids: this dish indices (in case of mid) to control
         :param sb_id: a generic id to identify a sb to assign resources
         :param composition: The assign resources configuration paramaters
-        :raises Exception: Raise exception in do method of assign resources command
+        :raises CommandException: Raise exception in do method of assign resources command
         """
+        assert self.long_running_command_subscriber
 
-        try:
-            csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
-            csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
-            if self._tel.skamid:
-                config = self.observation.generate_assign_resources_config(sub_array_id).as_json
-            elif self._tel.skalow:
-                # TODO Low json from CDM is not available.
-                # Once it is available pull json from CDM
+        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
+        csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
+        if self._tel.skamid:
+            config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available.
+            # Once it is available pull json from CDM
 
-                config_json = copy.deepcopy(ASSIGN_RESOURCE_CSP_JSON_LOW)
-                config = json.dumps(config_json)
-            # we retry this command three times in case there is a transitory race
-            # condition
+            config_json = copy.deepcopy(ASSIGN_RESOURCE_CSP_JSON_LOW)
+            config = json.dumps(config_json)
 
-            @retry(nr_of_reties=3)
-            def command():
-                csp_subarray_ln.command_inout("AssignResources", config)
-
-            logger.info(f"commanding {csp_subarray_ln_name} with AssignResources:" f" {config} ")
-            command()
-
-        except Exception as exception:
-            logger.exception(exception)
-            raise exception
+        logger.info(f"commanding {csp_subarray_ln_name} with AssignResources:" f" {config} ")
+        command_id = csp_subarray_ln.command_inout("AssignResources", config)
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
 
     def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
@@ -171,7 +168,11 @@ class CspLnAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
-        builder.set_waiting_on(subarray_name).for_attribute("cspSubarrayObsState").to_become_equal_to("IDLE")
+        # builder.set_waiting_on(subarray_name).for_attribute("cspSubarrayObsState").to_become_equal_to("IDLE")
+        # builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
+        self.long_running_command_subscriber = builder.set_wait_for_long_running_command_on(
+            subarray_name
+        )
         return builder
 
     def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -184,7 +185,9 @@ class CspLnAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
-        builder.set_waiting_on(subarray_name).for_attribute("cspSubarrayObsState").to_become_equal_to("EMPTY")
+        self.long_running_command_subscriber = builder.set_wait_for_long_running_command_on(
+            subarray_name
+        )
         return builder
 
     def undo_assign_resources(self, sub_array_id: int):
@@ -193,21 +196,19 @@ class CspLnAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         This implements the tear_down_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :raises CommandException: on command failure
         """
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
-        # we retry this command three times in case there is a transitory race
-        # condition
-
-        @retry(nr_of_reties=3)
-        def command():
-            csp_subarray_ln.command_inout("ReleaseAllResources")
-
-        self._log(f"Commanding {csp_subarray_ln_name} to ReleaseAllResources")
-        command()
+        command_id = csp_subarray_ln.command_inout("ReleaseAllResources")
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
 
 
-class CspLnConfigureStep(base.ConfigureStep, LogEnabled):
+class CspLnConfigureStep(base.ConfigureStep, LogEnabled, WithCommandID):
     """Implementation of Configure Scan Step for CSP LN."""
 
     def __init__(self, observation: Observation) -> None:
@@ -236,6 +237,7 @@ class CspLnConfigureStep(base.ConfigureStep, LogEnabled):
         :param sb_id: a generic ide to identify a sb to assign resources
         :param configuration: The assign resources configuration paramaters
         :param duration: duration of scan
+        :raises CommandException: Raise exception in do method of assign resources command
         """
         # scan duration needs to be a memorized for future objects
         # that many require it
@@ -247,15 +249,13 @@ class CspLnConfigureStep(base.ConfigureStep, LogEnabled):
         elif self._tel.skalow:
             config_json = copy.deepcopy(CONFIGURE_CSP_JSON_LOW)
             config = json.dumps(config_json)
-        # we retry this command three times in case there is a transitory race
-        # condition
-
-        @retry(nr_of_reties=3)
-        def command():
-            csp_subarray_ln.command_inout("Configure", config)
-
         logger.info(f"commanding {csp_subarray_ln_name} with Configure: {config}")
-        command()
+        command_id = csp_subarray_ln.command_inout("Configure", config)
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
 
     def undo_configure(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in csp LN.
@@ -263,18 +263,17 @@ class CspLnConfigureStep(base.ConfigureStep, LogEnabled):
         This implements the clear_configuration method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :raises CommandException: Raise exception in do method of assign resources command
         """
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
         csp_subarray_ln = con_config.get_device_proxy(csp_subarray_ln_name)
         self._log(f"commanding {csp_subarray_ln_name} with the End command")
-        # we retry this command three times in case there is a transitory race
-        # condition
-
-        @retry(nr_of_reties=3)
-        def command():
-            csp_subarray_ln.command_inout("End")
-
-        command()
+        command_id = csp_subarray_ln.command_inout("End")
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
 
     def set_wait_for_do_configure(self, sub_array_id: int) -> MessageBoardBuilder:
         """
@@ -286,8 +285,8 @@ class CspLnConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
-        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("cspSubarrayObsState").to_become_equal_to(
-            "READY"
+        self.long_running_command_subscriber = builder.set_wait_for_long_running_command_on(
+            csp_subarray_ln_name
         )
         return builder
 
@@ -301,8 +300,8 @@ class CspLnConfigureStep(base.ConfigureStep, LogEnabled):
         """
         builder = get_message_board_builder()
         csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
-        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("cspSubarrayObsState").to_become_equal_to(
-            "IDLE"
+        self.long_running_command_subscriber = builder.set_wait_for_long_running_command_on(
+            csp_subarray_ln_name
         )
         return builder
 
@@ -378,10 +377,10 @@ class CSPLnScanStep(base.ScanStep, LogEnabled):
         :return: builder
         """
         builder = get_message_board_builder()
-        csp_subarray_ln_name = self._tel.tm.subarray(sub_array_id).csp_leaf_node
-        builder.set_waiting_on(csp_subarray_ln_name).for_attribute("cspSubarrayObsState").to_become_equal_to(
-            "SCANNING", ignore_first=True
-        )
+        csp_subarray_name = self._tel.csp.subarray(sub_array_id)
+        builder.set_waiting_on(csp_subarray_name).for_attribute(
+            "cspSubarrayObsState"
+        ).to_become_equal_to("SCANNING", ignore_first=True)
         return builder
 
     def set_wait_for_undo_scan(self, sub_array_id: int) -> MessageBoardBuilder:

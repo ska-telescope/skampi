@@ -47,3 +47,5 @@ RUN git config --global --add safe.directory /app && \
 
 # Set bash as default shell, its more useful
 RUN chsh -s /bin/bash tango
+
+USER tango

@@ -8,7 +8,7 @@ LABEL \
       int.skao.version="1.0.0" \
       int.skao.repository="https://gitlab.com/ska-telescope/ska-skampi"
 
-RUN apt update && apt install -y --no-install-recommends nodejs npm jq git bash vim
+RUN apt update && apt install -y --no-install-recommends nodejs npm jq git bash vim make
 RUN npm install -g configurable-http-proxy
 RUN python3 -m pip install --no-cache-dir jupyterhub jupyterlab notebook
 
@@ -27,9 +27,25 @@ RUN curl -L "https://github.com/mikefarah/yq/releases/download/v$YQ_VERSION/yq_l
     chown root:root /usr/bin/yq /usr/bin/kubectl /usr/bin/helm /usr/bin/k9s && \
     chmod 755 /usr/bin/yq /usr/bin/kubectl /usr/bin/helm /usr/bin/k9s
 
-COPY --chown=tango:tango poetry.lock pyproject.toml ./
-RUN poetry config virtualenvs.create false && poetry install
+COPY --chown=tango:tango poetry.lock pyproject.toml README.md ./
+COPY --chown=tango:tango tests/integration ./tests/integration
+
+# We use a virtual env here, because of k8s-test-runner and to allow interactive
+# changes by the users
+USER tango
+RUN poetry install && \
+    echo ". $(poetry env info -p)/bin/activate" >> ~/.bashrc && \
+    echo "exec /bin/bash \$@" >> ~/.profile
+
+# Generate a kernel with the virtual environment
+RUN $(poetry env info -p)/bin/python -m ipykernel install --user
+
+USER root
 COPY --chown=tango:tango ./ ./
 RUN git config --global --add safe.directory /app && \
     chown -R tango:tango /app
 
+# Set bash as default shell, its more useful
+RUN chsh -s /bin/bash tango
+
+USER tango

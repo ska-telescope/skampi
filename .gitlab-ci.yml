@@ -9,10 +9,10 @@ variables:
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-tango-images-pytango-builder:9.3.35
   KEEP_NAMESPACE: "true"
   SKAMPI_TESTS_TRIGGER: "" # Meant to be set by upstream pipelines
-  KUBE_NAMESPACE: ""
 
 stages:
   - lint
+  - trigger
   - test
   - build
   - pages

@@ -11,7 +11,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tango-base.enabled
   - name: ska-tango-util
-    version: 0.4.4
+    version: 0.4.5
     repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-sdp
     version: 0.15.0

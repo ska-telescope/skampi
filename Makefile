@@ -114,18 +114,19 @@ DEVENV ?= false
 
 # Pytest variables
 PYTHON_VARS_AFTER_PYTEST ?=## Aruguments for pytest
-PYTEST_MARK ?=## Add custom mark expression
+PYTEST_MARK ?= not infra and ska$(CONFIG) ## pytest mark for the full telescope test set
+PYTEST_SUBSYS_MARK ?=## Add custom mark expression to select subsystem tests from the whole
 PYTEST_COUNT ?= 1## Number of times test should run
-MARK = not infra and ska$(CONFIG)
-ifneq ($(PYTEST_MARK),)
-MARK += and $(PYTEST_MARK)
+
+ifneq ($(PYTEST_SUBSYS_MARK),)
+PYTEST_MARK += and $(PYTEST_SUBSYS_MARK)
 endif
 
 ifneq ($(strip $(TARANTA_ENABLED)),true)
-MARK += and not taranta
+PYTEST_MARK += and not taranta
 endif
 
-PYTHON_VARS_AFTER_PYTEST += -m "$(MARK)"
+PYTHON_VARS_AFTER_PYTEST += -m "$(PYTEST_MARK)"
 
 ifneq ($(PYTEST_COUNT),)
 PYTHON_VARS_AFTER_PYTEST += --count=$(PYTEST_COUNT)
@@ -210,7 +211,7 @@ k8s-pre-test:
 	$(info ** CONFIG=$(CONFIG))
 	$(info ** KUBE_NAMESPACE=$(KUBE_NAMESPACE))
 	$(info ** HELM_RELEASE=$(HELM_RELEASE))
-	$(info ** MARK=$(MARK))
+	$(info ** PYTEST_MARK=$(PYTEST_MARK))
 	$(info )
 
 check-pod-throttling:  # check if pods in a namespace have been throttled

@@ -53,13 +53,13 @@ Now, we configure and validate the access to the Kubernetes cluster:
    kubectl describe ns -n $KUBE_NAMESPACE
    kubectl describe ns -n $KUBE_NAMESPACE_SDP
 
-Finally, we can selectively run the tests (by defining `PYTEST_MARK`) targetting the environment, as follows:
+Finally, we can selectively run the tests (by defining `PYTEST_SUBSYS_MARK`) targetting the environment, as follows:
 
 .. code-block:: bash
 
-   # Example for PYTEST_MARK: "(csp_startup or eda)"
+   # Example for PYTEST_SUBSYS_MARK: "(csp_startup or eda)"
    # KUBE_NAMESPACE was exported above
-   CONFIG=<mid or low> PYTEST_MARK=<mark selecting tests of your choice> make k8s-test-runner
+   CONFIG=<mid or low> PYTEST_SUBSYS_MARK=<mark selecting tests of your choice> make k8s-test-runner
 
 This setup replicates the CI/CD jobs in what running the tests concerns.
 

@@ -3,7 +3,7 @@
   variables:  # These should be passed by the upstream pipeline or manually set
     KUBE_BRANCH: $CI_JOB_ID
     KUBE_NAMESPACE: integration-$CONFIG
-    PYTEST_MARK: (csp_startup or sdp or eda)
+    PYTEST_SUBSYS_MARK: (csp_startup or sdp or eda)
     XRAY_UPLOAD_ENABLED: "true"
     TRIGGER_ID: none
     DATACENTRE: ""

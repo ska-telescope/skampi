@@ -20,6 +20,8 @@ The development pipelines uses the main pipeline in this repository to trigger t
 
 Depending on the contents of the tests, users can also trigger test pipelines in integration and staging environments, to quickly assess the overall health of the deployed system. If doing so, take consideration that the selected tests should not reconfigure the deployed components in a way that is destructive for other (even simultaneous) operations, as these can be long-lived environments.
 
+When a branch is created in SKAMPI, to validate the test changes, we are triggering a pipeline in `ska-skampi-deployment <https://developer.skao.int/projects/ska-skampi-deployment/en/latest/pipelines.html>`_ to deploy a test environment, run tests, and clean it up. This ensures that every change we do to the tests is tested against a fresh environment, to decouple test failure reasons form the state of the environment. Also, in **merge request** pipelines, we are running also tests against the integration environment. The intention of this process is to make sure our tests can be ran against new and long-living environments.
+
 SKAMPI Tests Configuration
 ==========================
 
@@ -70,8 +72,8 @@ These jobs exist so that we can run tests using particular runners and a particu
 
 * **KUBE_NAMESPACE** - Kubernetes namespace to target
 * **CONFIG** - Telescope selection, **mid** or **low**
-* **MARK** - Tests to run (by default runs the telescope tests)
-* **PYTEST_MARK** - Expression to modify the tests that run by default(given `MARK`)
+* **PYTEST_MARK** - Mark (default) for the full telescope test set
+* **PYTEST_SUBSYS_MARK** - Custom mark expression to select subsystem tests from the whole set (anded with `PYTEST_MARK`)
 * **PYTEST_COUNT** - Number of times the tests will run
 
 Make sure that you set the **secret** variables in the Makefile (preferably, in PrivateRules.mak):

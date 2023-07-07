@@ -4,6 +4,18 @@ SKAMPI was restructured into two parts - build/deploy and testing. This reposito
 
 >The SKAMPI specific make targets were removed in place of generic ones where possible, to facilitate the maintenance of SKAMPI. Going forwards, always try to contribute to [.make](https://gitlab.com/ska-telescope/sdi/ska-cicd-makefile) instead of adding custom SKAMPI targets.
 
+## CI/CD Pipeline
+
+The CI/CD pipeline was refactored to be test-focused only, although, we still need continuous testing on the changes we do to the tests. Therefore, we have now 2 testing stages:
+
+* **trigger** - This stage triggers a deploy and test pipeline in [ska-skampi-deplopyment](https://gitlab.com/ska-telescope/ska-skampi-deployment) (which in turn creates pipelines in this repository to run the low and mid tests)
+* **test** - Manual test stages that can be used to run a test against any cluster. Currently we suport tests in STFC-Techops cluster (test-low and test-mid jobs) and STFC-DP cluster (test-low-dp and test-mid-dp)
+  * On **merge request** pipelines, **test-low** and **test-mid** will automatically run against **integration-low** and **integration-mid** respectively
+
+This way, any changes we do are tested against a fresh SKAMPI deployment, so that we can decouple the occurence of failures from the state of the environment. As mentioned above, if the pipeline is a **merge request** pipeline, it will run its tests against the integration environment in STFC-Techops for validation.  This can help us further differentiate where issues might come from and make sure our tests still hold true for long-running environments.
+
+Note that we can still manually trigger tests on on-demand deployments. This increases the options we have to run tests. As we can retry deployments and tests separetely, if needed, we now have the abitlity to run more tests in a shorter amount of time.
+
 ## Before you begin
 For information on how to use the subsystems / components that are deployed using SKAMPI, please first look at the documentation on [SKAMPI Subsystems](https://developer.skao.int/projects/ska-skampi-deployment/en/latest/subsystems.html).
 
@@ -85,8 +97,8 @@ make k8s-test CONFIG=<mid or low>
 
 There are a few variables we can use to change the testing behavior:
 
-* `MARK`: Allows to set the default test selection expression for pytest
-* `PYTEST_MARK`: Allows to an extra expression (anded with `MARK`) to further modify the test behavior
+* `PYTEST_MARK`: Allows to set the default test selection expression for the telescope tests
+* `PYTEST_SUBSYS_MARK`: Allows to an extra expression (anded with `PYTEST_MARK`) to select subsystem tests
 * `PYTEST_COUNT`: Set the number of times the tests are executed
 * `HELM_RELEASE`: Sets the Helm release to consider when testing (it will auto-detect as well)
 * `XRAY_UPLOAD_ENABLED`: Controlls if the the test results are uploaded to XRay or not

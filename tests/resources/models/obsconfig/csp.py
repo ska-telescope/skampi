@@ -1,5 +1,7 @@
 from typing import TypedDict, cast
 
+from resources.models.obsconfig.target_spec import ArraySpec, BaseTargetSpec
+from ska_tmc_cdm.messages.central_node.csp import CSPConfiguration as CSPAssignConfiguration
 from ska_tmc_cdm.messages.subarray_node.configure.csp import (
     CBFConfiguration,
     CommonConfiguration,
@@ -10,6 +12,7 @@ from ska_tmc_cdm.messages.subarray_node.configure.csp import (
 )
 
 from .base import encoded
+from .dishes import Dishes
 from .target_spec import TargetSpecs
 
 
@@ -18,9 +21,18 @@ class CSPrunScanConfig(TypedDict):
     interface: str
 
 
-class CSPconfig(TargetSpecs):
+class CSPconfig(Dishes, TargetSpecs):
     csp_subarray_id = "dummy name"
     csp_scan_configure_schema = "https://schema.skao.int/ska-csp-configure/2.0"
+    csp_assign_resources_schema = "https://schema.skao.int/ska-csp-assignresources/2.2"
+
+    def __init__(
+        self,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
+    ) -> None:
+        Dishes.__init__(self, base_target_specs, array)
+        TargetSpecs.__init__(self, base_target_specs, array)
 
     def _generate_low_csp_assign_resources_config(self):
         interface = "https://schema.skao.int/ska-low-csp-assignresources/2.0"
@@ -41,7 +53,7 @@ class CSPconfig(TargetSpecs):
                 },
             ]
         }
-        return CSPConfiguration(interface=interface, common=common, lowcbf=lowcbf)
+        return CSPAssignConfiguration(interface=interface, common=common, lowcbf=lowcbf)
 
     @encoded
     def generate_low_csp_assign_resources_config(self):
@@ -73,7 +85,7 @@ class CSPconfig(TargetSpecs):
             channel_averaging_map=[(0, 2), (744, 0)],
             output_link_map=[(0, 4), (200, 5)],
             channel_offset=744,
-            zoom_window_tuning=650000,
+            zoom_window_tuning=1050000,
         )
         return CSPConfiguration(
             self.csp_scan_configure_schema,
@@ -86,6 +98,14 @@ class CSPconfig(TargetSpecs):
     def generate_csp_scan_config(self, target_id: str | None = None, subarray_id: int = 1):
         return self._generate_csp_scan_config(target_id, subarray_id)
 
+    @encoded
+    def generate_csp_assign_resources_config(self, subarray_id: int = 1):
+        return {
+            "interface": self.csp_assign_resources_schema,
+            "subarray_id": subarray_id,
+            "dish": {"receptor_ids": self.dish_allocation.receptor_ids},
+        }
+
     def generate_csp_run_scan_config(
         self, target_id: str | None = None, subarray_id: int = 1
     ) -> CSPrunScanConfig:
@@ -94,7 +114,7 @@ class CSPconfig(TargetSpecs):
             CSPrunScanConfig,
             {
                 **config,
-                **{"interface": "https://schema.skao.int/ska-mid-csp-scan/2.0"},
+                **{"interface": "https://schema.skao.int/ska-csp-scan/2.0"},
             },
         )
         return csp_run_scan_config

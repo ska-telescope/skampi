@@ -24,12 +24,17 @@ def load_next_sb():
 
 
 class SchedulingBlock:
-    def __init__(self, *_: Any, **__: Any) -> None:
-        logging.info("initialising scheduling block")
-        sbi_id, eb_id, pb_id = load_next_sb()
-        self.sbi_id = sbi_id
-        self.eb_id = eb_id
-        self.pb_id = pb_id
+
+    _sb_initialized = False
+
+    def __init__(self) -> None:
+        if not self._sb_initialized:
+            logging.info("initialising scheduling block")
+            sbi_id, eb_id, pb_id = load_next_sb()
+            self.sbi_id = sbi_id
+            self.eb_id = eb_id
+            self.pb_id = pb_id
+            self._sb_initialized = True
 
     def load_next_sb(self):
         sbi_id, eb_id, pb_id = load_next_sb()

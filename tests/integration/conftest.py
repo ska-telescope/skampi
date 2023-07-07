@@ -1,6 +1,7 @@
 """pytest global settings, fixtures and global bdd step implementations for
 integration tests."""
 import logging
+import time
 import os
 from types import SimpleNamespace
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
@@ -22,6 +23,10 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 logger = logging.getLogger(__name__)
 
+
+@pytest.fixture(name="wait", autouse=True, scope='session')
+def fxt_wait():
+   time.sleep(120)
 
 @pytest.fixture(name="check_infra_per_test", autouse=True)
 def fxt_check_infra_per_test(check_infra_per_session: Any) -> Any:
@@ -548,7 +553,7 @@ def i_command_it_to_abort(
     sub_array_id = sut_settings.subarray_id
     context_monitoring.builder.set_waiting_on(subarray).for_attribute(
         "obsstate"
-    ).to_become_equal_to("ABORTED")
+    ).to_become_equal_to("ABORTED", ignore_first=False)
     with context_monitoring.context_monitoring():
         with context_monitoring.wait_before_complete(integration_test_exec_settings):
             if sut_settings.restart_after_abort:

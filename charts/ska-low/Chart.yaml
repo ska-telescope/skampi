@@ -14,7 +14,7 @@ dependencies:
     version: 0.4.5
     repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-sdp
-    version: 0.14.1
+    version: 0.15.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
   - name: ska-tmc-low
@@ -45,7 +45,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tango-archiver.enabled
   - name: ska-csp-lmc-low
-    version: 0.3.1
+    version: 0.8.2
     repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-low-cbf
     version: 0.5.7

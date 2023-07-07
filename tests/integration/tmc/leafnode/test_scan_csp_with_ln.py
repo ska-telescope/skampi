@@ -17,7 +17,7 @@ def fxt_setup_log_checking(
     sut_settings: SutTestSettings,
 ):
     """ "
-    A fixture to setup the log check
+    A fixture to setup log check
 
     :param log_checking: skallop fixture used to set up log checking.
     :param sut_settings: A class representing the settings for the system under test.

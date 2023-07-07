@@ -1,8 +1,8 @@
 """pytest global settings, fixtures and global bdd step implementations for
 integration tests."""
 import logging
-import time
 import os
+import time
 from types import SimpleNamespace
 from typing import Any, Callable, Concatenate, ParamSpec, TypeVar
 
@@ -24,9 +24,10 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 logger = logging.getLogger(__name__)
 
 
-@pytest.fixture(name="wait", autouse=True, scope='session')
+@pytest.fixture(name="wait", autouse=True, scope="session")
 def fxt_wait():
-   time.sleep(120)
+    time.sleep(120)
+
 
 @pytest.fixture(name="check_infra_per_test", autouse=True)
 def fxt_check_infra_per_test(check_infra_per_session: Any) -> Any:

@@ -8,7 +8,6 @@ variables:
   SKALLOP_VERSION: "2.24.2"
   K8S_TEST_IMAGE_TO_TEST: artefact.skao.int/ska-tango-images-pytango-builder:9.3.35
   KEEP_NAMESPACE: "true"
-  SKAMPI_TESTS_TRIGGER: "" # Meant to be set by upstream pipelines
 
 stages:
   - lint

@@ -89,3 +89,28 @@ trigger-tests:
     - if: $CI_PIPELINE_SOURCE == "pipeline" || $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       when: never
     - when: on_success
+
+# If the pipeline is being exectued as a downstream, do not lint
+# or build
+
+notebook-lint:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
+    - exists:
+        - notebooks/**/*
+
+python-lint:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
+    - exists:
+        - pyproject.toml
+        - setup.py
+
+docs-build:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "pipeline"
+      when: never
+    - exists:
+        - docs/**/*

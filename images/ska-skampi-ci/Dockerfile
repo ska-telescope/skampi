@@ -7,7 +7,7 @@ ENV POETRY_VERSION="1.3.2"
 
 COPY --from=ska_cicd_base /usr/local/bin /usr/local/bin
 
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py --output $POETRY_HOME/install-poetry.py
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/install.python-poetry.org/main/install-poetry.py --output $POETRY_HOME/install-poetry.py
 RUN cd $POETRY_HOME && POETRY_VERSION=${POETRY_VERSION} python3 install-poetry.py --yes
 RUN ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
 

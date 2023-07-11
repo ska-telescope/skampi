@@ -13,6 +13,7 @@ global:
     app.gitlab.com/env: ska
   taranta_auth_enabled: false
   taranta_dashboard_enabled: false
+  data-product-pvc: shared
   sub-system:
     tango-base:
       enabled: false

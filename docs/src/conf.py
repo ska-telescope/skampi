@@ -50,7 +50,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinxcontrib.mermaid",
     "myst_parser",
-    # 'recommonmark',
+    "sphinx_rtd_theme"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -109,9 +109,10 @@ html_theme = "sphinx_rtd_theme"
 # documentation.
 #
 # html_theme_options = {}
+html_logo = "_static/img/logo.png"
+html_favicon = "_static/img/favicon_mono.ico"
+
 html_context = {
-    "favicon": "img/favicon_mono.ico",
-    "logo": "img/logo.png",
     "theme_logo_only": True,
     "display_gitlab": True,  # Integrate Gitlab
     "gitlab_user": "ska-telescope",  # Username

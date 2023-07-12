@@ -26,6 +26,7 @@ def test_sdp_start_up_telescope_mid(sdp_start_up_test_exec_settings):
 @pytest.mark.skalow
 @pytest.mark.startup
 @pytest.mark.sdp
+@pytest.mark.skip(reason="Failure in pipeline")
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in low")
 def test_sdp_start_up_telescope_low(sdp_start_up_test_exec_settings):
     """

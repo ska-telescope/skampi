@@ -31,7 +31,8 @@ httpx ="0.24.0"
 psycopg2-binary ="2.9.5"
 ska-oso-oet = "^5.1.1"
 ska-oso-scripting = "^7.4.0"
-itango = "^0.1.9"
+pytango = "^9.4.1"
+pytest = "6.2.5"
 ipykernel = "^6.23.2"
 
 [[tool.poetry.source]]

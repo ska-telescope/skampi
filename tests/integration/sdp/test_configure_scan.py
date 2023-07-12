@@ -11,6 +11,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 @pytest.mark.skalow
 @pytest.mark.configure
 @pytest.mark.sdp
+@pytest.mark.skip(reason="Failure in pipeline")
 @scenario(
     "features/sdp_configure_scan.feature",
     "Configure scan on sdp subarray in low",

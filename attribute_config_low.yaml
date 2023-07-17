@@ -1,4 +1,4 @@
-db: "databaseds-tango-base:10000"
+db: "databaseds-tango-base.ci-ska-skampi-hm-213-low.svc.cluster.local:10000"
 manager: low-eda/cm/01
 archiver: low-eda/es/01
 

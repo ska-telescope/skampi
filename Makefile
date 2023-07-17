@@ -8,11 +8,13 @@ SKIP_HELM_DEPENDENCY_UPDATE ?= 0# don't run "helm dependency update" on upgrade-
 
 CLUSTER_DOMAIN ?= cluster.local## Domain used for naming Tango Device Servers
 PYTHON_LINT_TARGET ?= tests/
+NOTEBOOK_LINT_TARGET ?= notebooks/
 INGRESS_HOST ?= k8s.stfc.skao.int## default ingress host
 KUBE_NAMESPACE ?= integration#namespace to be used
 KUBE_NAMESPACE_SDP ?= integration-sdp#namespace to be used
 TANGO_DATABASE_DS ?= databaseds-tango-base## Stable name for the Tango DB
 TANGO_HOST ?= $(TANGO_DATABASE_DS):10000
+SKA_TANGO_OPERATOR ?= true
 TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local server
 HELM_RELEASE ?= test## release name of the chart
 MINIKUBE ?= true## Minikube or not
@@ -44,11 +46,15 @@ else
 DASHMARK ?= ska$(CONFIG)
 endif
 
+TELESCOPE_ENVIRONMENT = "$(CONFIG)-STFC" # For configurator tool display
+ARCHIVER_ENABLED ?= true
 ARCHWIZARD_VIEW_DBNAME = SKA_ARCHIVER
+EVENT_SUBSCRIBER = "$(CONFIG)-eda/es/01"
+
 CONFIG_MANAGER= $(CONFIG)-eda/cm/01
 ATTR_CONFIG_FILE = attribute_config_$(CONFIG).yaml
 ARCHWIZARD_CONFIG?= $(ARCHWIZARD_VIEW_DBNAME)=tango://$(TANGO_DATABASE_DS).$(KUBE_NAMESPACE).svc.$(CLUSTER_DOMAIN):10000/$(CONFIG_MANAGER)
-
+ARCHIVER_TIMESCALE_HOST_NAME = timescaledb.ska-eda-$(CONFIG)-db.svc.cluster.local#for testing 
 TESTCOUNT ?= ## Number of times test should run for non-k8s-test jobs
 ifneq ($(TESTCOUNT),)
 # Dashcount is a synthesis of testcount as input user variable and is used to
@@ -89,13 +95,16 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set global.tango_host=$(TANGO_DATABASE_DS):10000 \
 	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
 	--set global.device_server_port=$(TANGO_SERVER_PORT) \
+	--set global.labels.app=$(KUBE_APP) \
 	--set ska-tango-base.itango.enabled=$(ITANGO_ENABLED) \
 	--set ska-sdp.helmdeploy.namespace=$(KUBE_NAMESPACE_SDP) \
-	--set ska-tango-archiver.hostname=$(ARCHIVER_HOST_NAME) \
+	--set ska-tango-archiver.hostname=$(ARCHIVER_TIMESCALE_HOST_NAME) \
+	--set ska-tango-archiver.enabled=$(ARCHIVER_ENABLED) \
 	--set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
 	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
+	--set ska-tango-archiver.telescope_environment=$(TELESCOPE_ENVIRONMENT)\
 	--set global.exposeAllDS=$(EXPOSE_All_DS) \
 	--set ska-tango-archiver.archwizard_config=$(ARCHWIZARD_CONFIG) \
 	--set ska-sdp.ska-sdp-qa.zookeeper.clusterDomain=$(CLUSTER_DOMAIN) \
@@ -112,8 +121,7 @@ HELM_CHARTS_TO_PUBLISH = $(SKAMPI_K8S_CHARTS)
 OCI_IMAGES_TO_PUBLISH =
 
 # KUBE_APP is set to the ska-tango-images base chart value
-SKAMPI_KUBE_APP ?= skampi
-KUBE_APP = ska-tango-images
+KUBE_APP ?= ska-skampi
 
 CI_JOB_ID ?= local##local default for ci job id
 #
@@ -276,7 +284,8 @@ k8s-post-test: # post test hook for processing received reports
 	@if ! [[ -f build/status ]]; then \
 		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
 		exit 1; \
-	fi
+	fi;
+	@[[ $$(cat build/status) == 0 ]] || KUBE_NAMESPACE=$(KUBE_NAMESPACE) source scripts/were_pods_throttled.sh;
 
 foo:
 	@echo $(CASED_CONFIG)

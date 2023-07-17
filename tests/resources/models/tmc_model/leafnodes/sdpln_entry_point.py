@@ -20,6 +20,7 @@ from ...sdp_model.entry_point import (
     SDPScanStep,
     StartUpStep,
 )
+from .utils import retry
 
 logger = logging.getLogger(__name__)
 
@@ -80,8 +81,15 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
         config = self.observation.generate_sdp_assign_resources_config().as_json
+        # we retry this command three times in case there is a transitory race
+        # condition
+
+        @retry(nr_of_reties=3)
+        def command():
+            subarray.command_inout("AssignResources", config)
+
         self._log(f"commanding {subarray_name} with AssignResources: {config} ")
-        subarray.command_inout("AssignResources", config)
+        command()
 
     def undo_assign_resources(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -92,8 +100,16 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         """
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
+
+        # we retry this command three times in case there is a transitory race
+        # condition
+
+        @retry(nr_of_reties=3)
+        def command():
+            subarray.command_inout("ReleaseResources", "[]")
+
         self._log(f"Commanding {subarray_name} to ReleaseResources")
-        subarray.command_inout("ReleaseResources", "[]")
+        command()
 
 
 class SdpLnConfigureStep(SdpConfigureStep):
@@ -121,8 +137,15 @@ class SdpLnConfigureStep(SdpConfigureStep):
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
         config = self.observation.generate_sdp_scan_config().as_json
+        # we retry this command three times in case there is a transitory race
+        # condition
+
+        @retry(nr_of_reties=3)
+        def command():
+            subarray.command_inout("Configure", config)
+
         self._log(f"commanding {subarray_name} with Configure: {config} ")
-        subarray.command_inout("Configure", config)
+        command()
 
     def undo_configure(self, sub_array_id: int):
         """Domain logic for clearing configuration on a subarray in sdp LN.
@@ -133,8 +156,15 @@ class SdpLnConfigureStep(SdpConfigureStep):
         """
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
+        # we retry this command three times in case there is a transitory race
+        # condition
+
+        @retry(nr_of_reties=3)
+        def command():
+            subarray.command_inout("End")
+
         self._log(f"commanding {subarray_name} with End command")
-        subarray.command_inout("End")
+        command()
 
 
 class SDPLnScanStep(SDPScanStep):
@@ -154,11 +184,19 @@ class SDPLnScanStep(SDPScanStep):
         scan_duration = Memo().get("scan_duration")
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
-        self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
-        try:
+        # we retry this command three times in case there is a transitory race
+        # condition
+
+        @retry(nr_of_reties=3)
+        def command():
             subarray.command_inout("Scan", scan_config)
             sleep(scan_duration)
             subarray.command_inout("EndScan")
+
+        self._log(f"commanding {subarray_name} with End command")
+        self._log(f"Commanding {subarray_name} to Scan with {scan_config}")
+        try:
+            command()
         except Exception as exception:
             logger.exception(exception)
             raise exception

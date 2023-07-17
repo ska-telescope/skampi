@@ -19,13 +19,13 @@
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
     - *create_k8s_creds
     - bash scripts/gitlab_section.sh install "Install Skampi Charts" make k8s-install-chart
-    - bash scripts/gitlab_section.sh get_all "Check all k8s resources in $KUBE_NAMESPACE" kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+    - bash scripts/gitlab_section.sh get_all "Check all k8s resources in $KUBE_NAMESPACE" kubectl get deviceservers.tango.tango-controls.org,all,pv,pvc,ingress -n $KUBE_NAMESPACE
     - bash scripts/gitlab_section.sh wait_for_it "Wait for all config jobs to complete" make skampi-wait-all
 
 .deploy_chart:
   script:
     - make k8s-install-chart
-    - kubectl get all,pv,pvc,ingress -n $KUBE_NAMESPACE
+    - kubectl get deviceservers.tango.tango-controls.org,all,pv,pvc,ingress -n $KUBE_NAMESPACE
     - make skampi-wait-all
 
 .test_deployment:
@@ -37,7 +37,7 @@
     - find ./build
     - echo "#####################################"
     - make skampi-upload-test-results
-    # Exit based on the make-k8s-test-runner output which is writting in build/status file
+    # Exit based on the make-k8s-test-runner output which is writing in build/status file
     - '[ -f build/status ] || (echo "Something went wrong with the test (no build/status file); exit 1")'
     - echo "Cleaning the environment"
     - make k8s-uninstall-chart || true

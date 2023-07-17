@@ -8,8 +8,8 @@
     VALUES: "charts/ska-$CONFIG/$CONFIG-itf-values.yaml" #TODO: Use CONFIG in shared definitions.
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
-    INGRESS_HOST: "10.134.0.3"
-    CLUSTER_DOMAIN: "au-itf.skao.int" ## Domain used for naming Tango Device Servers
+    INGRESS_HOST: "k8s.lowitf.internal.skao.int"
+    CLUSTER_DOMAIN: "lowitf.internal.skao.int" ## Domain used for naming Tango Device Servers
     K8S_EXTRA_PARMS: "--set global.ska-tango-archiver.enabled=false  --set ska-tango-archiver.enabled=false"
   when: manual
 

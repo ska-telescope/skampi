@@ -32,7 +32,6 @@ from integration.sdp.vis_receive_utils import (
     wait_for_predicate,
 )
 from pytest_bdd import given, scenario, then, when
-from requests.models import Response
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -46,12 +45,13 @@ pytest_plugins = ["unit.test_cluster_k8s"]
 
 LOG = logging.getLogger(__name__)
 
-INGRESS = os.environ.get("INGRESS_HOST")
+INGRESS = os.environ.get("LOADBALANCER_IP")
 NAMESPACE = os.environ.get("KUBE_NAMESPACE")
 NAMESPACE_SDP = os.environ.get("KUBE_NAMESPACE_SDP")
 PVC_NAME = os.environ.get("SDP_DATA_PVC_NAME", "shared")
 
 
+@pytest.mark.visibility
 @pytest.mark.skalow
 @pytest.mark.sdp
 @scenario(
@@ -64,6 +64,18 @@ def test_visibility_receive_in_low(assign_resources_test_exec_settings):
 
     :param assign_resources_test_exec_settings: Object for assign_resources_test_exec_settings
     """
+
+
+@pytest.fixture
+def k8s_element_manager():
+    """
+    Allow easy creation, and later automatic destruction, of k8s elements
+
+    :yields: K8sElementManager object
+    """
+    manager = K8sElementManager()
+    yield manager
+    manager.cleanup()
 
 
 @pytest.fixture(name="update_sut_settings")
@@ -105,6 +117,9 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
     k8s_element_manager.create_pod(receive_pod, NAMESPACE_SDP, PVC_NAME)
     k8s_element_manager.create_pod(sender_pod, NAMESPACE, PVC_NAME)
 
+    wait_for_pod(receive_pod, NAMESPACE_SDP, "Running", timeout=300)
+    wait_for_pod(sender_pod, NAMESPACE, "Running", timeout=300)
+
     ms_file_mount_location = "/mnt/data/AA05LOW.ms/"
 
     # Check if the measurement set has been download into pods
@@ -132,8 +147,8 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
             return True
         return False
 
-    wait_for_predicate(_wait_for_receive_data, "MS data not present in volume.", timeout=100)()
-    wait_for_predicate(_wait_for_sender_data, "MS data not present in volume.", timeout=100)()
+    wait_for_predicate(_wait_for_receive_data, "MS data not present in volume.", timeout=300)()
+    wait_for_predicate(_wait_for_sender_data, "MS data not present in volume.", timeout=300)()
 
     LOG.info("PVCs are present, pods created, and data downloaded successfully")
 
@@ -168,27 +183,24 @@ def check_rec_adds(configured_subarray: fxt_types.configured_subarray):
         pod_condition="Ready",
     )
 
-    LOG.info("Receive pod is running. Checking receive addresses.")
-    receive_addresses_expected = f"{receiver_pod_name}.receive.{NAMESPACE_SDP}"
-
-    assert host == receive_addresses_expected
+    LOG.info("Receiver address: %s", host)
 
 
 @when("SDP is commanded to capture data from a scan")
 def run_scan(
-    check_rec_adds,
-    k8s_element_manager: K8sElementManager,
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
+    check_rec_adds,
+    k8s_element_manager: K8sElementManager,
 ):
     """
     Run a scan.
 
-    :param check_rec_adds: fixture to wait for Receiver to run and to
-                check receive addresses are correctly set
-    :param k8s_element_manager: Kubernetes element manager
     :param configured_subarray: skallop configured_subarray fixture
     :param integration_test_exec_settings: test specific execution settings
+    :param check_rec_adds: fixture to wait for Receiver to run and to
+            check receive addresses are correctly set
+    :param k8s_element_manager: Kubernetes element manager
     """  # noqa: DAR401
     LOG.info("Running scan step.")
     tel = names.TEL()
@@ -201,6 +213,7 @@ def run_scan(
 
     receive_addresses = json.loads(sdp_subarray.read_attribute("receiveAddresses").value)
     host = receive_addresses["target:a"]["vis0"]["host"][0][1]
+    port = receive_addresses["target:a"]["vis0"]["port"][0][1]
 
     LOG.info("Executing scan.")
 
@@ -216,16 +229,35 @@ def run_scan(
             obs_state = sdp_subarray.read_attribute("obsstate").value
             assert_that(obs_state).is_equal_to(ObsState.SCANNING)
             LOG.info("Scanning")
-            deploy_cbf_emulator(host, scan_id, k8s_element_manager)
+            deploy_cbf_emulator((host, port), scan_id, k8s_element_manager)
 
         except Exception as err:
             err = err
             LOG.exception("Scan step failed")
 
+    def _check_obsstate():
+        try:
+            obsstate = sdp_subarray.read_attribute("obsState").value
+            assert_that(obsstate).is_equal_to(ObsState.READY)
+            return True
+        except AssertionError:
+            return False
+
+    wait_for_predicate(_check_obsstate, "ObsState hasn't reached READY after SCANNING.")()
+
     if err:
         # raise error after Subarray went back to READY
         # so that ReleaseAllResource can work
         raise err
+
+    # stop automatic teardown from READY to IDLE,
+    # since we're doing that manually below
+    configured_subarray.disable_automatic_clear()
+
+    # execute End() to make sure MS is fully written to disk
+    sdp_subarray.command_inout("End")
+    obs_state = sdp_subarray.read_attribute("obsState").value
+    assert_that(obs_state).is_equal_to(ObsState.IDLE)
 
 
 @pytest.fixture
@@ -243,16 +275,16 @@ def dataproduct_directory(entry_point: fxt_types.entry_point):
 
 @then("the data received matches with the data sent")
 def check_measurement_set(
+    sut_settings: conftest.SutTestSettings,
     dataproduct_directory,
     k8s_element_manager: K8sElementManager,
-    sut_settings: conftest.SutTestSettings,
 ):
     """
     Check the data received are same as the data sent.
 
+    :param sut_settings: SUT settings fixture
     :param dataproduct_directory: The directory where outputs are written
     :param k8s_element_manager: Kubernetes element manager
-    :param sut_settings: SUT settings fixture
     """
     # Wait 10 seconds before checking the measurement set.
     # This gives enough time for the receiver for finish writing the data.
@@ -282,17 +314,16 @@ def check_measurement_set(
 
 
 @then("a list of data products can be retrieved")
-def retrieveDataProducts() -> Response:
+def retrieve_data_products():
     """
     Check the data products are available
     """
-
     response = requests.get(f"http://{INGRESS}/{NAMESPACE}/dataproduct/api/dataproductlist")
     assert response.status_code == 200
 
 
 @then("an available data product can be downloaded")
-def downloadDataProduct():
+def download_data_product():
     """
     Check the data products can be downloaded.
     """

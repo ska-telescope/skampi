@@ -11,10 +11,13 @@ ska-tango-base:
 ska-mid-cbf:
   enabled: false
 ska-csp-lmc-mid:
+  legacy_compatibility: true
   enabled: false
 ska-sdp:
+  legacy_compatibility: true
   enabled: false
 ska-tmc-mid:
+  legacy_compatibility: true
   enabled: false
 ska-oso-scripting:
   enabled: false
@@ -25,4 +28,5 @@ ska-ser-skuid:
 ska-landingpage:
   enabled: false
 ska-tango-archiver:
+  legacy_compatibility: true
   enabled: false

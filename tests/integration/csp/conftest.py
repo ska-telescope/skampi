@@ -134,7 +134,8 @@ def fxt_set_up_log_checking_for_csp(
     if os.getenv("CAPTURE_LOGS"):
         tel = names.TEL()
         csp_subarray = str(tel.csp.subarray(sut_settings.subarray_id))
-        log_checking.capture_logs_from_devices(csp_subarray)
+        cbf_subarray = str(tel.csp.cbf.subarray(sut_settings.subarray_id))
+        log_checking.capture_logs_from_devices(csp_subarray, cbf_subarray)
 
 
 # transition monitoring

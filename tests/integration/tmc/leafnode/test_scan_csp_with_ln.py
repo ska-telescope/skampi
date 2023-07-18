@@ -8,13 +8,13 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-from tests.integration import conftest
+from ...conftest import SutTestSettings
 
 
 @pytest.fixture(name="setup_log_checking")
 def fxt_setup_log_checking(
     log_checking: fxt_types.log_checking,
-    sut_settings: conftest.SutTestSettings,
+    sut_settings: SutTestSettings,
 ):
     """ "
     A fixture to setup log check

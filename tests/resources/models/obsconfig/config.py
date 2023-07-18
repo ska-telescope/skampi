@@ -8,11 +8,52 @@ from .base import encoded
 from .csp import CSPconfig
 from .dishes import Dishes
 from .mccs import MCCSConfig
-from .sdp_config import SdpConfig
+from .sdp_config import (
+    ArraySpec,
+    BaseTargetSpec,
+    Beamgrouping,
+    ChannelConfiguration,
+    EBScanType,
+    FieldConfiguration,
+    PolarisationConfiguration,
+    ProcessingSpec,
+    SdpConfig,
+)
 from .tmc_config import TmcConfig
 
 
 class Observation(SdpConfig, CSPconfig, Dishes, TmcConfig, MCCSConfig):
+    def __init__(
+        self,
+        context: dict[Any, Any] | None = None,
+        max_length: float = 100.0,
+        beam_groupings: list[Beamgrouping] | None = None,
+        scan_types: list[EBScanType] | None = None,
+        channels: list[ChannelConfiguration] | None = None,
+        polarizations: list[PolarisationConfiguration] | None = None,
+        field_configurations: list[FieldConfiguration] | None = None,
+        processing_specs: list[ProcessingSpec] | None = None,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
+    ) -> None:
+        SdpConfig.__init__(
+            self,
+            context,
+            max_length,
+            beam_groupings,
+            scan_types,
+            channels,
+            polarizations,
+            field_configurations,
+            processing_specs,
+            base_target_specs,
+            array,
+        )
+        CSPconfig.__init__(self, base_target_specs, array)
+        Dishes.__init__(self, base_target_specs, array)
+        TmcConfig.__init__(self)
+        MCCSConfig.__init__(self)
+
     assign_resources_schema = "https://schema.skao.int/ska-tmc-assignresources/2.1"
 
     def _generate_assign_resources_config(self, subarray_id: int = 1):

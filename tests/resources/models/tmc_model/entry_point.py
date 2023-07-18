@@ -19,7 +19,8 @@ from ska_ser_skallop.utils.nrgen import get_id
 from ska_ser_skallop.utils.singleton import Memo
 
 from ..csp_model.entry_point import CSPWaitReadyStep
-from ..mvp_model.env import Observation, get_observation_config
+from ..mvp_model.env import Observation
+from ..mvp_model.object_with_obsconfig import HasObservation
 from ..mvp_model.states import ObsState
 
 logger = logging.getLogger(__name__)
@@ -678,24 +679,18 @@ class TMCWaitReadyStep(CSPWaitReadyStep):
     pass
 
 
-class TMCEntryPoint(CompositeEntryPoint):
+class TMCEntryPoint(CompositeEntryPoint, HasObservation):
     """Derived Entrypoint scoped to SDP element."""
 
     nr_of_subarrays = 2
     nr_of_receptors = 4
     receptors = [1, 2, 3, 4]
 
-    def __init__(self, observation: Observation | None = None) -> None:
-        """
-        Init Object
-
-        :param observation: An instance of the Observation class or None.
-            If None, a new instance of Observation will be created.
-        """
+    def __init__(self) -> None:
+        """Init Object"""
         super().__init__()
-        if not observation:
-            observation = get_observation_config()
-        self.observation = observation
+        HasObservation.__init__(self)
+        observation = self.observation
         self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
         self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)
         self.assign_resources_step = AssignResourcesStep(observation)

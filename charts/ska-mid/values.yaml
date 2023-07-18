@@ -67,6 +67,12 @@ ska-tango-base:
     replicas: 1
   tangodb:
     use_pv: false
+  databaseds:
+    image:
+      registry: registry.gitlab.com/ska-telescope/ska-tango-images
+      image: ska-tango-images-tango-cpp
+      tag: 5185c546
+      pullPolicy: IfNotPresent
 
 ska-taranta:
   legacy_compatibility: true
@@ -125,6 +131,8 @@ ska-mid-cbf-mcs:
 ska-csp-lmc-mid:
   legacy_compatibility: true
   enabled: true
+  dsconfig:
+    configuration_file: data/midcspconfigAA05.json
 
 ## sdp
 ska-sdp:

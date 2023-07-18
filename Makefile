@@ -111,6 +111,7 @@ LIVE_LOGGING ?= true
 REPLAY_EVENTS_AFTERWARDS ?= false
 CAPTURE_LOGS ?= true
 DEVENV ?= false
+PYTHONPATH ?= .:./tests:./tests/resources:./tests/integration:./tests/resources/models/csp_model
 
 # Pytest variables
 PYTHON_VARS_AFTER_PYTEST ?=## Aruguments for pytest
@@ -148,7 +149,6 @@ PYTHON_VARS_BEFORE_PYTEST ?= \
 	KUBE_NAMESPACE=$(KUBE_NAMESPACE) \
 	KUBE_NAMESPACE_SDP=$(KUBE_NAMESPACE_SDP) \
 	TANGO_HOST=$(TANGO_HOST) \
-	\
 	TEL=$(CONFIG) \
 	SKA_TELESCOPE=$(SKA_TELESCOPE) \
 	CENTRALNODE_FQDN=$(CENTRALNODE_FQDN) \
@@ -164,7 +164,6 @@ PYTHON_VARS_BEFORE_PYTEST ?= \
 	DOMAIN=$(DOMAIN) \
 	KUBE_BRANCH=$(KUBE_BRANCH) \
 	$(SKALLOP_SET_FLAGS) \
-	\
 	SDP_DATA_PVC_NAME=$(SDP_DATA_PVC_NAME) \
 	LOADBALANCER_IP=$(LOADBALANCER_IP) \
 	ARCHIVER_DBNAME=$(ARCHIVER_DBNAME) \
@@ -241,3 +240,11 @@ k8s-post-test: check-pod-throttling upload-test-results
 itango:
 	@echo "## Connecting to TANGO at '$(TANGO_HOST)'"
 	@TANGO_HOST=$(TANGO_HOST) itango3
+
+python-do-lint:
+	@mkdir -p build/reports;
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON_RUNNER) isort --check-only --profile black --line-length $(PYTHON_LINE_LENGTH) $(PYTHON_SWITCHES_FOR_ISORT) $(PYTHON_LINT_TARGET)
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON_RUNNER) black --exclude .+\.ipynb --check --line-length $(PYTHON_LINE_LENGTH) $(PYTHON_SWITCHES_FOR_BLACK) $(PYTHON_LINT_TARGET)
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON_RUNNER) flake8 --show-source --statistics --max-line-length $(PYTHON_LINE_LENGTH) $(PYTHON_SWITCHES_FOR_FLAKE8) $(PYTHON_LINT_TARGET)
+	PYTHONPATH=$(PYTHONPATH) $(PYTHON_RUNNER) pylint --output-format=parseable,parseable:build/code_analysis.stdout,pylint_junit.JUnitReporter:build/reports/linting-python.xml --max-line-length $(PYTHON_LINE_LENGTH) $(PYTHON_SWITCHES_FOR_PYLINT) $(PYTHON_LINT_TARGET)
+	@make --no-print-directory join-lint-reports

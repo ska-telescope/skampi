@@ -214,7 +214,8 @@ k8s-pre-test:
 	$(info )
 
 check-pod-throttling:  # check if pods in a namespace have been throttled
-	@KUBE_NAMESPACE=$(KUBE_NAMESPACE) source scripts/check_pod_throttling.sh;
+	@echo "Check throttling information at the following link:"; \
+	echo "https://k8s.stfc.skao.int/grafana/d/6581e46e4e5c7ba40a07646395ef7b23/kubernetes-compute-resources-pod?orgId=1&refresh=10s&var-datasource=default&var-cluster=stfc-ska-monitor&var-namespace=$(KUBE_NAMESPACE)&var-pod=databaseds-tangodb-databaseds-tango-base-0&from=now-1h&to=now"
 
 upload-test-results:  # uploads tests results
 	@if ! [[ -f build/status ]]; then \

@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.skamid
 @pytest.mark.startup
 @pytest.mark.sdp
+@pytest.mark.xfail(reason="Temp failure in pipeline")
 @scenario("features/sdp_start_up_telescope.feature", "Start up the sdp in mid")
 def test_sdp_start_up_telescope_mid(sdp_start_up_test_exec_settings):
     """

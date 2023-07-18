@@ -79,7 +79,7 @@ trigger-tests:
     SKA_SKAMPI_TESTS_REF: $CI_COMMIT_REF_SLUG
   trigger:
     project: ska-telescope/ska-skampi-deployment
-    branch: st-1662-setup-ska-skampi-deployment # TODO: Change to main
+    branch: main
     strategy: depend
     forward:
       yaml_variables: true

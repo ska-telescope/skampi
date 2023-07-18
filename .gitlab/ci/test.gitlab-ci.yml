@@ -12,8 +12,6 @@
     - bash scripts/gitlab_section.sh vars "Make config dump" make vars
     - bash scripts/gitlab_section.sh get-ns "Get namespace resources" make k8s-get
     - bash scripts/gitlab_section.sh wait-ns "Wait namespace resources" make k8s-wait
-    - bash scripts/gitlab_section.sh get-ns-dp "Get SDP namespace resources" make k8s-get KUBE_NAMESPACE=${KUBE_NAMESPACE}-sdp
-    - bash scripts/gitlab_section.sh wait-ns-dp "Wait SDP namespace resources" make k8s-wait KUBE_NAMESPACE=${KUBE_NAMESPACE}-sdp
     - make k8s-test-runner
     - find ./build
     # Exit based on the make-k8s-test-runner output which is writing in build/status file

@@ -15,7 +15,7 @@ from .. import conftest
 
 logger = logging.getLogger(__name__)
 
-
+@pytest.mark.tmc
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -34,7 +34,7 @@ def test_tmc_off_telescope_mid():
     """Off the telescope in mid."""
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
+@pytest.mark.tmc
 @pytest.mark.skalow
 @pytest.mark.startup
 @scenario(

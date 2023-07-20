@@ -9,7 +9,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
+@pytest.mark.tmc
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

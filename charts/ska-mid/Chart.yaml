@@ -29,7 +29,6 @@ dependencies:
     version: 0.10.1
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tmc-mid.enabled
-    alias: tmc-mid
   - name: ska-tango-taranta
     version: 2.2.0
     repository: https://artefact.skao.int/repository/helm-internal

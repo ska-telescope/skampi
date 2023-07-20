@@ -137,7 +137,7 @@ ska-csp-lmc-mid:
 ## sdp
 ska-sdp:
   legacy_compatibility: true
-  enabled: true
+  enabled: false
   lmc:
     prefix: mid
     nsubarray: 3
@@ -171,21 +171,21 @@ ska-sdp:
 ## tmc
 tmc-mid:
   legacy_compatibility: true
-  enabled: true
+  enabled: false
   telescope: SKA-mid
 
 ska-tango-archiver:
   legacy_compatibility: true
-  enabled: true
+  enabled: false
   telescope: SKA-mid
   dbname: default_mvp_archiver_db
 
 ## dishmasters
 ska-sim-dishmaster:
   legacy_compatibility: true
-  enabled: true
+  enabled: false
 
 # alarm-handler
 ska-tango-alarmhandler:
   legacy_compatibility: true
-  enabled: true
+  enabled: false

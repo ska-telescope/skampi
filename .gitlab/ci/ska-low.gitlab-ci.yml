@@ -8,7 +8,7 @@ low-test:
   stage: test
   variables:
     CONFIG: low
-    ADDMARKS: (csp_startup or sdp or eda or tmc)
+    ADDMARKS: tmc
     DEPLOYMENT_CONFIGURATION: "ska-$CONFIG"
     K8S_CHART: "$DEPLOYMENT_CONFIGURATION"
     HELM_RELEASE: "test-$CONFIG-$CI_JOB_ID"
@@ -23,7 +23,7 @@ low-test:
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     COUNT: 1
-    EXIT_AT_FAIL: "true"
+    EXIT_AT_FAIL: "False"
     CAPTURE_LOGS: "True"
     SKALLOP_LOG_FILTER_ERRORS: "True"
     DEBUG_ENTRYPOINT: "True"

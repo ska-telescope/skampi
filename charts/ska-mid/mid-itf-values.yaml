@@ -169,7 +169,7 @@ ska-sdp:
     enabled: false
 
 ## tmc
-tmc-mid:
+ska-tmc-mid:
   legacy_compatibility: true
   enabled: false
   telescope: SKA-mid

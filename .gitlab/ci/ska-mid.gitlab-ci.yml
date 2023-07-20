@@ -25,7 +25,7 @@ mid-test:
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
     ADDMARKS: tmc
-    EXIT_AT_FAIL: "False"
+    EXIT_AT_FAIL: "true"
     CAPTURE_LOGS: "True"
     SKALLOP_LOG_FILTER_ERRORS: "True"
     DEBUG_ENTRYPOINT: "True"

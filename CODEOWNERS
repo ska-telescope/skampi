@@ -8,12 +8,12 @@
 # by the rest of the file 
 # Members:
 # - All
-* @adb-42 @mmarquar @ben.mort @majashdown @gerhardlr @adam-avison @scpmw @abridger @sonja.vrcic @tjuerges @ska-telescope/ska-dev/skao-team-system 
+*   @ben.mort @majashdown  @adam-avison @scpmw @abridger @sonja.vrcic @tjuerges @ska-telescope/ska-dev/skao-team-system 
 
 # Other
 # Members:
-# - Owner: Gerhard LeRoux
-/charts/ska-landingpage/ @gerhardlr 
+# - Owner:
+/charts/ska-landingpage/  
 
 ## Grouped Changes
 ## Groups and Descriptions ar defined below and the codes will be commented for the file assignments
@@ -36,9 +36,7 @@
 # -- H1 --
 # Cosmetic changes to the way Helm charts
 # Members (POs/PMs, caretakers):
-# - AIV Low: Malte Marquarding
-# - AIV Mid: Adriaan De Beer
-# - Caretakers: Ben Mort, Gerhard LeRoux, Adam Avison, Mark Ashdown
+# - Caretakers: Ben Mort, Adam Avison, Mark Ashdown
 # ---------------------------------------- #
 # Tests Reviewers, A2, and Test Management Reviewers, H2
 # Description:
@@ -54,9 +52,7 @@
 # obsolete or redundant, change the way tests are marked/tagged and 
 # reported to Jira, etc.
 # Members (POs/PMs, stewards):
-# - AIV Low: Malte Marquarding
-# - AIV Mid: Adriaan De Beer 
-# - Stewards: Peter Wortmann, Alan Bridger, Sonja Vrcic, Thomas Juerges, Gerhard LeRoux, Matteo Di Carlo
+# - Stewards: Peter Wortmann, Alan Bridger, Sonja Vrcic, Thomas Juerges, Matteo Di Carlo
 # ---------------------------------------- #
 # CI/CD Reviewers, A3, and Housekeeping CI Reviewers, H3
 # Description:
@@ -83,28 +79,26 @@
 # as separate stories within the same feature used for A2 or A3.
 # Members(POs, marshalls):
 # - Marshalls: System Team
-# - AIV Low: Malte Marquarding
-# - AIV Mid: Adriaan De Beer
 # ---------------------------------------- #
 
 ## Assignments
 # A1
-/charts/ @adb-42 @mmarquar @ben.mort @gerhardlr @majashdown @adam-avison 
-.release @adb-42 @mmarquar @ben.mort @gerhardlr @majashdown @adam-avison 
+/charts/ @ben.mort @majashdown @adam-avison 
+.release @ben.mort @majashdown @adam-avison 
 
 # H1
-/charts/ska-mid/values.yaml @adb-42 @mmarquar @ben.mort @gerhardlr @adam-avison
-/charts/ska-low/values.yaml @adb-42 @mmarquar @ben.mort @gerhardlr @adam-avison
-pipeline.yaml @adb-42 @mmarquar @ben.mort @gerhardlr @adam-avison
+/charts/ska-mid/values.yaml @ben.mort @adam-avison
+/charts/ska-low/values.yaml @ben.mort @adam-avison
+pipeline.yaml @ben.mort @adam-avison
 
 # A2
-/tests/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
-/scripts/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
-/images/testing/ @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @matteo1981 
+/tests/ @scpmw @abridger @sonja.vrcic @tjuerges 
+/scripts/ @scpmw @abridger @sonja.vrcic @tjuerges @matteo1981 
+/images/testing/ @scpmw @abridger @sonja.vrcic @tjuerges @matteo1981 
 
 # H2 and H3
-/resources/ @piersharding @flyingfrog81 @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr @ska-telescope/ska-dev/skao-team-system 
-tests/Makefile @ska-telescope/ska-dev/skao-team-system @adb-42 @mmarquar @scpmw @abridger @sonja.vrcic @tjuerges @gerhardlr
+/resources/ @piersharding @flyingfrog81 @scpmw @abridger @sonja.vrcic @tjuerges @ska-telescope/ska-dev/skao-team-system 
+tests/Makefile @ska-telescope/ska-dev/skao-team-system @scpmw @abridger @sonja.vrcic @tjuerges 
 
 # A3
 .gitlab-ci.yml @ska-telescope/ska-dev/skao-team-system 
@@ -121,6 +115,6 @@ LICENSE @piersharding @flyingfrog81  @ska-telescope/ska-dev/skao-team-system
 pyproject.toml @piersharding @flyingfrog81 @piersharding @ska-telescope/ska-dev/skao-team-system
 
 # A4
-/docs/ @piersharding @vla22 @adb-42 @mmarquar @ska-telescope/ska-dev/skao-team-system
-README.md @piersharding @vla22 @adb-42 @mmarquar @ska-telescope/ska-dev/skao-team-system
+/docs/ @piersharding @vla22 @ska-telescope/ska-dev/skao-team-system
+README.md @piersharding @vla22 @ska-telescope/ska-dev/skao-team-system
 

@@ -43,6 +43,7 @@ global:
       image: ska-tango-images-tango-itango
       tag: 9.3.5
       pullPolicy: IfNotPresent
+  data-product-pvc-name: shared
 
 ska-landingpage:
   legacy_compatibility: true
@@ -136,7 +137,6 @@ ska-sdp:
   console:
     enabled: true
   data-pvc:
-    name: shared
     create:
       enabled: true
       size: 20Gi

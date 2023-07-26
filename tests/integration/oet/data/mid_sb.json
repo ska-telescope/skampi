@@ -198,7 +198,7 @@
           "name": "test-receive-addresses"
         },
         "parameters": {
-          "time-to-ready": 10
+          "time-to-ready": 5
         }
       }
     ],

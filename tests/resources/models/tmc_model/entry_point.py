@@ -805,9 +805,9 @@ ASSIGN_RESOURCE_JSON_LOW = {
                 "sbi_ids": ["sbi-test-20220916-00000"],
                 "parameters": {
                     # makes sure that Configure transitions to READY
-                    # after 10 seconds of being in CONFIGURING;
+                    # after 5 seconds of being in CONFIGURING;
                     # this is only needed for `test-receive-addresses` script (v0.6.1+)
-                    "time-to-ready": 10
+                    "time-to-ready": 5
                 },
             }
         ],

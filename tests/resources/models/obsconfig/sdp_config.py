@@ -297,9 +297,9 @@ class ProcessingSpec(NamedTuple):
     script: ScriptConfiguration
     parameters: dict[Any, Any] = {
         # makes sure that Configure transitions to READY
-        # after 10 seconds of being in CONFIGURING;
+        # after 5 seconds of being in CONFIGURING;
         # this is only needed for `test-receive-addresses` script (v0.6.1+)
-        "time-to-ready": 10
+        "time-to-ready": 5
     }
 
     def __hash__(self):

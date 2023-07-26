@@ -160,28 +160,18 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
 @pytest.fixture
 def check_rec_adds(configured_subarray: fxt_types.configured_subarray):
     """
-    Wait for receive pod to be Running and check that the
-    receive addresses have been updated correctly.
+    Check that receive addresses have been updated correctly.
 
     :param configured_subarray: skallop configured_subarray fixture
     """
     tel = names.TEL()
     sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(configured_subarray.id))
+    obs_state = sdp_subarray.read_attribute("obsState").value
+    assert_that(obs_state).is_equal_to(ObsState.READY)
 
     receive_addresses = json.loads(sdp_subarray.read_attribute("receiveAddresses").value)
     # Get the DNS hostname from receive addresses attribute
     host = receive_addresses["target:a"]["vis0"]["host"][0][1]
-    receiver_pod_name = host.split(".")[0]
-
-    # Check if the receiver is running
-    LOG.info("Waiting for receive pod to be 'Running'")
-    assert wait_for_pod(
-        receiver_pod_name,
-        NAMESPACE_SDP,
-        "Running",
-        timeout=600,
-        pod_condition="Ready",
-    )
 
     LOG.info("Receiver address: %s", host)
 
@@ -208,8 +198,8 @@ def run_scan(
     receptors = configured_subarray.receptors
     sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(subarray_id))
 
-    obs_state = sdp_subarray.read_attribute("obsState").value
-    assert_that(obs_state).is_equal_to(ObsState.READY)
+    # obs_state = sdp_subarray.read_attribute("obsState").value
+    # assert_that(obs_state).is_equal_to(ObsState.READY)
 
     receive_addresses = json.loads(sdp_subarray.read_attribute("receiveAddresses").value)
     host = receive_addresses["target:a"]["vis0"]["host"][0][1]

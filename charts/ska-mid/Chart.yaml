@@ -22,7 +22,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-csp-lmc-mid.enabled
   - name: ska-sdp
-    version: 0.14.1
+    version: 0.16.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
   - name: ska-tmc-mid

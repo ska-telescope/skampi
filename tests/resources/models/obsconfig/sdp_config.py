@@ -295,14 +295,19 @@ class Fields(TargetSpecs):
 
 class ProcessingSpec(NamedTuple):
     script: ScriptConfiguration
-    parameters: dict[Any, Any] = {}
+    parameters: dict[Any, Any] = {
+        # makes sure that Configure transitions to READY
+        # after 10 seconds of being in CONFIGURING;
+        # this is only needed for `test-receive-addresses` script (v0.6.1+)
+        "time-to-ready": 10
+    }
 
     def __hash__(self):
         return hash(f"{self.script.name}")
 
 
 DEFAULT_SCRIPT = ScriptConfiguration(
-    kind="realtime", name="test-receive-addresses", version="0.5.0"
+    kind="realtime", name="test-receive-addresses", version="0.6.1"
 )
 
 

@@ -194,10 +194,12 @@
         ],
         "script": {
           "kind": "realtime",
-          "version": "0.5.0",
+          "version": "0.6.1",
           "name": "test-receive-addresses"
         },
-        "parameters": {}
+        "parameters": {
+          "time-to-ready": 10
+        }
       }
     ],
     "resources": {

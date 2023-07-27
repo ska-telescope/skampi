@@ -419,7 +419,7 @@ class ExecutionBlockSpecs(ScanTypes, Channelization, Polarisations, Fields):
         polarisations = self.get_polarisations_from_target_specs()
         fields = self.get_fields_from_target_specs()
         return ExecutionBlockConfiguration(
-            eb_id=self.eb_id,
+            eb_id="eb-mvp01-20210623-00000",
             context=context,
             max_length=max_length,
             beams=beams,

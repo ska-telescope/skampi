@@ -81,8 +81,8 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
-        # config = self.observation.generate_sdp_assign_resources_config().as_json
-        config = json.dumps(ASSIGN_MID_JSON)
+        config = self.observation.generate_sdp_assign_resources_config().as_json
+        # config = json.dumps(ASSIGN_MID_JSON)
         # we retry this command three times in case there is a transitory race
         # condition
 

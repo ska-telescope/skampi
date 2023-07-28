@@ -14,7 +14,7 @@ from resources.models.obsconfig.target_spec import TargetSpec
 from ska_tmc_cdm.messages.central_node.sdp import ScriptConfiguration
 from ska_tmc_cdm.messages.subarray_node.configure.core import ReceiverBand, Target
 
-VIS_RECEIVE_SCRIPT = ScriptConfiguration(kind="realtime", name="vis-receive", version="1.0.0")
+VIS_RECEIVE_SCRIPT = ScriptConfiguration(kind="realtime", name="vis-receive", version="1.1.1")
 
 # The current set up for the vis-receive test is a mish-mash of
 # parameters for Mid and for Low. The code is set up to run

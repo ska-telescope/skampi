@@ -157,40 +157,10 @@ def local_volume(k8s_element_manager: K8sElementManager, fxt_k8s_cluster):
 # @given("an SDP subarray in READY state")
 
 
-@pytest.fixture
-def check_rec_adds(configured_subarray: fxt_types.configured_subarray):
-    """
-    Wait for receive pod to be Running and check that the
-    receive addresses have been updated correctly.
-
-    :param configured_subarray: skallop configured_subarray fixture
-    """
-    tel = names.TEL()
-    sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(configured_subarray.id))
-
-    receive_addresses = json.loads(sdp_subarray.read_attribute("receiveAddresses").value)
-    # Get the DNS hostname from receive addresses attribute
-    host = receive_addresses["target:a"]["vis0"]["host"][0][1]
-    receiver_pod_name = host.split(".")[0]
-
-    # Check if the receiver is running
-    LOG.info("Waiting for receive pod to be 'Running'")
-    assert wait_for_pod(
-        receiver_pod_name,
-        NAMESPACE_SDP,
-        "Running",
-        timeout=600,
-        pod_condition="Ready",
-    )
-
-    LOG.info("Receiver address: %s", host)
-
-
 @when("SDP is commanded to capture data from a scan")
 def run_scan(
     configured_subarray: fxt_types.configured_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
-    check_rec_adds,
     k8s_element_manager: K8sElementManager,
 ):
     """
@@ -198,10 +168,9 @@ def run_scan(
 
     :param configured_subarray: skallop configured_subarray fixture
     :param integration_test_exec_settings: test specific execution settings
-    :param check_rec_adds: fixture to wait for Receiver to run and to
-            check receive addresses are correctly set
     :param k8s_element_manager: Kubernetes element manager
     """  # noqa: DAR401
+
     LOG.info("Running scan step.")
     tel = names.TEL()
     subarray_id = configured_subarray.id
@@ -215,6 +184,7 @@ def run_scan(
     host = receive_addresses["target:a"]["vis0"]["host"][0][1]
     port = receive_addresses["target:a"]["vis0"]["port"][0][1]
 
+    LOG.info("Receiver address: %s", host)
     LOG.info("Executing scan.")
 
     err = None

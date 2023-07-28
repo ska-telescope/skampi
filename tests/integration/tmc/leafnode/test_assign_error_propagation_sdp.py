@@ -10,15 +10,14 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ...conftest import SutTestSettings
 
 
-@pytest.mark.sdpln
-@pytest.mark.skalow
+@pytest.mark.skamid
 @pytest.mark.assign
 @scenario(
-    "features/sdpln_assign_release.feature",
-    "Assign resources to sdp low subarray using TMC leaf node",
+    "features/sdpln_assign_resources_mid.feature",
+    "Assign resources to sdp mid subarray using TMC leaf node",
 )
-def test_assign_resources_on_sdp_in_low():
-    """AssignResources on sdp subarray in low using the leaf node."""
+def test_assign_resources_on_sdp_in_mid():
+    """AssignResources on sdp subarray in mid using the leaf node."""
 
 
 @given("a SDP subarray in the EMPTY state", target_fixture="composition")

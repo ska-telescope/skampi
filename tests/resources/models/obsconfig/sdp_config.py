@@ -295,14 +295,19 @@ class Fields(TargetSpecs):
 
 class ProcessingSpec(NamedTuple):
     script: ScriptConfiguration
-    parameters: dict[Any, Any] = {}
+    parameters: dict[Any, Any] = {
+        # makes sure that Configure transitions to READY
+        # after 5 seconds of being in CONFIGURING;
+        # this is only needed for `test-receive-addresses` script (v0.6.1+)
+        "time-to-ready": 5
+    }
 
     def __hash__(self):
         return hash(f"{self.script.name}")
 
 
 DEFAULT_SCRIPT = ScriptConfiguration(
-    kind="realtime", name="test-receive-addresses", version="0.5.0"
+    kind="realtime", name="test-receive-addresses", version="0.6.1"
 )
 
 
@@ -414,7 +419,7 @@ class ExecutionBlockSpecs(ScanTypes, Channelization, Polarisations, Fields):
         polarisations = self.get_polarisations_from_target_specs()
         fields = self.get_fields_from_target_specs()
         return ExecutionBlockConfiguration(
-            eb_id=self.eb_id,
+            eb_id="eb-mvp01-20210623-00000",
             context=context,
             max_length=max_length,
             beams=beams,

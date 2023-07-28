@@ -60,7 +60,7 @@ ska-tango-base:
     enabled: true
     replicas: 1
   tangodb:
-    use_pv: false
+    use_pv: true
 
 ska-taranta:
   enabled: true

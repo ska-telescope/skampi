@@ -43,7 +43,6 @@ global:
       image: ska-tango-images-tango-itango
       tag: 9.3.5
       pullPolicy: IfNotPresent
-  data-product-pvc-name: shared
 
 ska-landingpage:
   legacy_compatibility: true
@@ -68,6 +67,12 @@ ska-tango-base:
     replicas: 1
   tangodb:
     use_pv: false
+  databaseds:
+    image:
+      registry: registry.gitlab.com/ska-telescope/ska-tango-images
+      image: ska-tango-images-tango-cpp
+      tag: 5185c546
+      pullPolicy: IfNotPresent
 
 ska-taranta:
   legacy_compatibility: true
@@ -126,6 +131,8 @@ ska-mid-cbf-mcs:
 ska-csp-lmc-mid:
   legacy_compatibility: true
   enabled: true
+  dsconfig:
+    configuration_file: data/midcspconfigAA05.json
 
 ## sdp
 ska-sdp:
@@ -137,6 +144,7 @@ ska-sdp:
   console:
     enabled: true
   data-pvc:
+    name: shared
     create:
       enabled: true
       size: 20Gi

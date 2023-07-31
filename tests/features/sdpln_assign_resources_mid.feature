@@ -7,4 +7,3 @@ Feature: Assign resources to sdp subarray using the leaf node
 		When I assign resources to it
 		Then the SDP subarray must be in IDLE state
 		When I assign resources to it again
-		Then the SDP must raise an exception

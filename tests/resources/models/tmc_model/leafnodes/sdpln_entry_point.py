@@ -85,7 +85,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # we retry this command three times in case there is a transitory race
         # condition
 
-        @retry(nr_of_reties=3)
+        @retry(nr_of_reties=1)
         def command():
             subarray.command_inout("AssignResources", config)
 

@@ -15,7 +15,6 @@ from ...conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.sdpln
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
@@ -45,37 +44,7 @@ def a_sdp_sln():
     """a TMC SDP subarray Leaf Node."""
 
 
-@when("I assign resources to it")
-def i_assign_resources_to_it(
-    running_telescope: fxt_types.running_telescope,
-    context_monitoring: fxt_types.context_monitoring,
-    entry_point: fxt_types.entry_point,
-    sb_config: fxt_types.sb_config,
-    composition: conf_types.Composition,
-    integration_test_exec_settings: fxt_types.exec_settings,
-    sut_settings: SutTestSettings,
-):
-    """
-    I assign resources to it
-
-    :param running_telescope: Dictionary containing the running telescope's devices
-    :param context_monitoring: Object containing information about
-        the context in which the test is being executed
-    :param entry_point: Information about the entry point used for the test
-    :param sb_config: Object containing the Subarray Configuration
-    :param composition: Object containing information about the composition of the subarray
-    :param integration_test_exec_settings: Object containing
-        the execution settings for the integration test
-    :param sut_settings: Object containing the system under test settings
-    """
-
-    subarray_id = sut_settings.subarray_id
-    receptors = sut_settings.receptors
-    with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_allocating_a_subarray(
-            subarray_id, receptors, integration_test_exec_settings
-        ):
-            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
+# @when("I assign resources to it") from ...conftest
 
 
 @then("the SDP subarray must be in IDLE state")

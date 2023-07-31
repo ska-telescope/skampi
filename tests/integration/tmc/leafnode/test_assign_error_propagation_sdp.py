@@ -102,6 +102,6 @@ def the_sdp_subarray_must_be_raise_exception(sut_settings: SutTestSettings):
     :param sut_settings: A class representing the settings for the system under test.
     """
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(tel.tm.sdp_leaf_node)
     result = subarray.read_attribute("longRunningCommandResult").value
     assert_that(result).is_equal_to("Execution block eb-mvp01-20210623-00000 already exists")

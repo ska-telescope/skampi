@@ -45,7 +45,41 @@ def a_sdp_sln():
     """a TMC SDP subarray Leaf Node."""
 
 
-# @when("I assign resources to it") from ...conftest
+@when("I assign resources for the first time")
+def assign_resources_with_subarray_id(
+    telescope_context: fxt_types.telescope_context,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    sb_config: fxt_types.sb_config,
+    composition: conf_types.Composition,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    sut_settings: SutTestSettings,
+    resources_list: list,
+    subarray_id: int,
+):
+    """
+    I assign resources to it
+
+    :param telescope_context: A fixture that represents the telescope context.
+    :param context_monitoring: A fixture that represents the context monitoring service.
+    :param entry_point: A fixture that represents the entry point for the subarray.
+    :param sb_config: A fixture that represents the scan configuration for the subarray.
+    :param composition: A fixture that represents the composition of the subarray.
+    :param integration_test_exec_settings: A fixture that represents the execution
+        settings for the integration test.
+    :param sut_settings: An instance of the `SutTestSettings` class representing
+        the settings for the system under test.
+    :param resources_list: A list of resources to be assigned to the subarray.
+    :param subarray_id: An integer representing the ID of the subarray to which
+        the resources should be assigned.
+    """
+
+    receptors = sut_settings.receptors
+    with context_monitoring.context_monitoring():
+        with telescope_context.wait_for_allocating_a_subarray(
+            subarray_id, receptors, integration_test_exec_settings
+        ):
+            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
 
 @then("the SDP subarray must be in IDLE state")
@@ -60,28 +94,6 @@ def the_sdp_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     result = subarray.read_attribute("obsState").value
     logger.info(f"-----------------{result}")
     assert_that(result).is_equal_to(ObsState.IDLE)
-
-
-@then("I release all resources assigned to it")
-def i_release_all_resources_assigned_to_it(
-    allocated_subarray: fxt_types.allocated_subarray,
-    context_monitoring: fxt_types.context_monitoring,
-    entry_point: fxt_types.entry_point,
-    integration_test_exec_settings: fxt_types.exec_settings,
-):
-    """
-    I release all resources assigned to it.
-
-    :param allocated_subarray: The allocated subarray to be configured.
-    :param context_monitoring: Context monitoring object.
-    :param entry_point: The entry point to be used for the configuration.
-    :param integration_test_exec_settings: The integration test execution settings.
-    """
-    sub_array_id = allocated_subarray.id
-
-    with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
-            entry_point.tear_down_subarray(sub_array_id)
 
 
 @when("I assign resources to it again")

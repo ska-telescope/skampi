@@ -92,3 +92,19 @@ def i_assign_resources_to_it_again(
             subarray_id, receptors, integration_test_exec_settings
         ):
             entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
+
+
+# @when("I release all resources assigned to it") from ...conftest
+
+
+@then("the SDP subarray throws an exception")
+def the_sdp_subarray_must_be_raise_exception(sut_settings: SutTestSettings):
+    """
+    the SDP Subarray must be in IDLE state.
+
+    :param sut_settings: A class representing the settings for the system under test.
+    """
+    tel = names.TEL()
+    subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
+    result = subarray.read_attribute("longRunningCommandResult").value
+    assert_that(result).is_equal_to("Execution block eb-mvp01-20210623-00000 already exists")

@@ -62,6 +62,28 @@ def the_sdp_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
     assert_that(result).is_equal_to(ObsState.IDLE)
 
 
+@then("I release all resources assigned to it")
+def i_release_all_resources_assigned_to_it(
+    allocated_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """
+    I release all resources assigned to it.
+
+    :param allocated_subarray: The allocated subarray to be configured.
+    :param context_monitoring: Context monitoring object.
+    :param entry_point: The entry point to be used for the configuration.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
+    sub_array_id = allocated_subarray.id
+
+    with context_monitoring.context_monitoring():
+        with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
+            entry_point.tear_down_subarray(sub_array_id)
+
+
 @when("I assign resources to it again")
 def i_assign_resources_to_it_again(
     running_telescope: fxt_types.running_telescope,

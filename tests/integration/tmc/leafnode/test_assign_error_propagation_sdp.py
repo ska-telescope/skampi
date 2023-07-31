@@ -94,9 +94,6 @@ def i_assign_resources_to_it_again(
             entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
 
-# @when("I release all resources assigned to it") from ...conftest
-
-
 @then("the SDP subarray throws an exception")
 def the_sdp_subarray_must_be_raise_exception(sut_settings: SutTestSettings):
     """

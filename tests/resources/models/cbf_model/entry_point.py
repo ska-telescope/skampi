@@ -16,6 +16,8 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     MessageBoardBuilder,
 )
 
+from ..mvp_model.object_with_obsconfig import HasObservation
+
 logger = logging.getLogger(__name__)
 
 # scan duration needs to be a singleton in order to keep track of scan
@@ -112,13 +114,13 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         # we skip tests if telescope low
 
 
-class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
+class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled, HasObservation):
     """Implementation of Assign Resources Step for cbf."""
 
     def __init__(self) -> None:
         """Init object."""
         super().__init__()
-        self._tel = names.TEL()
+        HasObservation.__init__(self)
 
     def do_assign_resources(
         self,
@@ -137,10 +139,11 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :param sb_id: a generic ide to identify a sb to assign resources
         """
         if self._tel.skamid:
+            config = self.observation.dish_allocation.receptor_ids
             subarray_name = self._tel.skamid.csp.cbf.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            self._log(f"commanding {subarray_name} with AddReceptors: {dish_ids} ")
-            subarray.command_inout("AddReceptors", dish_ids)
+            self._log(f"commanding {subarray_name} with AddReceptors: {config} ")
+            subarray.command_inout("AddReceptors", config)
         elif self._tel.skalow:
             subarray_name = self._tel.skalow.csp.cbf.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
@@ -178,7 +181,9 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         """
         builder = get_message_board_builder()
         subarray_name = self._tel.csp.cbf.subarray(sub_array_id)
-        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
+        builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "IDLE", ignore_first=False
+        )
 
         return builder
 
@@ -204,13 +209,13 @@ class CbfAsignResourcesStep(base.AssignResourcesStep, LogEnabled):
         if self._tel.skamid:
             subarray_name = self._tel.skamid.csp.cbf.subarray(sub_array_id)
             builder.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
-                "EMPTY"
+                "EMPTY", ignore_first=False
             )
 
         return builder
 
 
-class CbfConfigureStep(base.ConfigureStep, LogEnabled):
+class CbfConfigureStep(base.ConfigureStep, LogEnabled, HasObservation):
     """Implementation of Configure Scan Step for CBF."""
 
     def __init__(self) -> None:
@@ -469,7 +474,7 @@ class CBFSetOnlineStep(base.SetOnlineStep, LogEnabled):
         raise NotImplementedError()
 
 
-class CBFEntryPoint(CompositeEntryPoint):
+class CBFEntryPoint(CompositeEntryPoint, HasObservation):
     """Derived Entrypoint scoped to SDP element."""
 
     nr_of_subarrays = 2

@@ -1,5 +1,4 @@
 """Domain logic for the sdp."""
-import json
 import logging
 from time import sleep
 from typing import List
@@ -108,9 +107,9 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
 
         @retry(nr_of_reties=3)
         def command():
-            subarray.command_inout("ReleaseResources", "[]")
+            subarray.command_inout("ReleaseAllResources")
 
-        self._log(f"Commanding {subarray_name} to ReleaseResources")
+        self._log(f"Commanding {subarray_name} to ReleaseAllResources")
         command()
 
 

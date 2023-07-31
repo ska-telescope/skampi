@@ -3,11 +3,19 @@ import logging
 
 import pytest
 from pytest_bdd import scenario
+from resources.models.obsconfig.config import Observation
+from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 
 from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
+
+
+@pytest.fixture(name="set_obsconfig")
+def fxt_set_obsconfig(observation_config: Observation):
+    if names.TEL().skamid:
+        observation_config.update_target_specs(dishes="mkt-default")
 
 
 @pytest.fixture(name="composition")
@@ -23,7 +31,7 @@ def fxt_default_composition(csp_base_composition: conf_types.Composition):
 
 @pytest.mark.csprelated
 @pytest.mark.skalow
-@pytest.mark.csp
+@pytest.mark.csplmc
 @pytest.mark.assign
 @scenario(
     "features/csp_assign_resources.feature",
@@ -35,19 +43,22 @@ def test_assign_resources_to_csp_low_subarray():
 
 @pytest.mark.csp_related
 @pytest.mark.skamid
-@pytest.mark.csp
+@pytest.mark.csplmc
 @pytest.mark.assign
 @scenario(
     "features/csp_assign_resources.feature",
     "Assign resources to CSP mid subarray",
 )
-def test_assign_resources_to_csp_mid_subarray():
-    """Assign resources to CSP mid subarray."""
+def test_assign_resources_to_csp_mid_subarray(set_obsconfig: None):
+    """Assign resources to CSP mid subarray.
+
+    :param set_obsconfig: sets the observation config
+    """
 
 
 @pytest.mark.csp_related
 @pytest.mark.skalow
-@pytest.mark.csp
+@pytest.mark.csplmc
 @pytest.mark.assign
 @scenario(
     "features/csp_assign_resources.feature",
@@ -59,7 +70,7 @@ def test_release_resources_to_csp_low_subarray():
 
 @pytest.mark.csp_related
 @pytest.mark.skamid
-@pytest.mark.csp
+@pytest.mark.csplmc
 @pytest.mark.assign
 @scenario(
     "features/csp_assign_resources.feature",
@@ -79,7 +90,7 @@ def fxt_set_restart_after_abort(sut_settings: SutTestSettings):
     sut_settings.restart_after_abort = True
 
 
-@pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
+# @pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -94,7 +105,7 @@ def test_abort_in_resourcing_mid(
     """
 
 
-@pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
+# @pytest.mark.skip(reason="abort in resourcing not implemented yet for CSP")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

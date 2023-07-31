@@ -11,7 +11,8 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from .. import conftest
 
 
-@pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
+# @pytest.mark.skip(reason="Disable test as it need update to support new JSON Schema")
+@pytest.mark.csplmc
 @pytest.mark.skalow
 @pytest.mark.scan
 @scenario("features/csp_scan.feature", "Run a scan on csp subarray in low")
@@ -19,7 +20,7 @@ def test_run_a_scan_on_csp_subarray_in_low():
     """Run a scan on csp subarray in low."""
 
 
-@pytest.mark.csp_related
+@pytest.mark.csplmc
 @pytest.mark.skamid
 @pytest.mark.scan
 @scenario("features/csp_scan.feature", "Run a scan on csp subarray in mid")
@@ -30,7 +31,7 @@ def test_run_a_scan_on_csp_subarray_in_mid():
 @pytest.mark.csp_related
 @pytest.mark.skamid
 @pytest.mark.scan
-@pytest.mark.csp
+@pytest.mark.csplmc
 @scenario("features/csp_scan.feature", "Abort Csp scanning")
 def test_abort_scanning(disable_clear):
     """Abort scanning.
@@ -41,7 +42,7 @@ def test_abort_scanning(disable_clear):
 @pytest.mark.skip(reason="This functionality not tested at CSP/CBF, raised SKB-221.")
 @pytest.mark.skalow
 @pytest.mark.scan
-@pytest.mark.csp
+@pytest.mark.csplmc
 @scenario("features/csp_scan.feature", "Abort scanning on CSP Low")
 def test_abort_scanning_low(disable_clear):
     """Abort scanning.

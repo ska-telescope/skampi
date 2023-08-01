@@ -122,7 +122,7 @@ The forth file is a makefile where targets to run tests can be added or modified
 Changing the umbrella charts
 ----------------------------
 
-The `charts/ska-low/Chart.yaml` and `charts/ska-low/Chart.yaml` files are Helm umbrella charts
+The `charts/ska-low/Chart.yaml` and `charts/ska-mid/Chart.yaml` files are Helm umbrella charts
 determining which Helm charts should used in SKA-LOW and SKA-MID deployments. New charts
 should be added just below `dependencies:` as shown in the example below for ska-tango-base
 and ska-tango-util.  

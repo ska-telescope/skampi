@@ -1,5 +1,4 @@
 # TODO: Make this image version dynamic per pipeline as it's hard-coded here
-image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4
 
 variables:
   MINIKUBE: "false"
@@ -13,6 +12,9 @@ variables:
   DOMAIN: "branch"
   EXPOSE_All_DS: "true"
   CONFIG: "common"
+  CI_IMAGE: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.7
+
+image: $CI_IMAGE
 
 stages:
   - on-demand
@@ -46,13 +48,15 @@ build-base-image:
   rules:
     - changes:
         - images/ska-skampi-ci/Dockerfile
+        - images/ska-skampi-ci/release
     - if: $REBUILD_IMAGES
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
   script:
+    - export TAG=$(cat images/ska-skampi-ci/release)
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4 images/ska-skampi-ci/
-    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4
+    - docker build -t $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:$TAG images/ska-skampi-ci/
+    - docker push $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:$TAG
 
 # See: https://docs.gitlab.com/ee/ci/yaml/includes.html
 include:
@@ -81,6 +85,7 @@ include:
   - local: "/.gitlab/ci/psi-low.gitlab-ci.yml"
   - local: "/.gitlab/ci/psi-mid.gitlab-ci.yml"
   - local: "/.gitlab/ci/mid-itf.gitlab-ci.yml"
+  - local: "/.gitlab/ci/low-itf.gitlab-ci.yml"
 
   # .post steps
   - project: "ska-telescope/templates-repository"
@@ -89,6 +94,8 @@ include:
   # linting job
   - project: "ska-telescope/templates-repository"
     file: "gitlab-ci/includes/python-lint.gitlab-ci.yml"
+  - project: "ska-telescope/templates-repository"
+    file: "gitlab-ci/includes/notebook-lint.gitlab-ci.yml"
 
 python-lint:
-  image: $CI_REGISTRY/ska-telescope/ska-skampi/ska-skampi-ci:1.0.4
+  image: $CI_IMAGE

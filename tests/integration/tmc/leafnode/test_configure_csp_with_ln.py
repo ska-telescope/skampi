@@ -8,6 +8,7 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
 
+@pytest.mark.csp_related
 @pytest.mark.skamid
 @scenario(
     "features/tmc_cspln_configure.feature",
@@ -17,6 +18,7 @@ def test_configure_cspsubarray_for_a_scan_in_mid():
     """Configure cspsubarray for a scan in mid using the csp leaf node."""
 
 
+@pytest.mark.csp_related
 @pytest.mark.skalow
 @scenario(
     "features/tmc_cspln_configure.feature",

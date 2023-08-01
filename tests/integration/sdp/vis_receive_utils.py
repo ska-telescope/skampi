@@ -111,8 +111,23 @@ class K8sElementManager:
         were created.
         """
         LOG.info("Run cleanup")
+
+        # wait for pods to be deleted after deletion starts;
+        # this should spead up as compared to when one pod has to be
+        # completely deleted before the deletion of the next one could start
+        to_wait = []
+
         for cleanup_function, data in self.to_remove[::-1]:
             cleanup_function(*data)
+
+            if cleanup_function == self.delete_pod:
+                to_wait.append(data)
+
+        for data in to_wait:
+            pod_name, namespace = data
+            wait_for_predicate(pod_deleted, f"Pod {pod_name} delete", timeout=100)(
+                pod_name, namespace
+            )
 
     def create_pod(self, pod_name: str, namespace: str, pvc_name: str):
         """
@@ -139,7 +154,6 @@ class K8sElementManager:
 
         core_api.create_namespaced_pod(namespace, pod_spec)
         self.to_remove.append((self.delete_pod, (pod_name, namespace)))
-        wait_for_pod(pod_name, namespace, "Running", timeout=300)
 
     @staticmethod
     def delete_pod(pod_name: str, namespace: str):
@@ -150,8 +164,9 @@ class K8sElementManager:
         :param namespace: namespace where pod exists
         """
         core_api = client.CoreV1Api()
-        core_api.delete_namespaced_pod(pod_name, namespace, async_req=False)
-        wait_for_predicate(pod_deleted, f"Pod {pod_name} delete", timeout=100)(pod_name, namespace)
+        core_api.delete_namespaced_pod(
+            pod_name, namespace, async_req=False, grace_period_seconds=0
+        )
 
     def helm_install(self, release: str, chart: str, namespace: str, values_file: str):
         """
@@ -421,14 +436,16 @@ def compare_data(pod_name: str, container_name: str, namespace: str, measurement
     return resp
 
 
-def deploy_cbf_emulator(host: str, scan_id: int, k8s_element_manager: K8sElementManager):
+def deploy_cbf_emulator(endpoint: tuple, scan_id: int, k8s_element_manager: K8sElementManager):
     """
     Deploy the CBF emulator and check that it finished sending the data.
 
-    :param host: receiver's host
+    :param endpoint: A 2-tuple `(host, port)` indicating the first endpoint
+        where the receiver is expected to be listening on
     :param scan_id: ID of the scan that is being executed
     :param k8s_element_manager: Kubernetes element manager
     """
+    host, port = endpoint
 
     # Construct command for the sender
     command = [
@@ -439,7 +456,7 @@ def deploy_cbf_emulator(host: str, scan_id: int, k8s_element_manager: K8sElement
         "-o",
         "transmission.method=spead2_transmitters",
         "-o",
-        "transmission.channels_per_stream=6912",
+        "transmission.num_streams=2",
         "-o",
         "transmission.rate=10416667",
         "-o",
@@ -447,7 +464,11 @@ def deploy_cbf_emulator(host: str, scan_id: int, k8s_element_manager: K8sElement
         "-o",
         f"transmission.target_host={host}",
         "-o",
+        f"transmission.target_port_start={port}",
+        "-o",
         f"transmission.scan_id={scan_id}",
+        "-o",
+        "transmission.telescope=low",
     ]
     values = {
         "command": command,

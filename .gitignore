@@ -11,6 +11,7 @@ my_local_values.yaml
 gitlab_values.yaml
 /ska-cicd-deploy-minikube/
 docs/venv
+docs/.venv
 docs/Pipfile
 docs/Pipfile.lock
 /.vagrant
@@ -54,6 +55,7 @@ ansible-playbooks
 *__pycache__
 *.swp
 *.ipynb
+!notebooks/*.ipynb
 .pytest_cache/*
 cucumber.json
 junit-report.xml

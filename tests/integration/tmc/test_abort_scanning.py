@@ -21,6 +21,7 @@ def fxt_disable_abort(configured_subarray: fxt_types.configured_subarray):
     configured_subarray.disable_automatic_teardown()
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -30,6 +31,19 @@ def test_tmc_abort_scanning_on_mid_subarray(disable_clear_and_tear_down: None):
     """
     Run a abort on TMC mid subarray when Scanning
 
+    :param disable_clear_and_tear_down: object to disable clear and tear down
+    """
+
+
+@pytest.mark.skip(reason="This functionality not tested at CSP/CBF, raised SKB-221.")
+@pytest.mark.k8s
+@pytest.mark.k8sonly
+@pytest.mark.skalow
+@pytest.mark.scan
+@scenario("features/tmc_abort_scanning.feature", "Abort scanning Low")
+def test_tmc_abort_scanning_on_low_subarray(disable_clear_and_tear_down: None):
+    """
+    Run a abort on TMC low subarray when Scanning
     :param disable_clear_and_tear_down: object to disable clear and tear down
     """
 
@@ -55,7 +69,7 @@ def the_subarray_should_go_into_aborted_state(
     """
     tel = names.TEL()
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
-        str(tel.tm.subarray(sut_settings.subarray_id))
+        str(tel.tm.subarray(sut_settings.subarray_id)), time_source="local"
     )
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = tmc_subarray.read_attribute("obsState").value

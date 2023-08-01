@@ -126,7 +126,5 @@ def assign_resources_with_subarray(
             entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-    result = subarray.read_attribute("obsState").value
     long_running_command_result = subarray.read_attribute("longRunningCommandResult").value
-    logger.info(f"-------------->result{result}")
     logger.info(f"-------------->result{long_running_command_result}")

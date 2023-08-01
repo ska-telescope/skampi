@@ -6,10 +6,7 @@ tags:
   taranta_dashboard: false
 
 global:
-  labels:
-    app: ska-skampi
   minikube: true
-  exposeAllDS: true
   annotations:
     skampi: "true"
     app.gitlab.com/app: skampi
@@ -44,12 +41,10 @@ global:
       pullPolicy: IfNotPresent
 
 ska-landingpage:
-  legacy_compatibility: true
   enabled: true
   MVPInstance: ska-mid
 
 ska-ser-skuid:
-  legacy_compatibility: true
   enabled: true
   skuid:
     use_pv: false
@@ -68,7 +63,6 @@ ska-tango-base:
     use_pv: false
 
 ska-taranta:
-  legacy_compatibility: true
   enabled: true
   ingress:
     enabled: true
@@ -85,7 +79,6 @@ ska-taranta:
         memory: 1024Mi # 1024Mi = 1 GB mem
 
 ska-oso-oet:
-  legacy_compatibility: true
   enabled: true
   system: TM-mid
   telescope: SKA-mid
@@ -106,7 +99,6 @@ ska-oso-oet:
       memory: 1024Mi
 
 ska-db-oda:
-  legacy_compatibility: true
   enabled: false
 
 #telescope control
@@ -115,20 +107,13 @@ ska-mid-cbf-mcs:
   enabled: true
 ska-mid-cbf-tmleafnode:
   enabled: true
-  global:
-    minikube: false
-  deviceServers:
-    talondxlogconsumer:
-      instances: []
 
 ## mid-csp
 ska-csp-lmc-mid:
-  legacy_compatibility: true
   enabled: true
 
 ## sdp
 ska-sdp:
-  legacy_compatibility: true
   enabled: true
   lmc:
     prefix: mid
@@ -162,22 +147,18 @@ ska-sdp:
 
 ## tmc
 tmc-mid:
-  legacy_compatibility: true
   enabled: true
   telescope: SKA-mid
 
 ska-tango-archiver:
-  legacy_compatibility: true
   enabled: true
-  telescope: SKA-mid
   dbname: default_mvp_archiver_db
 
 ## dishmasters
 ska-sim-dishmaster:
-  legacy_compatibility: true
   enabled: true
 
 # alarm-handler
 ska-tango-alarmhandler:
-  legacy_compatibility: true
   enabled: true
+

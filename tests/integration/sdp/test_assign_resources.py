@@ -85,6 +85,7 @@ def test_abort_in_resourcing_sdp_subarray_in_mid(
     """
 
 
+@pytest.mark.skb224
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp

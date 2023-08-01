@@ -22,6 +22,7 @@ def test_cbf_start_up_telescope_mid():
     """Start up the cbf in mid."""
 
 
+@pytest.mark.skb224
 @pytest.mark.csp_related
 @pytest.mark.skalow
 @pytest.mark.cbf

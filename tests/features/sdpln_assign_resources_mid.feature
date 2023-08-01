@@ -5,4 +5,6 @@ Feature: Assign resources to sdp subarray using the leaf node
 		Given a SDP subarray in the EMPTY state
 		And a TMC SDP subarray Leaf Node
 		When I start up the telescope
-		Then I assign resources to it again
+		When I assign resources for the first time 
+		Then the SDP subarray must be in IDLE state
+		When I assign resources to it again

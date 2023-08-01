@@ -13,6 +13,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 )
 from ska_ser_skallop.utils.singleton import Memo
 
+from ...mvp_model.env import get_error_propagation
 from ...obsconfig.config import Observation
 from ...sdp_model.entry_point import (
     SdpAssignResourcesStep,
@@ -111,6 +112,49 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
 
         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
         command()
+
+    def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder | None:
+        """
+        Domain logic specifying what needs to be waited for
+        subarray assign resources is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: brd
+        """
+        if not get_error_propagation():
+            brd = get_message_board_builder()
+            subarray_name = self._tel.sdp.subarray(sub_array_id)
+            brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
+            return brd
+        else:
+            self._log("Error propagation true")
+
+    def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
+        """
+        Domain logic specifyig what needs to be done for waiting
+        for subarray to be scanning.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: brd
+        """
+        brd = get_message_board_builder()
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("RESOURCING")
+        return brd
+
+    def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
+        """
+        Domain logic specifying what needs to be waited
+        for subarray releasing resources is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: brd
+        """
+        brd = get_message_board_builder()
+        subarray_name = self._tel.sdp.subarray(sub_array_id)
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY")
+        return brd
 
 
 class SdpLnConfigureStep(SdpConfigureStep):

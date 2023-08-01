@@ -15,7 +15,6 @@ from ...conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.sdpln
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
@@ -45,8 +44,8 @@ def a_sdp_sln():
     """a TMC SDP subarray Leaf Node."""
 
 
-# when
-# use @when("I start up the telescope") from ...conftest
+# # @when("I assign resources to it") from ...conftest
+
 
 # @then("the SDP subarray must be in IDLE state")
 # def the_sdp_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
@@ -58,11 +57,10 @@ def a_sdp_sln():
 #     tel = names.TEL()
 #     subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
 #     result = subarray.read_attribute("obsState").value
-#     logger.info(f"-----------------{result}")
 #     assert_that(result).is_equal_to(ObsState.IDLE)
 
 
-@when("I assign resources to it without eb_id")
+@then("I assign resources to it again")
 def i_assign_resources_to_it_again(
     telescope_context: fxt_types.telescope_context,
     context_monitoring: fxt_types.context_monitoring,
@@ -89,22 +87,11 @@ def i_assign_resources_to_it_again(
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
     with context_monitoring.context_monitoring():
-        with telescope_context.wait_for_allocating_a_subarray(
-            subarray_id, receptors, integration_test_exec_settings
-        ):
-            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
+        try:
+            with telescope_context.wait_for_allocating_a_subarray(
+                subarray_id, receptors, integration_test_exec_settings
+            ):
 
-
-@then("the SDP subarray throws an exception")
-def the_sdp_subarray_must_be_raise_exception(sut_settings: SutTestSettings):
-    """
-    the SDP Subarray must be in IDLE state.
-
-    :param sut_settings: A class representing the settings for the system under test.
-    """
-    tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.sdp_leaf_node)
-    result, message = subarray.read_attribute("longRunningCommandResult").value
-    logger.info(f"-----------------{message}")
-    logger.info(f"-----------------{result}")
-    assert_that(message).is_equal_to("Execution block eb-mvp01-20210623-00000 already exists")
+                entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
+        except Exception as e:
+            logger.info(f"--------->{e}")

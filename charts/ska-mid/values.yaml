@@ -114,7 +114,6 @@ ska-db-oda:
 ska-mid-cbf-mcs:
   enabled: true
 ska-mid-cbf-tmleafnode:
-  legacy_compatibility: true
   enabled: true
   global:
     minikube: false

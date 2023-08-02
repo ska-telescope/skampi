@@ -21,7 +21,6 @@ ska-landingpage:
 ska-mid-cbf:
   enabled: true
 ska-csp-lmc-mid:
-  legacy_compatibility: true
   enabled: true
 ska-tmc-mid:
   legacy_compatibility: true

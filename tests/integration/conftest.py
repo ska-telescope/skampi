@@ -522,7 +522,7 @@ def i_command_it_to_scan(
     with context_monitoring.context_monitoring():
         configured_subarray.set_to_scanning(integration_test_exec_settings)
 
-
+@when("I assign resources and release for the first time")
 @when("I release all resources assigned to it")
 def i_release_all_resources_assigned_to_it(
     allocated_subarray: fxt_types.allocated_subarray,

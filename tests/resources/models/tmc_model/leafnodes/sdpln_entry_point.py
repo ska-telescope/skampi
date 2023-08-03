@@ -120,15 +120,16 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param sub_array_id: The index id of the subarray to control
         :return: brd
         """
-        try:
-            brd = get_message_board_builder()
-            subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-            brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
+        brd = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
+        if get_error_propagation():
             brd.set_waiting_on(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to((f"{self.unique_id}","0"))
             return brd
-        except Exception:
-            brd.set_waiting_on(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to((f"{self.unique_id}","3"))
-            self._log("Error propagation true")
+
+        brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
+        brd.set_waiting_on(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to((f"{self.unique_id}","0"))
+        return brd
+
 
     def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """

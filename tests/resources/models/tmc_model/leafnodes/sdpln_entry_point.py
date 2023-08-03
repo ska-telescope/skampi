@@ -12,6 +12,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     NoOpStep,
 )
 from ska_ser_skallop.utils.singleton import Memo
+from tests.resources.models.obsconfig.config import Observation
 
 from ...mvp_model.env import get_error_propagation
 from ...obsconfig.config import Observation
@@ -61,6 +62,9 @@ class StartUpLnStep(StartUpStep):
 
 class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
     """Implementation of Assign Resources Step for SDP LN."""
+    def __init__(self, observation: Observation) -> None:
+        super().__init__(observation)
+        self.count = 0
 
     def do_assign_resources(
         self,
@@ -122,11 +126,12 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-        if get_error_propagation():
+        if self.count == 1:
             brd.set_waiting_on(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to((f"{self.unique_id}","0"))
             return brd
 
         brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
+        self.count = 1
         return brd
 
 

@@ -128,6 +128,7 @@ class SdpAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         super().__init__()
         self._tel = names.TEL()
         self.observation = observation
+        self.unique_id = None
 
     def do_assign_resources(
         self,

@@ -68,3 +68,4 @@ def the_sdp_subarray_must_be_in_error(sut_settings: SutTestSettings):
     unique_id, message = subarray.read_attribute("longRunningCommandResult").value
     logger.info(f"message is{unique_id}")
     logger.info(f"message is{message}")
+    assert message == "Execution block eb-mvp01-20210623-00000 already exists"

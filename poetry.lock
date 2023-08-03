@@ -274,6 +274,19 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
+name = "blinker"
+version = "1.6.2"
+description = "Fast, simple object-to-object and broadcast signaling"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
 name = "cachetools"
 version = "5.3.1"
 description = "Extensible memoizing collections and decorators"
@@ -389,14 +402,14 @@ reference = 'ska'
 
 [[package]]
 name = "comm"
-version = "0.1.3"
+version = "0.1.4"
 description = "Jupyter Python Comm implementation, for usage in ipykernel, xeus-python etc."
 category = "main"
 optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
-traitlets = ">=5.3"
+traitlets = ">=4"
 
 [package.extras]
 lint = ["black (>=22.6.0)", "mdformat (>0.7)", "mdformat-gfm (>=0.3.5)", "ruff (>=0.0.156)"]
@@ -410,7 +423,7 @@ reference = 'ska'
 
 [[package]]
 name = "connexion"
-version = "2.14.2"
+version = "2.14.1"
 description = "Connexion - API first applications with OpenAPI/Swagger and Flask"
 category = "main"
 optional = false
@@ -418,21 +431,21 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 clickclick = ">=1.2,<21"
-flask = ">=1.0.4,<2.3"
+flask = ">=1.0.4,<3"
 inflection = ">=0.3.1,<0.6"
 itsdangerous = ">=0.24"
 jsonschema = ">=2.5.1,<5"
 packaging = ">=20"
 PyYAML = ">=5.1,<7"
 requests = ">=2.9.1,<3"
-werkzeug = ">=1.0,<2.3"
+werkzeug = ">=1.0,<3"
 
 [package.extras]
 aiohttp = ["MarkupSafe (>=0.23)", "aiohttp (>=2.3.10,<4)", "aiohttp-jinja2 (>=0.14.0,<2)"]
 docs = ["sphinx-autoapi (==1.8.1)"]
-flask = ["flask (>=1.0.4,<2.3)", "itsdangerous (>=0.24)"]
+flask = ["flask (>=1.0.4,<3)", "itsdangerous (>=0.24)"]
 swagger-ui = ["swagger-ui-bundle (>=0.0.2,<0.1)"]
-tests = ["MarkupSafe (>=0.23)", "aiohttp (>=2.3.10,<4)", "aiohttp-jinja2 (>=0.14.0,<2)", "aiohttp-remotes", "decorator (>=5,<6)", "flask (>=1.0.4,<2.3)", "itsdangerous (>=0.24)", "pytest (>=6,<7)", "pytest-aiohttp", "pytest-cov (>=2,<3)", "swagger-ui-bundle (>=0.0.2,<0.1)", "testfixtures (>=6,<7)"]
+tests = ["MarkupSafe (>=0.23)", "aiohttp (>=2.3.10,<4)", "aiohttp-jinja2 (>=0.14.0,<2)", "aiohttp-remotes", "decorator (>=5,<6)", "flask (>=1.0.4,<3)", "itsdangerous (>=0.24)", "pytest (>=6,<7)", "pytest-aiohttp", "pytest-cov (>=2,<3)", "swagger-ui-bundle (>=0.0.2,<0.1)", "testfixtures (>=6,<7)"]
 
 [package.source]
 type = "legacy"
@@ -486,7 +499,7 @@ reference = 'ska'
 
 [[package]]
 name = "debugpy"
-version = "1.6.7"
+version = "1.6.8"
 description = "An implementation of the Debug Adapter Protocol for Python"
 category = "main"
 optional = false
@@ -666,17 +679,18 @@ reference = 'ska'
 
 [[package]]
 name = "flask"
-version = "2.2.5"
+version = "2.3.2"
 description = "A simple framework for building complex web applications."
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [package.dependencies]
-click = ">=8.0"
-itsdangerous = ">=2.0"
-Jinja2 = ">=3.0"
-Werkzeug = ">=2.2.2"
+blinker = ">=1.6.2"
+click = ">=8.1.3"
+itsdangerous = ">=2.1.2"
+Jinja2 = ">=3.1.2"
+Werkzeug = ">=2.3.3"
 
 [package.extras]
 async = ["asgiref (>=3.2)"]
@@ -1076,7 +1090,7 @@ reference = 'ska'
 
 [[package]]
 name = "jsonschema"
-version = "4.18.4"
+version = "4.18.6"
 description = "An implementation of JSON Schema validation for Python"
 category = "main"
 optional = false
@@ -2841,6 +2855,23 @@ url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
 reference = 'ska'
 
 [[package]]
+name = "ska-tango-testing"
+version = "0.6.0"
+description = "Test harness for testing SKA Tango devices"
+category = "main"
+optional = false
+python-versions = ">=3.8,<4.0"
+
+[package.dependencies]
+numpy = ">=1.19.0,<2.0.0"
+pytango = ">=9.3.3,<10.0.0"
+
+[package.source]
+type = "legacy"
+url = "https://artefact.skatelescope.org/repository/pypi-all/simple"
+reference = 'ska'
+
+[[package]]
 name = "ska-telmodel"
 version = "1.8.0"
 description = "SKA telescope model library"
@@ -3209,17 +3240,17 @@ reference = 'ska'
 
 [[package]]
 name = "werkzeug"
-version = "2.2.3"
+version = "2.3.6"
 description = "The comprehensive WSGI web application library."
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [package.dependencies]
 MarkupSafe = ">=2.1.1"
 
 [package.extras]
-watchdog = ["watchdog"]
+watchdog = ["watchdog (>=2.3)"]
 
 [package.source]
 type = "legacy"
@@ -3259,7 +3290,7 @@ reference = 'ska'
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "b6c0516f47c49be2ec86c6bacc653d2d69e6cfabc349084198a9fb7a4d2551f8"
+content-hash = "1f22a4adbfd3956690362cec46542ad370a3606e4f4f3cd3a9a0f41941eaf04d"
 
 [metadata.files]
 aiohttp = [
@@ -3434,6 +3465,10 @@ black = [
     {file = "black-22.12.0-py3-none-any.whl", hash = "sha256:436cc9167dd28040ad90d3b404aec22cedf24a6e4d7de221bec2730ec0c97bcf"},
     {file = "black-22.12.0.tar.gz", hash = "sha256:229351e5a18ca30f447bf724d007f890f97e13af070bb6ad4c0a441cd7596a2f"},
 ]
+blinker = [
+    {file = "blinker-1.6.2-py3-none-any.whl", hash = "sha256:c3d739772abb7bc2860abf5f2ec284223d9ad5c76da018234f6f50d6f31ab1f0"},
+    {file = "blinker-1.6.2.tar.gz", hash = "sha256:4afd3de66ef3a9f8067559fb7a1cbe555c17dcbe15971b05d1b625c3e7abe213"},
+]
 cachetools = [
     {file = "cachetools-5.3.1-py3-none-any.whl", hash = "sha256:95ef631eeaea14ba2e36f06437f36463aac3a096799e876ee55e5cdccb102590"},
     {file = "cachetools-5.3.1.tar.gz", hash = "sha256:dce83f2d9b4e1f732a8cd44af8e8fab2dbe46201467fc98b3ef8f269092bf62b"},
@@ -3602,12 +3637,12 @@ colorama = [
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
 ]
 comm = [
-    {file = "comm-0.1.3-py3-none-any.whl", hash = "sha256:16613c6211e20223f215fc6d3b266a247b6e2641bf4e0a3ad34cb1aff2aa3f37"},
-    {file = "comm-0.1.3.tar.gz", hash = "sha256:a61efa9daffcfbe66fd643ba966f846a624e4e6d6767eda9cf6e993aadaab93e"},
+    {file = "comm-0.1.4-py3-none-any.whl", hash = "sha256:6d52794cba11b36ed9860999cd10fd02d6b2eac177068fdd585e1e2f8a96e67a"},
+    {file = "comm-0.1.4.tar.gz", hash = "sha256:354e40a59c9dd6db50c5cc6b4acc887d82e9603787f83b68c01a80a923984d15"},
 ]
 connexion = [
-    {file = "connexion-2.14.2-py2.py3-none-any.whl", hash = "sha256:a73b96a0e07b16979a42cde7c7e26afe8548099e352cf350f80c57185e0e0b36"},
-    {file = "connexion-2.14.2.tar.gz", hash = "sha256:dbc06f52ebeebcf045c9904d570f24377e8bbd5a6521caef15a06f634cf85646"},
+    {file = "connexion-2.14.1-py2.py3-none-any.whl", hash = "sha256:f343717241b4c4802a694c38fee66fb1693c897fe4ea5a957fa9b3b07caf6394"},
+    {file = "connexion-2.14.1.tar.gz", hash = "sha256:99aa5781e70a7b94f8ffae8cf89f309d49cdb811bbd65a8e2f2546f3b19a01e6"},
 ]
 contextlib2 = [
     {file = "contextlib2-21.6.0-py2.py3-none-any.whl", hash = "sha256:3fbdb64466afd23abaf6c977627b75b6139a5a3e8ce38405c5b413aed7a0471f"},
@@ -3680,24 +3715,24 @@ darglint = [
     {file = "darglint-1.8.1.tar.gz", hash = "sha256:080d5106df149b199822e7ee7deb9c012b49891538f14a11be681044f0bb20da"},
 ]
 debugpy = [
-    {file = "debugpy-1.6.7-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:b3e7ac809b991006ad7f857f016fa92014445085711ef111fdc3f74f66144096"},
-    {file = "debugpy-1.6.7-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e3876611d114a18aafef6383695dfc3f1217c98a9168c1aaf1a02b01ec7d8d1e"},
-    {file = "debugpy-1.6.7-cp310-cp310-win32.whl", hash = "sha256:33edb4afa85c098c24cc361d72ba7c21bb92f501104514d4ffec1fb36e09c01a"},
-    {file = "debugpy-1.6.7-cp310-cp310-win_amd64.whl", hash = "sha256:ed6d5413474e209ba50b1a75b2d9eecf64d41e6e4501977991cdc755dc83ab0f"},
-    {file = "debugpy-1.6.7-cp37-cp37m-macosx_10_15_x86_64.whl", hash = "sha256:38ed626353e7c63f4b11efad659be04c23de2b0d15efff77b60e4740ea685d07"},
-    {file = "debugpy-1.6.7-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:279d64c408c60431c8ee832dfd9ace7c396984fd7341fa3116aee414e7dcd88d"},
-    {file = "debugpy-1.6.7-cp37-cp37m-win32.whl", hash = "sha256:dbe04e7568aa69361a5b4c47b4493d5680bfa3a911d1e105fbea1b1f23f3eb45"},
-    {file = "debugpy-1.6.7-cp37-cp37m-win_amd64.whl", hash = "sha256:f90a2d4ad9a035cee7331c06a4cf2245e38bd7c89554fe3b616d90ab8aab89cc"},
-    {file = "debugpy-1.6.7-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:5224eabbbeddcf1943d4e2821876f3e5d7d383f27390b82da5d9558fd4eb30a9"},
-    {file = "debugpy-1.6.7-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bae1123dff5bfe548ba1683eb972329ba6d646c3a80e6b4c06cd1b1dd0205e9b"},
-    {file = "debugpy-1.6.7-cp38-cp38-win32.whl", hash = "sha256:9cd10cf338e0907fdcf9eac9087faa30f150ef5445af5a545d307055141dd7a4"},
-    {file = "debugpy-1.6.7-cp38-cp38-win_amd64.whl", hash = "sha256:aaf6da50377ff4056c8ed470da24632b42e4087bc826845daad7af211e00faad"},
-    {file = "debugpy-1.6.7-cp39-cp39-macosx_11_0_x86_64.whl", hash = "sha256:0679b7e1e3523bd7d7869447ec67b59728675aadfc038550a63a362b63029d2c"},
-    {file = "debugpy-1.6.7-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:de86029696e1b3b4d0d49076b9eba606c226e33ae312a57a46dca14ff370894d"},
-    {file = "debugpy-1.6.7-cp39-cp39-win32.whl", hash = "sha256:d71b31117779d9a90b745720c0eab54ae1da76d5b38c8026c654f4a066b0130a"},
-    {file = "debugpy-1.6.7-cp39-cp39-win_amd64.whl", hash = "sha256:c0ff93ae90a03b06d85b2c529eca51ab15457868a377c4cc40a23ab0e4e552a3"},
-    {file = "debugpy-1.6.7-py2.py3-none-any.whl", hash = "sha256:53f7a456bc50706a0eaabecf2d3ce44c4d5010e46dfc65b6b81a518b42866267"},
-    {file = "debugpy-1.6.7.zip", hash = "sha256:c4c2f0810fa25323abfdfa36cbbbb24e5c3b1a42cb762782de64439c575d67f2"},
+    {file = "debugpy-1.6.8-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:8c1f5a3286fb633f691c594649e9d2e8e30292c9eaf49e38d7da525151b33a83"},
+    {file = "debugpy-1.6.8-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:406b3a6cb7548d73260f69a511178ec9196779cafda68e563488c6f94cc88670"},
+    {file = "debugpy-1.6.8-cp310-cp310-win32.whl", hash = "sha256:6830947f68b41cd6abe20941ec3303a8452c40ff5fe3637c6efe233e395ecebc"},
+    {file = "debugpy-1.6.8-cp310-cp310-win_amd64.whl", hash = "sha256:1fe3baa28f5a14d8d2a60dded9ea088e27b33f1854ae9a0a1faa1ba03a8b7e47"},
+    {file = "debugpy-1.6.8-cp37-cp37m-macosx_11_0_x86_64.whl", hash = "sha256:5502e14de6b7241ecf7c4fa4ec6dd61d0824da7a09020c7ffe7be4cd09d36f24"},
+    {file = "debugpy-1.6.8-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f4a7193cec3f1e188963f6e8699e1187f758a0a4bbce511b3ad40caf618fc888"},
+    {file = "debugpy-1.6.8-cp37-cp37m-win32.whl", hash = "sha256:591aac0e69bc75102d9f9294f1228e5d9ff9aa17b8c88e48b1bbb3dab8a54dcc"},
+    {file = "debugpy-1.6.8-cp37-cp37m-win_amd64.whl", hash = "sha256:bb27b8e08f8e60705de6cf05b5da4c21e5a0bc2ca73f06fc36646f456df18ff5"},
+    {file = "debugpy-1.6.8-cp38-cp38-macosx_11_0_x86_64.whl", hash = "sha256:6ca1c92e30e2aaeca156d5bd76e1587c23e332474a7b12e1900dd632b31ce05e"},
+    {file = "debugpy-1.6.8-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:959f9b8181a4c544b067daff8d881cd3ac4c7aec1a3a4f41f81c529795b3d864"},
+    {file = "debugpy-1.6.8-cp38-cp38-win32.whl", hash = "sha256:4172383b961a2334d29168c7f7b24f2f99d29291a945016986c78a5683fba915"},
+    {file = "debugpy-1.6.8-cp38-cp38-win_amd64.whl", hash = "sha256:05d1b288167ce3bfc8e1912ebed036207a27b9569ae4476f18287902501689c6"},
+    {file = "debugpy-1.6.8-cp39-cp39-macosx_11_0_x86_64.whl", hash = "sha256:95f7ce92450b72abcf0c479539a7d00c20e68f1f1fb447eef0b08d2a635d96d7"},
+    {file = "debugpy-1.6.8-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f16bb157b6018ce6a23b64653a6b1892f046cc2b0576df1794c6b22f9fd82118"},
+    {file = "debugpy-1.6.8-cp39-cp39-win32.whl", hash = "sha256:f7a80c50b89d8fb49c9e5b6ee28c0bfb822fbd33fef0f2f9843724d0d1984e4e"},
+    {file = "debugpy-1.6.8-cp39-cp39-win_amd64.whl", hash = "sha256:2345beced3e79fd8ac4158e839a1604d5cccd19beb45561a1ffe2e5b33465f28"},
+    {file = "debugpy-1.6.8-py2.py3-none-any.whl", hash = "sha256:1ca76d3ebb0e6368e107cf2e005e848d3c7705a5b513fdf65470a6f4e49a2de7"},
+    {file = "debugpy-1.6.8.zip", hash = "sha256:3b7091d908dec70022b8966c32b1e9eaf183ff05291edf1d147fee153f4cb9f8"},
 ]
 decorator = [
     {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
@@ -3737,8 +3772,8 @@ flake8-pyproject = [
     {file = "flake8_pyproject-1.2.3-py3-none-any.whl", hash = "sha256:6249fe53545205af5e76837644dc80b4c10037e73a0e5db87ff562d75fb5bd4a"},
 ]
 flask = [
-    {file = "Flask-2.2.5-py3-none-any.whl", hash = "sha256:58107ed83443e86067e41eff4631b058178191a355886f8e479e347fa1285fdf"},
-    {file = "Flask-2.2.5.tar.gz", hash = "sha256:edee9b0a7ff26621bd5a8c10ff484ae28737a2410d99b0bb9a6850c7fb977aa0"},
+    {file = "Flask-2.3.2-py3-none-any.whl", hash = "sha256:77fd4e1249d8c9923de34907236b747ced06e5467ecac1a7bb7115ae0e9670b0"},
+    {file = "Flask-2.3.2.tar.gz", hash = "sha256:8c2f9abd47a9e8df7f0c3f091ce9497d011dc3b31effcf4c85a6e2b50f4114ef"},
 ]
 frozenlist = [
     {file = "frozenlist-1.4.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:764226ceef3125e53ea2cb275000e309c0aa5464d43bd72abd661e27fffc26ab"},
@@ -3879,8 +3914,8 @@ jsonpickle = [
     {file = "jsonpickle-2.2.0.tar.gz", hash = "sha256:7b272918b0554182e53dc340ddd62d9b7f902fec7e7b05620c04f3ccef479a0e"},
 ]
 jsonschema = [
-    {file = "jsonschema-4.18.4-py3-none-any.whl", hash = "sha256:971be834317c22daaa9132340a51c01b50910724082c2c1a2ac87eeec153a3fe"},
-    {file = "jsonschema-4.18.4.tar.gz", hash = "sha256:fb3642735399fa958c0d2aad7057901554596c63349f4f6b283c493cf692a25d"},
+    {file = "jsonschema-4.18.6-py3-none-any.whl", hash = "sha256:dc274409c36175aad949c68e5ead0853aaffbe8e88c830ae66bb3c7a1728ad2d"},
+    {file = "jsonschema-4.18.6.tar.gz", hash = "sha256:ce71d2f8c7983ef75a756e568317bf54bc531dc3ad7e66a128eae0d51623d8a3"},
 ]
 jsonschema-spec = [
     {file = "jsonschema_spec-0.1.3-py3-none-any.whl", hash = "sha256:b3cde007ad65c2e631e2f8653cf187124a2c714d02d9fafbab68ad64bf5745d6"},
@@ -4895,6 +4930,10 @@ ska-tango-base = [
     {file = "ska_tango_base-0.18.0-py3-none-any.whl", hash = "sha256:a6052c697c0a0932f37224b60495f02010462e57eb18eb043c9b479fe6c9121a"},
     {file = "ska_tango_base-0.18.0.tar.gz", hash = "sha256:7478ad181a3d6cbcee87a6ae30aaeff0c7632006c98e2d58261100f6da7fd073"},
 ]
+ska-tango-testing = [
+    {file = "ska_tango_testing-0.6.0-py3-none-any.whl", hash = "sha256:3a96b090998b445df013cba33721d110298a946b277a7de6fe312f3da1219504"},
+    {file = "ska_tango_testing-0.6.0.tar.gz", hash = "sha256:fdc1d807dc1cad2ddc1d754cb5ee9debe846db667de12e412474388c3fff97d6"},
+]
 ska-telmodel = [
     {file = "ska_telmodel-1.8.0-py3-none-any.whl", hash = "sha256:958624fc8faa17ec9ae7364f0106b00509419d4bbb3a54fc63b5b6983fe2d2a2"},
     {file = "ska_telmodel-1.8.0.tar.gz", hash = "sha256:ebb4502210072ad2262c5a710fccbca5b493443f484c5d0c9dc4a39fe02db57a"},
@@ -5068,8 +5107,8 @@ websockets = [
     {file = "websockets-11.0.3.tar.gz", hash = "sha256:88fc51d9a26b10fc331be344f1781224a375b78488fc343620184e95a4b27016"},
 ]
 werkzeug = [
-    {file = "Werkzeug-2.2.3-py3-none-any.whl", hash = "sha256:56433961bc1f12533306c624f3be5e744389ac61d722175d543e1751285da612"},
-    {file = "Werkzeug-2.2.3.tar.gz", hash = "sha256:2e1ccc9417d4da358b9de6f174e3ac094391ea1d4fbef2d667865d819dfd0afe"},
+    {file = "Werkzeug-2.3.6-py3-none-any.whl", hash = "sha256:935539fa1413afbb9195b24880778422ed620c0fc09670945185cce4d91a8890"},
+    {file = "Werkzeug-2.3.6.tar.gz", hash = "sha256:98c774df2f91b05550078891dee5f0eb0cb797a522c757a2452b9cee5b202330"},
 ]
 wrapt = [
     {file = "wrapt-1.15.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:ca1cccf838cd28d5a0883b342474c630ac48cac5df0ee6eacc9c7290f76b11c1"},

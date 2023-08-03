@@ -20,6 +20,8 @@ from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.infra_mon.configuration import get_mvp_release
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from ska_tango_testing.mock.tango.event_callback import MockTangoEventCallbackGroup
+from tango import EventType
 
 logger = logging.getLogger(__name__)
 
@@ -424,6 +426,7 @@ def i_assign_resources_to(
     composition: conf_types.Composition,
     integration_test_exec_settings: fxt_types.exec_settings,
     sut_settings: SutTestSettings,
+    change_event_callbacks,
 ):
     """
     I assign resources to it
@@ -437,6 +440,7 @@ def i_assign_resources_to(
     :param integration_test_exec_settings: Object containing
         the execution settings for the integration test
     :param sut_settings: Object containing the system under test settings
+    :param change_event_callbacks: To check for change event callbacks
     """
 
     subarray_id = sut_settings.subarray_id
@@ -461,6 +465,22 @@ def i_assign_resources_to(
                 "Execution block eb-mvp01-20210623-00000 already exists",
                 ignore_first=False,
                 settings=integration_test_exec_settings,
+            )
+            subarray = con_config.get_device_proxy(
+                tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
+            )
+            unique_id, message = subarray.read_attribute("longRunningCommandResult").value
+            logger.info(f"message is{unique_id}")
+            logger.info(f"message is{message}")
+            exception_message = "Execution block eb-mvp01-20210623-00000 already exists"
+            subarray.subscribe_event(
+                "longRunningCommandResult",
+                EventType.CHANGE_EVENT,
+                change_event_callbacks["longRunningCommandResult"],
+            )
+            change_event_callbacks["longRunningCommandResult"].assert_change_event(
+                (unique_id[0], exception_message),
+                lookahead=4,
             )
 
 
@@ -623,3 +643,18 @@ def the_subarray_should_go_into_an_aborted_state(
     subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
     result = subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.ABORTED)
+
+
+@pytest.fixture()
+def change_event_callbacks() -> MockTangoEventCallbackGroup:
+    """
+    Return a dictionary of Tango device change event callbacks with
+    asynchrony support.
+
+    :return: a collections.defaultdict that returns change event
+        callbacks by name.
+    """
+    return MockTangoEventCallbackGroup(
+        "longRunningCommandResult",
+        timeout=50.0,
+    )

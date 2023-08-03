@@ -87,7 +87,7 @@ def a_deployed_taranta_web_dashboard_service(env: ENV) -> str:
     return f"http://{env.host}/{env.namespace}/taranta/dashboard/"
 
 
-@pytest.mark.skb224
+# @pytest.mark.skb224
 @pytest.mark.taranta
 @pytest.mark.skamid
 @pytest.mark.skalow

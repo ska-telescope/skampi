@@ -121,12 +121,18 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param sub_array_id: The index id of the subarray to control
         :return: brd
         """
-        if not get_error_propagation():
+        try:
             brd = get_message_board_builder()
             subarray_name = self._tel.sdp.subarray(sub_array_id)
             brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
+            subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
+            _, message = subarray_name.read_attribute("longRunningCommandResult").value
+            assert message in ["0","1","2"]
             return brd
-        else:
+        except AssertionError:
+            subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
+            _, message = subarray_name.read_attribute("longRunningCommandResult").value
+            assert message == "3"
             self._log("Error propagation true")
 
     def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:

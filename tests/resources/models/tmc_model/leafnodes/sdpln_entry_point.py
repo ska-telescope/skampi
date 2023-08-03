@@ -127,7 +127,6 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
             return brd
 
         brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
-        brd.set_waiting_on(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to((f"{self.unique_id}","0"))
         return brd
 
 

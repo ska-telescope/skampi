@@ -12,7 +12,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from tests.resources.models.mvp_model.env import set_error_propagation
 
-from ..conftest import SutTestSettings
+from ...conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
 

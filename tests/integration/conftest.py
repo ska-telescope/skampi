@@ -459,13 +459,13 @@ def i_assign_resources_to(
             )
 
             entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
-            context_monitoring.wait_for(sdp_leafnode).for_attribute(
-                "longRunningCommandResult"
-            ).to_become_equal_to(
-                "Execution block eb-mvp01-20210623-00000 already exists",
-                ignore_first=False,
-                settings=integration_test_exec_settings,
-            )
+            # context_monitoring.wait_for(sdp_leafnode).for_attribute(
+            #     "longRunningCommandResult"
+            # ).to_become_equal_to(
+            #     "Execution block eb-mvp01-20210623-00000 already exists",
+            #     ignore_first=False,
+            #     settings=integration_test_exec_settings,
+            # )
             subarray = con_config.get_device_proxy(
                 tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
             )

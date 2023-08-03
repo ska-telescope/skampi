@@ -123,7 +123,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         try:
             brd = get_message_board_builder()
             subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-            brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("IDLE")
+            brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
             brd.set_waiting_on(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to((f"{self.unique_id}","0"))
             return brd
         except Exception:

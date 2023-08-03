@@ -12,7 +12,7 @@ from assertpy import assert_that
 from pytest_bdd import given, parsers, scenario, then, when
 from resources.models.mvp_model.states import ObsState
 from ska_oso_oet_client.activityclient import ActivityAdapter
-from ska_oso_scripting.objects import SubArray
+# from ska_oso_scripting.objects import SubArray
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types

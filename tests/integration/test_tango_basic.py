@@ -52,7 +52,7 @@ def i_expect_a_response_to_be_returned_from_the_device_server():
     """I expect a response to be returned from the device server."""
 
 
-@pytest.mark.skb224
+# @pytest.mark.skb224
 @pytest.mark.taranta
 @pytest.mark.skalow
 @pytest.mark.taranta

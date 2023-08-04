@@ -1,4 +1,5 @@
 import logging
+import time
 
 import pytest
 from assertpy import assert_that
@@ -105,20 +106,42 @@ def i_assign_resources_to_sdpsln(
             )
 
 
+def get_long_running_command_result(sut_settings: SutTestSettings):
+    # Replace this function with your actual code to fetch the attribute value.
+    # For demonstration purposes, I'll just return a dummy value '3' here.
+    tel = names.TEL()
+    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
+    return subarray.read_attribute("longRunningCommandResult").value[1]
+
+
+def wait_for_attribute_value(attribute_name, target_value, sut_settings, timeout=300, delay=5):
+    start_time = time.time()
+    while True:
+        attribute_value = get_long_running_command_result(sut_settings)
+
+        if attribute_value == target_value:
+            print(f"The {attribute_name} attribute value is now {target_value}.")
+            break
+
+        elapsed_time = time.time() - start_time
+        if elapsed_time >= timeout:
+            print(
+                f"Timeout: The {attribute_name} attribute value did not become {target_value} within {timeout} seconds."
+            )
+            break
+
+        time.sleep(delay)
+
+
 @then("the lrcr event throws error")
 def lrcr_event(
     sut_settings: SutTestSettings,
     running_telescope: fxt_types.running_telescope,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
 ):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-    subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
-    context_monitoring.wait_for(subarray_name).for_attribute(
-        "longRunningCommandResult"
-    ).to_become_equal_to("3", ignore_first=True, settings=integration_test_exec_settings)
-    _, message = subarray.read_attribute("longRunningCommandResult").value
+    wait_for_attribute_value("longRunningCommandResult", "3", sut_settings)
+    message = subarray.read_attribute("longRunningCommandResult").value[1]
 
     assert message == "3"
     running_telescope.disable_automatic_setdown()

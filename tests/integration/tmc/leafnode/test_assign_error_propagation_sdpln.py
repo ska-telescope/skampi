@@ -153,10 +153,10 @@ def lrcr_event(
     assert message == "3"
     running_telescope.disable_automatic_setdown()
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
+    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
     subarray_name = tel.sdp.subarray(sut_settings.subarray_id)
     context_monitoring.wait_for(subarray_name).for_attribute("obsState").to_become_equal_to(
         "EMPTY", ignore_first=False, settings=integration_test_exec_settings
      )
-    # result = subarray.read_attribute("sdpSubarrayObsState").value
-    # assert result == "0"
+    result = subarray.read_attribute("sdpSubarrayObsState").value
+    assert result == "0"

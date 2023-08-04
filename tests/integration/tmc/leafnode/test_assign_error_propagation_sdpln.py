@@ -114,10 +114,10 @@ def lrcr_event(
 ):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-    subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
-    context_monitoring.wait_for(subarray_name).for_attribute(
-        "longRunningCommandResult"
-    ).to_become_equal_to("3", ignore_first=False, settings=integration_test_exec_settings)
+    # subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
+    # context_monitoring.wait_for(subarray_name).for_attribute(
+    #     "longRunningCommandResult"
+    # ).to_become_equal_to("3", ignore_first=False, settings=integration_test_exec_settings)
     _, message = subarray.read_attribute("longRunningCommandResult").value
 
     assert message == "3"

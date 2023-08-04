@@ -111,14 +111,18 @@ def get_long_running_command_result(sut_settings: SutTestSettings):
     # For demonstration purposes, I'll just return a dummy value '3' here.
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-    return subarray.read_attribute("longRunningCommandResult").value[1]
+
+    value_attribute = subarray.read_attribute("longRunningCommandResult").value
+    logger.info(f"------->attribute_value{value_attribute}")
+    return value_attribute
 
 
 def wait_for_attribute_value(attribute_name, target_value, sut_settings, timeout=300, delay=5):
     start_time = time.time()
     while True:
-        attribute_value = get_long_running_command_result(sut_settings)
 
+        attribute_value = get_long_running_command_result(sut_settings)
+        logger.info(f"------->attribute_value{attribute_value}")
         if attribute_value == target_value:
             print(f"The {attribute_name} attribute value is now {target_value}.")
             break

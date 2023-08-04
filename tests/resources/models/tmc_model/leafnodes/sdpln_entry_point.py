@@ -69,7 +69,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param observation: An instance of the Observation class or None.
             If None, a new instance of Observation will be created.
         """
-        super().__init__()
+        super().__init__(observation)
         self.unique_id: str | None = None
 
     def do_assign_resources(

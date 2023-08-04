@@ -1,7 +1,7 @@
 
 
 import logging
-import os
+import os,time
 import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
@@ -78,8 +78,22 @@ def i_assign_resources_to_sdpsln(
 
 
 @then("the lrcr event throws error")
-def lrcr_event(sut_settings: SutTestSettings):
+def lrcr_event(
+    sut_settings: SutTestSettings,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings
+    ):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-    _, message = subarray.read_attribute("longRunningCommandResult").value
-    assert message == "3"
+
+    _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
+    start_time= time.time()
+    elapsed_time = 0
+    time_out = 30
+    while resultcode_or_message!="3" and elapsed_time>time_out:
+        time.sleep(0.1)
+        _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
+        elapsed_time =time.time() - start_time
+        
+    
+    assert resultcode_or_message == "3"

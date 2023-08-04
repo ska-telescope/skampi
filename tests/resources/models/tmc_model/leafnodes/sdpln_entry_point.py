@@ -116,8 +116,8 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # we retry this command three times in case there is a transitory race
         # condition
 
-
-        subarray.command_inout("ReleaseAllResources")
+        if not bool(os.getenv("ERROR_PROPOGATION")):
+            subarray.command_inout("ReleaseAllResources")
 
         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
 
@@ -140,7 +140,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         else:         
             brd = get_message_board_builder()
             subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-            brd.set_waiting_on(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to((f"{self.unique_id}","3"))
+            brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("EMPTY")
             return brd
 
 

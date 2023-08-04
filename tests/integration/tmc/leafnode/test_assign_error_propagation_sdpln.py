@@ -128,4 +128,4 @@ def lrcr_event(
     #     "E", ignore_first=False, settings=integration_test_exec_settings
     # )
     result = subarray.read_attribute("sdpSubarrayObsState").value
-    assert_that(result).is_equal_to("EMPTY")
+    assert result == "0"

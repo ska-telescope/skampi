@@ -122,8 +122,8 @@ def wait_for_attribute_value(attribute_name, target_value, sut_settings, timeout
     while True:
 
         attribute_value = get_long_running_command_result(sut_settings)
-        logger.info(f"------->attribute_value{attribute_value}")
-        if attribute_value == target_value:
+        logger.info(f"------->attribute_value{attribute_value[1]}")
+        if attribute_value[1] == target_value:
             print(f"The {attribute_name} attribute value is now {target_value}.")
             break
 

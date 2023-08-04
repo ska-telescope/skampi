@@ -121,6 +121,8 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param sub_array_id: The index id of the subarray to control
         :return: brd
         """
+        error_propagation= os.environ["ERROR_PROPOGATION"]
+        self._log(f" env variable: {error_propagation}")
         if not os.environ["ERROR_PROPOGATION"]:
             brd = get_message_board_builder()
             subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node

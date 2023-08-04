@@ -103,6 +103,11 @@ class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep):
         :param sub_array_id: The index id of the subarray to control
         :return: brd
         """
+        brd = get_message_board_builder()
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to(["RESOURCING","EMPTY"])
+        return brd
 
     def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """

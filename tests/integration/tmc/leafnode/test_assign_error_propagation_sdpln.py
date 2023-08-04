@@ -63,9 +63,12 @@ def i_release_all_resources_assigned_to_it(
         with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
             entry_point.tear_down_subarray(sub_array_id)
 
+@given("subarray again in empty")
+def subarray_in_empty(set_sdp_ln_error_entry_point):
+    pass
+
 @when("I assign resources for the second time with same eb_id")
 def i_assign_resources_to_sdpsln(
-    set_sdp_ln_error_entry_point,
     running_telescope: fxt_types.running_telescope,
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,
@@ -90,7 +93,6 @@ def i_assign_resources_to_sdpsln(
 
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
-    set_error_propagation(True)
     with context_monitoring.context_monitoring():
         with running_telescope.wait_for_allocating_a_subarray(
             subarray_id, receptors, integration_test_exec_settings

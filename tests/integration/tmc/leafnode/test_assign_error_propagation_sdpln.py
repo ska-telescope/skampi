@@ -70,7 +70,8 @@ def i_release_all_resources_assigned_to_it(
 def subarray_in_empty(set_sdp_ln_error_entry_point):
     pass
 
-
+time.sleep(3
+           )
 @when("I assign resources for the second time with same eb_id")
 def i_assign_resources_to_sdpsln(
     running_telescope: fxt_types.running_telescope,
@@ -141,6 +142,8 @@ def wait_for_attribute_value(attribute_name, target_value, sut_settings, timeout
 def lrcr_event(
     sut_settings: SutTestSettings,
     running_telescope: fxt_types.running_telescope,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
 ):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
@@ -150,9 +153,10 @@ def lrcr_event(
     assert message == "3"
     running_telescope.disable_automatic_setdown()
     tel = names.TEL()
-    # subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
-    # context_monitoring.wait_for(subarray_name).for_attribute("obsState").to_become_equal_to(
-    #     "E", ignore_first=False, settings=integration_test_exec_settings
-    # )
+    subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
+    subarray_name = tel.sdp.subarray(sut_settings.sub_array_id)
+    context_monitoring.wait_for(subarray_name).for_attribute("obsState").to_become_equal_to(
+        "EMPTY", ignore_first=False, settings=integration_test_exec_settings
+     )
     result = subarray.read_attribute("sdpSubarrayObsState").value
     assert result == "0"

@@ -89,6 +89,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
 
 
         result_code, unique_id = subarray.command_inout("AssignResources", config)
+        self._log(f"result code and unique id : {result_code,unique_id}")
         self.unique_id = unique_id
 
         self._log(f"commanding {subarray_name} with AssignResources: {config} ")

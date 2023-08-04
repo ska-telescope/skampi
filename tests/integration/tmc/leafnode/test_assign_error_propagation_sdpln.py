@@ -30,7 +30,6 @@ def test_error_propogation_from_tmc_subarray_in_low():
 
 @given("a TMC SDP subarray Leaf Node", target_fixture="composition")
 def an_telescope_subarray(
-    set_sdp_ln_entry_point,
     base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """
@@ -42,7 +41,27 @@ def an_telescope_subarray(
     """
     return base_composition
 
+@given("I assign resources and release for the first time")
+def i_release_all_resources_assigned_to_it(
+    set_sdp_ln_entry_point,
+    allocated_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """
+    I release all resources assigned to it.
 
+    :param allocated_subarray: The allocated subarray to be configured.
+    :param context_monitoring: Context monitoring object.
+    :param entry_point: The entry point to be used for the configuration.
+    :param integration_test_exec_settings: The integration test execution settings.
+    """
+    sub_array_id = allocated_subarray.id
+
+    with context_monitoring.context_monitoring():
+        with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
+            entry_point.tear_down_subarray(sub_array_id)
 
 @when("I assign resources for the second time with same eb_id")
 def i_assign_resources_to_sdpsln(

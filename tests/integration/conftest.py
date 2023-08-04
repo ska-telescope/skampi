@@ -459,7 +459,7 @@ def i_assign_resources_to(
             )
 
             entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
-    
+
 
 # scan configuration
 @when("I configure it for a scan")
@@ -521,6 +521,7 @@ def i_command_it_to_scan(
     integration_test_exec_settings.attr_synching = False
     with context_monitoring.context_monitoring():
         configured_subarray.set_to_scanning(integration_test_exec_settings)
+
 
 @given("I assign resources and release for the first time")
 @when("I release all resources assigned to it")

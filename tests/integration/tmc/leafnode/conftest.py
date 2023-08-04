@@ -36,13 +36,14 @@ def fxt_set_sdp_ln_entry_point(
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
     sut_settings.scan_duration = 6
-    SDPLnErrorEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
-    exec_env.entrypoint = SDPLnErrorEntryPoint
+    SDPLnEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
+    exec_env.entrypoint = SDPLnEntryPoint
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = [
         "sdp",
         "sdp control",
     ]
+
 
 @pytest.fixture(name="set_sdp_ln_error_entry_point")
 @pytest.mark.usefixtures("set_up_subarray_log_checking_for_sdp_ln")

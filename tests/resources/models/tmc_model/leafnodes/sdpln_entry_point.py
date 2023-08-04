@@ -12,6 +12,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     NoOpStep,
 )
 from ska_ser_skallop.utils.singleton import Memo
+
 from tests.resources.models.obsconfig.config import Observation
 
 from ...mvp_model.env import get_error_propagation
@@ -87,7 +88,6 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # we retry this command three times in case there is a transitory race
         # condition
 
-
         result_code, unique_id = subarray.command_inout("AssignResources", config)
         self.unique_id = unique_id
 
@@ -106,11 +106,9 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # we retry this command three times in case there is a transitory race
         # condition
 
-
         subarray.command_inout("ReleaseAllResources")
 
         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
-
 
     def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder | None:
         """
@@ -122,12 +120,11 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-        brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
+        brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to(
+            ["IDLE", "EMPTY"]
+        )
 
         return brd
-
-
-
 
     def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """

@@ -12,20 +12,22 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     NoOpStep,
 )
 from ska_ser_skallop.utils.singleton import Memo
+
 from tests.resources.models.obsconfig.config import Observation
 
 from ...mvp_model.env import get_error_propagation
 from ...obsconfig.config import Observation
-from ...sdp_model.entry_point import (
-    SdpAssignResourcesStep,
-
+from ...sdp_model.entry_point import SdpAssignResourcesStep
+from .sdpln_entry_point import (
+    NoOpStep,
+    SdpLnConfigureStep,
+    SDPLnEntryPoint,
+    SDPLnScanStep,
+    StartUpLnStep,
 )
-
-from .sdpln_entry_point import SDPLnEntryPoint,SdpLnConfigureStep,SDPLnScanStep,NoOpStep,StartUpLnStep
 from .utils import retry
 
 logger = logging.getLogger(__name__)
-
 
 
 class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep):
@@ -55,7 +57,6 @@ class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep):
         # we retry this command three times in case there is a transitory race
         # condition
 
-
         result_code, unique_id = subarray.command_inout("AssignResources", config)
         self.unique_id = unique_id
 
@@ -74,11 +75,9 @@ class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep):
         # we retry this command three times in case there is a transitory race
         # condition
 
-
         subarray.command_inout("ReleaseAllResources")
 
         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
-
 
     def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder | None:
         """
@@ -90,10 +89,10 @@ class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-        brd.set_waiting_on(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to((f"{self.unique_id}","0"))
+        brd.set_waiting_on(subarray_name).for_attribute(
+            "longRunningCommandResult"
+        ).to_become_equal_to((f"{self.unique_id}", "0"))
         return brd
-
-
 
     def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
@@ -106,7 +105,7 @@ class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep):
         brd = get_message_board_builder()
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
-        ).to_become_equal_to(["RESOURCING","EMPTY"])
+        ).to_become_equal_to(["RESOURCING", "EMPTY"])
         return brd
 
     def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -121,11 +120,6 @@ class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep):
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY")
         return brd
-
-
-
-
-
 
 
 class SDPLnErrorEntryPoint(CompositeEntryPoint):
@@ -149,7 +143,6 @@ class SDPLnErrorEntryPoint(CompositeEntryPoint):
         self.start_up_step = StartUpLnStep(self.nr_of_subarrays)
         self.configure_scan_step = SdpLnConfigureStep(observation)
         self.scan_step = SDPLnScanStep(observation)
-
 
 
 ASSIGN_MID_JSON = {

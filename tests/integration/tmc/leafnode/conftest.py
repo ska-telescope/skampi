@@ -8,6 +8,7 @@ import pytest
 from pytest_bdd import given
 from resources.models.tmc_model.leafnodes.cspln_entry_point import CSPLnEntryPoint
 from resources.models.tmc_model.leafnodes.sdpln_entry_point import SDPLnEntryPoint
+from resources.models.tmc_model.leafnodes.sdpln_error_entry_point import SDPLnErrorEntryPoint
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
@@ -37,6 +38,32 @@ def fxt_set_sdp_ln_entry_point(
     sut_settings.scan_duration = 6
     SDPLnEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     exec_env.entrypoint = SDPLnEntryPoint
+    #  TODO  determine correct scope for readiness checks to work
+    exec_env.scope = [
+        "sdp",
+        "sdp control",
+    ]
+
+@pytest.fixture(name="set_sdp_ln_error_entry_point")
+@pytest.mark.usefixtures("set_up_subarray_log_checking_for_sdp_ln")
+def fxt_set_sdp_ln_error_entry_point(
+    nr_of_subarrays: int,
+    set_session_exec_env: fxt_types.set_session_exec_env,
+    sut_settings: conftest.SutTestSettings,
+):
+    """
+    Fixture to use for setting up the entry point as from only the
+    interface to sdp.
+
+    :param nr_of_subarrays: The number of subarrays to set in the SUT settings
+    :param set_session_exec_env: A fixture to set session execution environment.
+    :param sut_settings: A class representing the settings for the system under test.
+    """
+    exec_env = set_session_exec_env
+    sut_settings.nr_of_subarrays = nr_of_subarrays
+    sut_settings.scan_duration = 6
+    SDPLnErrorEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
+    exec_env.entrypoint = SDPLnErrorEntryPoint
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = [
         "sdp",

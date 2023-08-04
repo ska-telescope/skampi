@@ -46,6 +46,7 @@ def an_telescope_subarray(
 
 @when("I assign resources for the second time with same eb_id")
 def i_assign_resources_to_sdpsln(
+    set_sdp_ln_error_entry_point,
     running_telescope: fxt_types.running_telescope,
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,

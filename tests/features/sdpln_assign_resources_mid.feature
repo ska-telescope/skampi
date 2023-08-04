@@ -7,4 +7,3 @@ Feature: Assign resources to sdp subarray using the leaf node
 		When I assign resources for the first time	
 		Then the SDP subarray must be in IDLE state
 		Then the lrcr event throws error
-		Then the obsState is empty and teardown is disabled

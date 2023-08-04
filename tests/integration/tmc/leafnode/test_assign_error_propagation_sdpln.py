@@ -106,19 +106,9 @@ def i_assign_resources_to_sdpsln(
 
 
 @then("the lrcr event throws error")
-def lrcr_event(sut_settings: SutTestSettings):
+def lrcr_event(sut_settings: SutTestSettings, running_telescope: fxt_types.running_telescope):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
     _, message = subarray.read_attribute("longRunningCommandResult").value
     assert message == "3"
-
-
-@then("the obsState is empty and teardown is disabled")
-def obstate_empty_disable_teardown(
-    sut_settings: SutTestSettings, running_telescope: fxt_types.running_telescope
-):
-    running_telescope.disable_automatic_setdown
-    tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.EMPTY)
+    running_telescope.disable_automatic_setdown()

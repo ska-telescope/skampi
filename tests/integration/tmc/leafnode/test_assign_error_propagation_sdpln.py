@@ -106,9 +106,26 @@ def i_assign_resources_to_sdpsln(
 
 
 @then("the lrcr event throws error")
-def lrcr_event(sut_settings: SutTestSettings, running_telescope: fxt_types.running_telescope):
+def lrcr_event(
+    sut_settings: SutTestSettings,
+    running_telescope: fxt_types.running_telescope,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
+    subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
+    context_monitoring.wait_for(subarray_name).for_attribute(
+        "longRunningCommandResult"
+    ).to_become_equal_to("3", ignore_first=False, settings=integration_test_exec_settings)
     _, message = subarray.read_attribute("longRunningCommandResult").value
+
     assert message == "3"
     running_telescope.disable_automatic_setdown()
+    # tel = names.TEL()
+    # subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
+    # context_monitoring.wait_for(subarray_name).for_attribute("obsState").to_become_equal_to(
+    #     "E", ignore_first=False, settings=integration_test_exec_settings
+    # )
+    result = subarray.read_attribute("sdpSubarrayObsState").value
+    assert_that(result).is_equal_to("EMPTY")

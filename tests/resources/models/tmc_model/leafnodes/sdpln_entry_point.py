@@ -1,5 +1,6 @@
 """Domain logic for the sdp."""
 import logging
+import os
 from time import sleep
 from typing import List
 
@@ -120,12 +121,17 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param sub_array_id: The index id of the subarray to control
         :return: brd
         """
-        brd = get_message_board_builder()
-        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-        brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
+        if not os.environ["ERROR_PROPOGATION"]:
+            brd = get_message_board_builder()
+            subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
+            brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
 
-        return brd
-
+            return brd
+        else:
+            
+            brd = get_message_board_builder()
+            subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
+            brd.set_waiting_on(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to("0")
 
 
 
@@ -137,11 +143,12 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param sub_array_id: The index id of the subarray to control
         :return: brd
         """
-        brd = get_message_board_builder()
-        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
-            "obsState"
-        ).to_become_equal_to("RESOURCING")
-        return brd
+        if not os.environ["ERROR_PROPOGATION"]:
+            brd = get_message_board_builder()
+            brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+                "obsState"
+            ).to_become_equal_to("RESOURCING")
+            return brd
 
     def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """

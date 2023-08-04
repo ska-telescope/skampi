@@ -36,8 +36,8 @@ def fxt_set_sdp_ln_entry_point(
     exec_env = set_session_exec_env
     sut_settings.nr_of_subarrays = nr_of_subarrays
     sut_settings.scan_duration = 6
-    SDPLnEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
-    exec_env.entrypoint = SDPLnEntryPoint
+    SDPLnErrorEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
+    exec_env.entrypoint = SDPLnErrorEntryPoint
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = [
         "sdp",

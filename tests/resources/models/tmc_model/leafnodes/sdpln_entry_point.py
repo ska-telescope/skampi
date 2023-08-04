@@ -15,7 +15,6 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
 from ska_ser_skallop.utils.singleton import Memo
 from tests.resources.models.obsconfig.config import Observation
 
-from ...mvp_model.env import get_error_propagation
 from ...obsconfig.config import Observation
 from ...sdp_model.entry_point import (
     SdpAssignResourcesStep,

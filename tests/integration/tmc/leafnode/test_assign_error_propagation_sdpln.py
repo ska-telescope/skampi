@@ -67,7 +67,7 @@ def i_assign_resources_to_sdpsln(
         the execution settings for the integration test
     :param sut_settings: Object containing the system under test settings
     """
-    os.environ["ERROR_PROPOGATION"] = True
+    os.environ["ERROR_PROPOGATION"] = "True"
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
     with context_monitoring.context_monitoring():

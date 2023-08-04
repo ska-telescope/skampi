@@ -63,12 +63,10 @@ def i_release_all_resources_assigned_to_it(
         with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
             entry_point.tear_down_subarray(sub_array_id)
 
-@given("subarray again in empty")
-def subarray_in_empty(set_sdp_ln_error_entry_point):
-    pass
 
 @when("I assign resources for the second time with same eb_id")
 def i_assign_resources_to_sdpsln(
+    set_sdp_ln_error_entry_point,
     running_telescope: fxt_types.running_telescope,
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,

@@ -120,9 +120,9 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param sub_array_id: The index id of the subarray to control
         :return: brd
         """
-        error_propagation= os.environ["ERROR_PROPOGATION"]
+        error_propagation= bool(os.getenv("ERROR_PROPOGATION"))
         self._log(f" env variable: {error_propagation}")
-        if not os.environ["ERROR_PROPOGATION"]:
+        if not bool(os.getenv("ERROR_PROPOGATION")):
             brd = get_message_board_builder()
             subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
             brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
@@ -144,7 +144,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param sub_array_id: The index id of the subarray to control
         :return: brd
         """
-        if not os.environ["ERROR_PROPOGATION"]:
+        if not bool(os.getenv("ERROR_PROPOGATION")):
             brd = get_message_board_builder()
             brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
                 "obsState"

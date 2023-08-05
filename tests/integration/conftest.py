@@ -20,8 +20,7 @@ from ska_ser_skallop.mvp_control.describing.mvp_names import DeviceName
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.infra_mon.configuration import get_mvp_release
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
-from ska_tango_testing.mock.tango.event_callback import MockTangoEventCallbackGroup
-from tango import EventType
+
 
 logger = logging.getLogger(__name__)
 
@@ -622,16 +621,3 @@ def the_subarray_should_go_into_an_aborted_state(
     assert_that(result).is_equal_to(ObsState.ABORTED)
 
 
-@pytest.fixture()
-def change_event_callbacks() -> MockTangoEventCallbackGroup:
-    """
-    Return a dictionary of Tango device change event callbacks with
-    asynchrony support.
-
-    :return: a collections.defaultdict that returns change event
-        callbacks by name.
-    """
-    return MockTangoEventCallbackGroup(
-        "longRunningCommandResult",
-        timeout=50.0,
-    )

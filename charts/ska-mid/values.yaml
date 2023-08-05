@@ -6,6 +6,7 @@ tags:
   taranta_dashboard: false
 
 global:
+  operator: true
   minikube: true
   annotations:
     skampi: "true"

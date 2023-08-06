@@ -217,7 +217,14 @@ check-pod-throttling:  # check if pods in a namespace have been throttled
 	@echo "Check throttling information at the following link:"; \
 	echo "https://k8s.stfc.skao.int/grafana/d/6581e46e4e5c7ba40a07646395ef7b23/kubernetes-compute-resources-pod?orgId=1&refresh=10s&var-datasource=default&var-cluster=stfc-ska-monitor&var-namespace=$(KUBE_NAMESPACE)&var-pod=databaseds-tangodb-databaseds-tango-base-0&from=now-1h&to=now"
 
-upload-test-results:  # uploads tests results
+
+# Note that in tests/test-exec-*.json files the chart_info field is changed to
+# auto generated dependency information from runtime configuration (builds/chart_config.yaml)
+# instead of the local repo chart file (charts/ska-mid|low/Chart.yaml)
+# This is a hack at best to keep the same functionality without breaking skallop or
+# requiring extra work. This is expected to change in future once 
+# more requirements regarding config management is known
+upload-test-results: extract-chart-config## uploads tests results
 	@if ! [[ -f build/status ]]; then \
 		echo "k8s-post-test: something went very wrong with the test container (no build/status file) - ABORTING!"; \
 		exit 1; \
@@ -249,3 +256,18 @@ python-do-lint:
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON_RUNNER) flake8 --show-source --statistics --max-line-length $(PYTHON_LINE_LENGTH) $(PYTHON_SWITCHES_FOR_FLAKE8) $(PYTHON_LINT_TARGET)
 	PYTHONPATH=$(PYTHONPATH) $(PYTHON_RUNNER) pylint --output-format=parseable,parseable:build/code_analysis.stdout,pylint_junit.JUnitReporter:build/reports/linting-python.xml --max-line-length $(PYTHON_LINE_LENGTH) $(PYTHON_SWITCHES_FOR_PYLINT) $(PYTHON_LINT_TARGET)
 	@make --no-print-directory join-lint-reports
+
+extract-chart-config:
+	@echo "Deleting existing config exporters..."
+	@helm uninstall -n $(KUBE_NAMESPACE) ska-config-exporter && kubectl -n $(KUBE_NAMESPACE) delete --ignore-not-found pod/ska-config-export
+	@echo "Installing config exporter from artefact.skao.int/ska-config-exporter:0.0.3..."
+	@echo " This is needed to define the access roles"
+	@helm repo add skatelescope $(CAR_HELM_REPOSITORY_URL) && helm repo update
+	@helm install -n $(KUBE_NAMESPACE) ska-config-exporter skatelescope/ska-config-exporter:0.0.3 --set persistentService=false
+	@echo "Exporting config into build/deploy_config.json"
+	@kubectl run -q -n $(KUBE_NAMESPACE) --rm -i --tty --restart=Never --image "artefact.skao.int/ska-k8s-config-exporter:0.0.3" \
+	--env TANGO_HOST=$(TANGO_HOST) --env NAMESPACE=$(KUBE_NAMESPACE) config-export -- ska-config-export -a '["versionId", "buildState"]' > deploy_config.json
+	@echo "Extracting chart config into build/chart_info.yml"
+	@cat build/deploy_config.json | jq -r '.helm | to_entries[1].value | { "apiVersion": "v2", "name": .chart_name, "description": "", "type": "application", "version": .chart_version, "appVersion": .app_version, "dependencies": .dependencies }' | yq -Pyo > build/chart_info.yml
+	@echo "Done!"
+.PHONY: extract-chart-config

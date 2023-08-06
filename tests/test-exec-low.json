@@ -1,57 +1,63 @@
 {
-    "test_plans": [
-        {
-            "select_from_tag": {
-                "XTP-16540": "XTP-16540",
-                "XTP-5539": "XTP-5539",
-                "XTP-5589": "XTP-5589",
-                "XTP-3325": "XTP-3325",
-                "XTP-4021": "XTP-4021",
-                "default": "XTP-3325"
-            }
-        }
-    ],
-    "name": {
-        "env": "CI_COMMIT_BRANCH",
-        "maps_to": {
-            "master": "Skampi master branch Test Execution",
-            "default": "Skampi branch Test Execution"
-        }
-    },
-    "test_report": "build/report.json",
-    "project_id": "XTP",
-    "test_environments": [
-        {
-            "env": "TEST_ENV",
-            "maps_to": {
-                "dev": "dev-testing",
-                "PSI": "PSI",
-                "default": "STFC-CI"
-            }
-        }
-    ],
-    "labels": [
-        {
-            "env": "CI_COMMIT_BRANCH",
-            "maps_to": {
-                "default": "branch",
-                "master": "master"
-            }
-        }
-    ],
-    "description": "Test execution results as generated from https://gitlab.com/ska-telescope/ska-skampi\n",
-    "versions": [
-        {
-            "env": "CI_COMMIT_BRANCH",
-            "maps_to": {
-                "default": "",
-                "master": "PI17"
-            }
-        }
-    ],
-    "environmental_variables": [
-        "CI_JOB_URL",
-        "CI_COMMIT_TITLE",
-        "CI_JOB_STARTED_AT"
-    ]
+  "test_plans": [
+    {
+      "select_from_tag": {
+        "XTP-16540": "XTP-16540",
+        "XTP-5539": "XTP-5539",
+        "XTP-5589": "XTP-5589",
+        "XTP-3325": "XTP-3325",
+        "XTP-4021": "XTP-4021",
+        "default": "XTP-3325"
+      }
+    }
+  ],
+  "name": {
+    "env": "CI_COMMIT_BRANCH",
+    "maps_to": {
+      "master": "Skampi master branch Test Execution",
+      "default": "Skampi branch Test Execution"
+    }
+  },
+  "chart_info": {
+    "env": "DEPLOYMENT_CONFIGURATION",
+    "maps_to": {
+      "ska-mid": "build/chart_info.yml"
+    }
+  },
+  "test_report": "build/report.json",
+  "project_id": "XTP",
+  "test_environments": [
+    {
+      "env": "TEST_ENV",
+      "maps_to": {
+        "dev": "dev-testing",
+        "PSI": "PSI",
+        "default": "STFC-CI"
+      }
+    }
+  ],
+  "labels": [
+    {
+      "env": "CI_COMMIT_BRANCH",
+      "maps_to": {
+        "default": "branch",
+        "master": "master"
+      }
+    }
+  ],
+  "description": "Test execution results as generated from https://gitlab.com/ska-telescope/ska-skampi\n",
+  "versions": [
+    {
+      "env": "CI_COMMIT_BRANCH",
+      "maps_to": {
+        "default": "",
+        "master": "PI17"
+      }
+    }
+  ],
+  "environmental_variables": [
+    "CI_JOB_URL",
+    "CI_COMMIT_TITLE",
+    "CI_JOB_STARTED_AT"
+  ]
 }

@@ -258,8 +258,9 @@ python-do-lint:
 	@make --no-print-directory join-lint-reports
 
 extract-chart-config:
-	@echo "Deleting existing config exporters..."
-	@helm uninstall -n $(KUBE_NAMESPACE) ska-config-exporter && kubectl -n $(KUBE_NAMESPACE) delete --ignore-not-found pod/ska-config-export
+	@echo "Deleting existing config exporters(if any)..."
+	@helm uninstall ska-config-exporter -n $(KUBE_NAMESPACE) || true
+	@kubectl -n $(KUBE_NAMESPACE) delete --ignore-not-found pod/ska-config-export
 	@echo "Installing config exporter from artefact.skao.int/ska-config-exporter:0.0.3..."
 	@echo " This is needed to define the access roles"
 	@helm repo add skatelescope $(CAR_HELM_REPOSITORY_URL) && helm repo update

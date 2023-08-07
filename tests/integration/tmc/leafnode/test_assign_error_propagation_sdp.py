@@ -68,8 +68,8 @@ def lrcr_event(
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
 
     _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
-    logger.info(f'---------------> value of 0 {subarray.read_attribute("longRunningCommandResult").value[0]}')
-    logger.info(f'---------------> value of 1 {subarray.read_attribute("longRunningCommandResult").value[1]}')
+    # logger.info(f'---------------> value of 0 {subarray.read_attribute("longRunningCommandResult").value[0]}')
+    # logger.info(f'---------------> value of 1 {subarray.read_attribute("longRunningCommandResult").value[1]}')
     start_time = time.time()
     elapsed_time = 0
     time_out = 30

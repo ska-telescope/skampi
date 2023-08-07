@@ -149,7 +149,9 @@ def lrcr_event(
 ):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-    wait_for_attribute_value("longRunningCommandResult", "3", sut_settings)
+    value_attribute = subarray.read_attribute("longRunningCommandResult").value[1]
+    if value_attribute.endswith("AssignResources"):
+        wait_for_attribute_value("longRunningCommandResult", "3", sut_settings)
     message = subarray.read_attribute("longRunningCommandResult").value[1]
 
     assert message == "3"

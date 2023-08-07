@@ -11,7 +11,7 @@ from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ...conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
-# @pytest.mark.sdpln
+@pytest.mark.sdpln
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(

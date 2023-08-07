@@ -269,7 +269,7 @@ extract-chart-config:
 	helm install -n $(KUBE_NAMESPACE) ska-config-exporter skatelescope/ska-k8s-config-exporter --version 0.0.3 --set persistentService=false
 	@echo "Exporting config into build/deploy_config.json"
 	kubectl run -q -n $(KUBE_NAMESPACE) --rm -i --tty --restart=Never --image "artefact.skao.int/ska-k8s-config-exporter:0.0.3" \
-	--env TANGO_HOST=$(TANGO_HOST) --env NAMESPACE=$(KUBE_NAMESPACE) ska-config-export -- ska-config-export -a '["versionId", "buildState"]' > deploy_config.json
+	--env TANGO_HOST=$(TANGO_HOST) --env NAMESPACE=$(KUBE_NAMESPACE) ska-config-export -- ska-config-export -a '["versionId", "buildState"]' > build/deploy_config.json
 	@echo "Extracting chart config into build/chart_info.yml"
 	cat build/deploy_config.json | jq -r '.helm | to_entries[1].value | { "apiVersion": "v2", "name": .chart_name, "description": "", "type": "application", "version": .chart_version, "appVersion": .app_version, "dependencies": .dependencies }' | yq -Poy > build/chart_info.yml
 	@echo "Done!"

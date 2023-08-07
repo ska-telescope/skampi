@@ -105,12 +105,10 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
 
         # we retry this command three times in case there is a transitory race
         # condition
-        value = subarray.read_attribute("sdpSubarrayObsState").value
-        if value != 0:
 
-            subarray.command_inout("ReleaseAllResources")
+        subarray.command_inout("ReleaseAllResources")
 
-            self._log(f"Commanding {subarray_name} to ReleaseAllResources")
+        self._log(f"Commanding {subarray_name} to ReleaseAllResources")
 
     def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder | None:
         """
@@ -123,7 +121,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to(
-            ["IDLE", "EMPTY"]
+            "IDLE"
         )
 
         return brd

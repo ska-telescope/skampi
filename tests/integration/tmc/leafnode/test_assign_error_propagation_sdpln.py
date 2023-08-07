@@ -1,6 +1,6 @@
-"""Assign Resource on a SDP Subarray"""
-import json
 import logging
+import os
+import time
 
 import pytest
 from assertpy import assert_that
@@ -10,85 +10,75 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+
+from tests.resources.models.obsconfig.config import Observation
+
 from ...conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
 
 
 @pytest.mark.sdpln
+@pytest.mark.k8s
+@pytest.mark.k8sonly
 @pytest.mark.skalow
-@pytest.mark.assign
 @scenario(
-    "features/sdpln_assign_resources_mid.feature",
-    "Assign resources to sdp low subarray using TMC leaf node",
+    "features/sdpln_assign_reasources_mid.feature",
+    "Error propagation",
 )
-def test_assign_resources_on_sdp_in_low():
-    """AssignResources on sdp subarray in low using the leaf node."""
+def test_error_propogation_from_tmc_subarray_in_low():
+    """Release resources from tmc subarrays in mid."""
 
 
-@given("a SDP subarray in the EMPTY state", target_fixture="composition")
-def an_sdp_subarray_in_empty_state(
-    set_sdp_ln_entry_point, base_composition: conf_types.Composition
+@given("a TMC SDP subarray Leaf Node", target_fixture="composition")
+def an_telescope_subarray(
+    set_sdp_ln_entry_point,
+    base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """
-    an SDP subarray in Empty state.
+    an telescope subarray.
 
-    :param set_sdp_ln_entry_point: An object to set sdp leafnode entry point
+    :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
     :param base_composition : An object for base composition
     :return: base composition
     """
     return base_composition
 
 
-@given("a TMC SDP subarray Leaf Node")
-def a_sdp_sln():
-    """a TMC SDP subarray Leaf Node."""
-
-
-@when("I assign resources command for the first time")
-def assign_resources_for_the_first_time(   
-    entry_point: fxt_types.entry_point,
-    running_telescope: fxt_types.running_telescope,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings,
-    sb_config: fxt_types.sb_config,
-    composition: conf_types.Composition,
-    sut_settings: SutTestSettings,
-    ):
-    """Assign resources for two times"""
-
-    subarray_id = sut_settings.subarray_id
-    receptors = sut_settings.receptors
-    with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_allocating_a_subarray(
-            subarray_id, receptors, integration_test_exec_settings
-        ):
-            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
-
-
-@then("the SDP subarray must be in IDLE state")
-def the_sdp_subarray_must_be_in_idle_state(sut_settings: SutTestSettings):
+@when("I assign resources for the second time with same eb_id")
+def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings):
     """
-    the SDP Subarray must be in IDLE state.
-
-    :param sut_settings: A class representing the settings for the system under test.
+    I assign resources to it
     """
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
-    result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.IDLE)
+    observation = Observation()
+    subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
+    subarray = con_config.get_device_proxy(subarray_name)
+    config = observation.generate_sdp_assign_resources_config().as_json
+
+    result_code, unique_id = subarray.command_inout("AssignResources", config)
 
 
-@then("I assign resources command for second time")
-def assign_resources_for_the_second_time(
-    entry_point: fxt_types.entry_point,
-    sb_config: fxt_types.sb_config,
-    composition: conf_types.Composition,
+@then("the lrcr event throws error")
+def lrcr_event(
     sut_settings: SutTestSettings,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    """Assign resources for two times"""
+    tel = names.TEL()
+    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
 
-    subarray_id = sut_settings.subarray_id
-    receptors = sut_settings.receptors
+    _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
+    start_time = time.time()
+    elapsed_time = 0
+    time_out = 30
+    while (
+        resultcode_or_message != "Execution block eb-mvp01-20210623-00000 already exists"
+        and elapsed_time > time_out
+    ):
+        time.sleep(0.1)
+        _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
+        elapsed_time = time.time() - start_time
 
-    entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
+    assert resultcode_or_message == "3"
+    # "Execution block eb-mvp01-20210623-00000 already exists"

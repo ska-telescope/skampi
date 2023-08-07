@@ -49,6 +49,7 @@ def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings ):
     """
     I assign resources to it
     """
+    global unique_id
     tel = names.TEL()
     observation = Observation()
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
@@ -66,16 +67,9 @@ def lrcr_event(
     integration_test_exec_settings: fxt_types.exec_settings
     ):
     tel = names.TEL()
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-
-    _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
-    start_time= time.time()
-    elapsed_time = 0
-    time_out = 30
-    while resultcode_or_message!="Execution block eb-mvp01-20210623-00000 already exists" and elapsed_time>time_out:
-        time.sleep(0.1)
-        _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
-        elapsed_time =time.time() - start_time
-        
+    subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
+    context_monitoring.re_init_builder()
+    context_monitoring.wait_for(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to(
+        (f"{unique_id}","Execution block eb-mvp01-20210623-00000 already exists"), ignore_first=False, settings=integration_test_exec_settings
+    )
     
-    assert resultcode_or_message == "Execution block eb-mvp01-20210623-00000 already exists"

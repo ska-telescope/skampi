@@ -92,6 +92,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
         config = self.observation.generate_sdp_assign_resources_config().as_json
+        
         # config = json.dumps(ASSIGN_MID_JSON)
         # we retry this command three times in case there is a transitory race
         # condition
@@ -116,8 +117,8 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # we retry this command three times in case there is a transitory race
         # condition
 
-        if not bool(os.getenv("ERROR_PROPOGATION")):
-            subarray.command_inout("ReleaseAllResources")
+
+        subarray.command_inout("ReleaseAllResources")
 
         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
 
@@ -130,21 +131,14 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param sub_array_id: The index id of the subarray to control
         :return: brd
         """
-        error_propagation= bool(os.getenv("ERROR_PROPOGATION"))
-        self._log(f" env variable: {error_propagation}")
-        if not bool(os.getenv("ERROR_PROPOGATION")):
-            brd = get_message_board_builder()
-            subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-            brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
-            return brd
-        else:         
-            brd = get_message_board_builder()
-            subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-            brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("EMPTY")
-            return brd
 
 
 
+        brd = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
+        brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
+        return brd
+ 
     def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifyig what needs to be done for waiting
@@ -153,12 +147,12 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         :param sub_array_id: The index id of the subarray to control
         :return: brd
         """
-        if not bool(os.getenv("ERROR_PROPOGATION")):
-            brd = get_message_board_builder()
-            brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
-                "obsState"
-            ).to_become_equal_to("RESOURCING")
-            return brd
+
+        brd = get_message_board_builder()
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("RESOURCING")
+        return brd
 
     def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """

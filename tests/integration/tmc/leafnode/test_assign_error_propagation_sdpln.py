@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @scenario(
-    "features/sdpln_assign_reasources_mid.feature",
+    "features/sdpln_assign_resources_mid.feature",
     "Error propagation",
 )
 def test_error_propogation_from_tmc_subarray_in_low():

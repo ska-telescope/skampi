@@ -1,6 +1,7 @@
 """Assign Resource on a SDP Subarray"""
 import pytest
 import logging
+import json
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then
 from resources.models.mvp_model.states import ObsState
@@ -63,7 +64,7 @@ def assign_resources_for_the_second_time(sut_settings: SutTestSettings):
 
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-    unique_id = subarray.command_inout("AssignResources", ASSIGN_MID_JSON)
+    unique_id = subarray.command_inout("AssignResources", json.dumps(ASSIGN_MID_JSON))
     logger.info(f"-----------> unique_id{unique_id}")
 
 

@@ -258,18 +258,20 @@ python-do-lint:
 	@make --no-print-directory join-lint-reports
 
 extract-chart-config:
+	@echo "Installing yq (if it's not installed)..."
+	command -v yq >/dev/null 2>&1 || { curl -sSL https://github.com/mikefarah/yq/releases/download/v4.34.2/yq_linux_amd64.tar.gz | tar -xzO ./yq_linux_amd64 > /usr/bin/yq && chmod +x /usr/bin/yq; }
 	@echo "Deleting existing config exporters(if any)..."
-	@helm uninstall ska-config-exporter -n $(KUBE_NAMESPACE) || true
-	@kubectl -n $(KUBE_NAMESPACE) delete --ignore-not-found pod/ska-config-export
+	helm uninstall ska-config-exporter -n $(KUBE_NAMESPACE) || true
+	kubectl -n $(KUBE_NAMESPACE) delete --ignore-not-found pod/ska-config-export
 	@echo "Installing config exporter from artefact.skao.int/ska-k8s-config-exporter:0.0.3..."
 	@echo " This is needed to define the access roles"
-	@helm repo add skatelescope $(CAR_HELM_REPOSITORY_URL) && helm repo update
-	@helm install -n $(KUBE_NAMESPACE) ska-config-exporter skatelescope/ska-k8s-config-exporter --version 0.0.3 --set persistentService=false
+	helm repo add skatelescope $(CAR_HELM_REPOSITORY_URL) && helm repo update
+	helm install -n $(KUBE_NAMESPACE) ska-config-exporter skatelescope/ska-k8s-config-exporter --version 0.0.3 --set persistentService=false
 	@echo "Exporting config into build/deploy_config.json"
-	@kubectl run -q -n $(KUBE_NAMESPACE) --rm -i --tty --restart=Never --image "artefact.skao.int/ska-k8s-config-exporter:0.0.3" \
+	kubectl run -q -n $(KUBE_NAMESPACE) --rm -i --tty --restart=Never --image "artefact.skao.int/ska-k8s-config-exporter:0.0.3" \
 	--env TANGO_HOST=$(TANGO_HOST) --env NAMESPACE=$(KUBE_NAMESPACE) ska-config-export -- ska-config-export -a '["versionId", "buildState"]' > deploy_config.json
 	@echo "Extracting chart config into build/chart_info.yml"
-	@cat build/deploy_config.json | jq -r '.helm | to_entries[1].value | { "apiVersion": "v2", "name": .chart_name, "description": "", "type": "application", "version": .chart_version, "appVersion": .app_version, "dependencies": .dependencies }' | yq -Pyo > build/chart_info.yml
+	cat build/deploy_config.json | jq -r '.helm | to_entries[1].value | { "apiVersion": "v2", "name": .chart_name, "description": "", "type": "application", "version": .chart_version, "appVersion": .app_version, "dependencies": .dependencies }' | yq -Pyo > build/chart_info.yml
 	@echo "Done!"
 .PHONY: extract-chart-config
 

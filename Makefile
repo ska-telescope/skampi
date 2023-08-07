@@ -272,3 +272,26 @@ extract-chart-config:
 	@cat build/deploy_config.json | jq -r '.helm | to_entries[1].value | { "apiVersion": "v2", "name": .chart_name, "description": "", "type": "application", "version": .chart_version, "appVersion": .app_version, "dependencies": .dependencies }' | yq -Pyo > build/chart_info.yml
 	@echo "Done!"
 .PHONY: extract-chart-config
+
+# Override k8s-do-test-runner as we want to run our post hooks to run everytime
+# This is a temporary fix until it's fixed in the makefile repositories. 
+k8s-do-test-runner:
+	@rm -fr build; mkdir build
+	@find ./$(k8s_test_folder) -name "*.pyc" -type f -delete
+	@if [[ -f pyproject.toml ]]; then \
+		poetry config virtualenvs.create false; \
+		echo 'k8s-test: installing poetry dependencies';  \
+		poetry install; \
+	else if [[ -f $(k8s_test_folder)/requirements.txt ]]; then \
+			echo 'k8s-test: installing $(k8s_test_folder)/requirements.txt'; \
+			pip install -qUr $(k8s_test_folder)/requirements.txt; \
+		fi; \
+	fi;
+	export PYTHONPATH=${PYTHONPATH}:/app/src$(k8s_test_src_dirs); \
+	mkdir -p build; \
+	cd $(K8S_RUN_TEST_FOLDER); \
+	set -o pipefail; \
+	$(K8S_TEST_TEST_COMMAND); \
+	echo $$? > $(BASE)/build/status; \
+	pip list > build/pip_list.txt;
+	@echo "k8s_test_command: test command exit is: $$(cat $(BASE)/build/status)"

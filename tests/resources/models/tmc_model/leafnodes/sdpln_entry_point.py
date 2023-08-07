@@ -170,7 +170,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY")
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY",ignore_first=False)
         return brd
 
 

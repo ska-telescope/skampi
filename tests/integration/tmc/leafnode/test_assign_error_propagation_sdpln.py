@@ -68,7 +68,15 @@ def lrcr_event(
     ):
     tel = names.TEL()
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
+
     context_monitoring.re_init_builder()
+    
+    context_monitoring.wait_for(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to(
+    "EMPTY", ignore_first=False, settings=integration_test_exec_settings
+    )
+    context_monitoring.wait_for(subarray_name).for_attribute("longRunningCommandsInQueue").to_become_equal_to(
+        ("AssignResources"), ignore_first=False, settings=integration_test_exec_settings
+    )
     context_monitoring.wait_for(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to(
         (f"{unique_id[0]}","Execution block eb-mvp01-20210623-00000 already exists"), ignore_first=False, settings=integration_test_exec_settings
     )

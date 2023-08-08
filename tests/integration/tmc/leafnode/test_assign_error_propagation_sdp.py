@@ -3,7 +3,7 @@ import os
 import time
 
 import pytest
-from pytest_bdd import given, scenario, then, when
+from pytest_bdd import given, scenario, then, when, and
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -44,7 +44,7 @@ def an_telescope_subarray(
     return base_composition
 
 
-@when("I assign resources for the second time with same eb_id")
+@then("I assign resources for the second time with same eb_id")
 def i_assign_resources_to_sdpsln(
     sut_settings: SutTestSettings, allocated_subarray: fxt_types.allocated_subarray
 ):

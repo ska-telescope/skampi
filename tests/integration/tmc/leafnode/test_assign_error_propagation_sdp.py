@@ -45,7 +45,9 @@ def an_telescope_subarray(
 
 
 @when("I assign resources for the second time with same eb_id")
-def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings, allocated_subarray: fxt_types.allocated_subarray):
+def i_assign_resources_to_sdpsln(
+    sut_settings: SutTestSettings, allocated_subarray: fxt_types.allocated_subarray
+):
     """
     I assign resources to it
     """

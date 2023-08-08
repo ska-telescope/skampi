@@ -40,7 +40,6 @@ def configure_attribute(
     archiver_helper.stop_archiving(attribute)
 
 
-@pytest.mark.eda
 @pytest.mark.post_deployment
 @pytest.mark.skamid
 @pytest.mark.skalow

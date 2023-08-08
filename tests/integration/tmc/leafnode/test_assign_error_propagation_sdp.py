@@ -63,12 +63,12 @@ def i_assign_resources_to_sdpsln(
 @then("the lrcr event throws error")
 def lrcr_event(
     sut_settings: SutTestSettings,
-    context_monitoring: fxt_types.context_monitoring,
+    allocated_subarray: fxt_types.allocated_subarray,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-
+    allocated_subarray.disable_automatic_teardown()
     _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
     start_time = time.time()
     elapsed_time = 0

@@ -12,6 +12,7 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     MessageBoardBuilder,
     NoOpStep,
 )
+from resources.utils.validation import CommandException, command_success
 from ska_ser_skallop.utils.singleton import Memo
 from tests.resources.models.obsconfig.config import Observation
 
@@ -108,8 +109,12 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         # condition
 
 
-        result_code, unique_id = subarray.command_inout("AssignResources", config)
-        self.long_running_command_subscriber.set_command_id(unique_id[0])
+        command_id = subarray.command_inout("AssignResources", config)
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
         self._log(f"commanding {subarray_name} with AssignResources: {config} ")
 
     def undo_assign_resources(self, sub_array_id: int):
@@ -126,8 +131,12 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         # condition
 
 
-        _,unique_id=subarray.command_inout("ReleaseAllResources")
-        self.long_running_command_subscriber.set_command_id(unique_id[0])
+        command_id=subarray.command_inout("ReleaseAllResources")
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
 
         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
 

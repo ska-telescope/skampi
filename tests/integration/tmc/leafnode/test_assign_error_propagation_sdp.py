@@ -45,7 +45,7 @@ def an_telescope_subarray(
 
 
 @when("I assign resources for the second time with same eb_id")
-def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings):
+def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings, allocated_subarray: fxt_types.allocated_subarray):
     """
     I assign resources to it
     """
@@ -54,8 +54,8 @@ def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings):
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
     subarray = con_config.get_device_proxy(subarray_name)
     config = observation.generate_sdp_assign_resources_config().as_json
-
-    result_code, unique_id = subarray.command_inout("AssignResources", config)
+    allocated_subarray.disable_automatic_teardown()
+    subarray.command_inout("AssignResources", config)
 
 
 @then("the lrcr event throws error")
@@ -68,8 +68,6 @@ def lrcr_event(
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
 
     _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
-    # logger.info(f'---------------> value of 0 {subarray.read_attribute("longRunningCommandResult").value[0]}')
-    # logger.info(f'---------------> value of 1 {subarray.read_attribute("longRunningCommandResult").value[1]}')
     start_time = time.time()
     elapsed_time = 0
     time_out = 30

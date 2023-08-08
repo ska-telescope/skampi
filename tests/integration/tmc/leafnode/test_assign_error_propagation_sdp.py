@@ -43,56 +43,41 @@ def an_telescope_subarray(
     """
     return base_composition
 
-@when("I assign resources to the subarray for two times")
-def i_assign_resources_to_it_twice(
-    running_telescope: fxt_types.running_telescope,
-    context_monitoring: fxt_types.context_monitoring,
-    entry_point: fxt_types.entry_point,
-    sb_config: fxt_types.sb_config,
-    composition: conf_types.Composition,
-    integration_test_exec_settings: fxt_types.exec_settings,
-    sut_settings: SutTestSettings,
-    allocated_subarray: fxt_types.allocated_subarray
-):
+
+@when("I assign resources for the second time with same eb_id")
+def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings, allocated_subarray: fxt_types.allocated_subarray):
     """
     I assign resources to it
-
-    :param running_telescope: Dictionary containing the running telescope's devices
-    :param context_monitoring: Object containing information about
-        the context in which the test is being executed
-    :param entry_point: Information about the entry point used for the test
-    :param sb_config: Object containing the Subarray Configuration
-    :param composition: Object containing information about the composition of the subarray
-    :param integration_test_exec_settings: Object containing
-        the execution settings for the integration test
-    :param sut_settings: Object containing the system under test settings
     """
     tel = names.TEL()
     observation = Observation()
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
     subarray = con_config.get_device_proxy(subarray_name)
     config = observation.generate_sdp_assign_resources_config().as_json
+    allocated_subarray.disable_automatic_teardown()
     subarray.command_inout("AssignResources", config)
-    context_monitoring.wait_for(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to(
-        "IDLE", ignore_first=False, settings=integration_test_exec_settings
-    )
-    subarray.command_inout("ReleaseAllResources")
-    context_monitoring.wait_for(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to(
-        "EMPTY", ignore_first=False, settings=integration_test_exec_settings
-    )
-    result = subarray.command_inout("AssignResources", config)
-    logger.info(f"----------.result {result}")
 
 
 @then("the lrcr event throws error")
 def lrcr_event(
     sut_settings: SutTestSettings,
-    allocated_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
+
     _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
-    logger.info(f"-------->result{resultcode_or_message}")
+    start_time = time.time()
+    elapsed_time = 0
+    time_out = 30
+    while (
+        resultcode_or_message != "Execution block eb-mvp01-20210623-00000 already exists"
+        and elapsed_time > time_out
+    ):
+        time.sleep(0.1)
+        _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
+        elapsed_time = time.time() - start_time
 
     assert resultcode_or_message == "3"
+    # "Execution block eb-mvp01-20210623-00000 already exists"

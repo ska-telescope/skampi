@@ -76,11 +76,12 @@ def i_assign_resources_to_it_twice(
     context_monitoring.wait_for(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to(
         "IDLE", ignore_first=False, settings=integration_test_exec_settings
     )
- 
-    allocated_subarray.disable_automatic_teardown()
-    time.sleep(3)
-    subarray.command_inout("AssignResources", config)
-
+    subarray.command_inout("ReleaseAllResources")
+    context_monitoring.wait_for(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to(
+        "EMPTY", ignore_first=False, settings=integration_test_exec_settings
+    )
+    result = subarray.command_inout("AssignResources", config)
+    logger.info(f"----------.result {result}")
 
 
 @then("the lrcr event throws error")
@@ -91,18 +92,7 @@ def lrcr_event(
 ):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-    allocated_subarray.disable_automatic_teardown()
     _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
-    start_time = time.time()
-    elapsed_time = 0
-    time_out = 30
-    while (
-        resultcode_or_message != "Execution block eb-mvp01-20210623-00000 already exists"
-        and elapsed_time > time_out
-    ):
-        time.sleep(0.1)
-        _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
-        elapsed_time = time.time() - start_time
+    logger.info(f"-------->result{resultcode_or_message}")
 
     assert resultcode_or_message == "3"
-    # "Execution block eb-mvp01-20210623-00000 already exists"

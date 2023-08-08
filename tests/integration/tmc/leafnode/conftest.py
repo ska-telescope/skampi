@@ -44,8 +44,6 @@ def fxt_set_sdp_ln_entry_point(
     ]
 
 
-
-
 @pytest.fixture(name="set_csp_ln_entry_point")
 @pytest.mark.usefixtures("set_up_subarray_log_checking_for_csp_ln")
 def fxt_set_csp_ln_entry_point(
@@ -154,4 +152,3 @@ def an_sdp_subarray_in_idle_state(
     # will use default composition for the allocated subarray
     # subarray_allocation_spec.composition
     return sdp_base_configuration
-

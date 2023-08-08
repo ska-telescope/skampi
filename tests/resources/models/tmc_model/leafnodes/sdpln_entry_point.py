@@ -4,16 +4,18 @@ import os
 from time import sleep
 from typing import List
 
+from resources.utils.validation import CommandException, command_success
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
+from ska_ser_skallop.event_handling.handlers import WaitForLRCComplete
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.entry_points.composite import (
     CompositeEntryPoint,
     MessageBoardBuilder,
     NoOpStep,
 )
-from resources.utils.validation import CommandException, command_success
 from ska_ser_skallop.utils.singleton import Memo
+
 from tests.resources.models.obsconfig.config import Observation
 
 from ...obsconfig.config import Observation
@@ -24,8 +26,10 @@ from ...sdp_model.entry_point import (
     StartUpStep,
 )
 from .utils import retry
-from ska_ser_skallop.event_handling.handlers import WaitForLRCComplete
+
 logger = logging.getLogger(__name__)
+
+
 class WithCommandID:
     def __init__(self) -> None:
         self._long_running_command_subscriber = None
@@ -37,6 +41,7 @@ class WithCommandID:
     @long_running_command_subscriber.setter
     def long_running_command_subscriber(self, subscriber: WaitForLRCComplete):
         Memo(long_running_command_subscriber=subscriber)
+
 
 class StartUpLnStep(StartUpStep):
     """Implementation of Startup step for SDP LN"""
@@ -73,6 +78,7 @@ class StartUpLnStep(StartUpStep):
 
 class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
     """Implementation of Assign Resources Step for SDP LN."""
+
     def __init__(self, observation: Observation) -> None:
         """
         Init object.
@@ -103,11 +109,10 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
         config = self.observation.generate_sdp_assign_resources_config().as_json
-        
+
         # config = json.dumps(ASSIGN_MID_JSON)
         # we retry this command three times in case there is a transitory race
         # condition
-
 
         command_id = subarray.command_inout("AssignResources", config)
         if command_success(command_id):
@@ -130,8 +135,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         # we retry this command three times in case there is a transitory race
         # condition
 
-
-        command_id=subarray.command_inout("ReleaseAllResources")
+        command_id = subarray.command_inout("ReleaseAllResources")
         if command_success(command_id):
             self.long_running_command_subscriber.set_command_id(command_id)
         else:
@@ -139,7 +143,6 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
             raise CommandException(command_id)
 
         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
-
 
     def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder | None:
         """
@@ -150,16 +153,16 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         :return: brd
         """
 
-
-
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-        brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
+        brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to(
+            "IDLE"
+        )
         self.long_running_command_subscriber = brd.set_wait_for_long_running_command_on(
             subarray_name
         )
         return brd
- 
+
     def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """
         Domain logic specifyig what needs to be done for waiting
@@ -185,7 +188,9 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         """
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-        brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("EMPTY",ignore_first=False)
+        brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to(
+            "EMPTY", ignore_first=False
+        )
         self.long_running_command_subscriber = brd.set_wait_for_long_running_command_on(
             subarray_name
         )

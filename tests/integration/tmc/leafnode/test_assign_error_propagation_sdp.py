@@ -43,6 +43,10 @@ def an_telescope_subarray(
     """
     return base_composition
 
+@given("subarray again in empty")
+def subarray_in_empty(set_sdp_ln_error_entry_point):
+    pass
+
 
 @when("I assign resources for the second time with same eb_id")
 def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings, allocated_subarray: fxt_types.allocated_subarray):

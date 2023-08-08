@@ -78,7 +78,7 @@ def lrcr_event(
 
     context_monitoring.wait_for(subarray_name).for_attribute(
         "longRunningCommandResult"
-    ).to_change_in_order(
-        ["Execution block eb-mvp01-20210623-00000 already exists", "3"],
+    ).to_become_equal_to(
+        [f"('{unique_id[0]}', 'Execution block eb-mvp01-20210623-00000 already exists')",f"('{unique_id[0]}', '3')"],
         settings=integration_test_exec_settings,
     )

@@ -79,8 +79,8 @@ def lrcr_event(
     )
     
     id_list= subarray.read_attribute("longRunningCommandIDsInQueue").value
-    assert unique_id in id_list
-    
+    assert unique_id[0] in id_list
+
     context_monitoring.wait_for(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to(
         [(f"{unique_id[0]}","Execution block eb-mvp01-20210623-00000 already exists")], ignore_first=False, settings=integration_test_exec_settings
     )

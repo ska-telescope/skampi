@@ -163,4 +163,4 @@ def fxt_sdp_start_up_test_exec_settings(
 
     :param integration_test_exec_settings: Fixture as used by skallop
     """
-    integration_test_exec_settings.time_out = 300
+    integration_test_exec_settings.time_out = 200

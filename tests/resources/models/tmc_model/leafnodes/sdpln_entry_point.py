@@ -23,9 +23,19 @@ from ...sdp_model.entry_point import (
     StartUpStep,
 )
 from .utils import retry
-
+from ska_ser_skallop.event_handling.handlers import WaitForLRCComplete
 logger = logging.getLogger(__name__)
+class WithCommandID:
+    def __init__(self) -> None:
+        self._long_running_command_subscriber = None
 
+    @property
+    def long_running_command_subscriber(self) -> WaitForLRCComplete | None:
+        return Memo().get("long_running_command_subscriber")
+
+    @long_running_command_subscriber.setter
+    def long_running_command_subscriber(self, subscriber: WaitForLRCComplete):
+        Memo(long_running_command_subscriber=subscriber)
 
 class StartUpLnStep(StartUpStep):
     """Implementation of Startup step for SDP LN"""
@@ -60,7 +70,7 @@ class StartUpLnStep(StartUpStep):
         sdp_master_ln.command_inout("Off")
 
 
-class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
+class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
     """Implementation of Assign Resources Step for SDP LN."""
     def __init__(self, observation: Observation) -> None:
         """
@@ -99,9 +109,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
 
 
         result_code, unique_id = subarray.command_inout("AssignResources", config)
-        self._log(f"result code and unique id : {result_code,unique_id}")
-        self.unique_id = unique_id
-
+        self.long_running_command_subscriber.set_command_id(unique_id[0])
         self._log(f"commanding {subarray_name} with AssignResources: {config} ")
 
     def undo_assign_resources(self, sub_array_id: int):
@@ -118,7 +126,8 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         # condition
 
 
-        subarray.command_inout("ReleaseAllResources")
+        _,unique_id=subarray.command_inout("ReleaseAllResources")
+        self.long_running_command_subscriber.set_command_id(unique_id[0])
 
         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
 
@@ -137,6 +146,9 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         brd = get_message_board_builder()
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("IDLE")
+        self.long_running_command_subscriber = brd.set_wait_for_long_running_command_on(
+            subarray_name
+        )
         return brd
  
     def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -165,6 +177,9 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep):
         brd = get_message_board_builder()
         subarray_name = self._tel.sdp.subarray(sub_array_id)
         brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY",ignore_first=False)
+        self.long_running_command_subscriber = brd.set_wait_for_long_running_command_on(
+            subarray_name
+        )
         return brd
 
 

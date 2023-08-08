@@ -154,3 +154,13 @@ def an_sdp_subarray_in_idle_state(
     # will use default composition for the allocated subarray
     # subarray_allocation_spec.composition
     return sdp_base_configuration
+
+@pytest.fixture(name="sdpln_test_exec_settings", autouse=True)
+def fxt_sdp_start_up_test_exec_settings(
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    """General startup test execution settings specific to telescope from tmc.
+
+    :param integration_test_exec_settings: Fixture as used by skallop
+    """
+    integration_test_exec_settings.time_out = 300

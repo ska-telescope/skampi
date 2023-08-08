@@ -74,7 +74,7 @@ def lrcr_event(
     elapsed_time = 0
     time_out = 30
     while (
-        resultcode_or_message != "3"
+        resultcode_or_message != "Execution block eb-mvp01-20210623-00000 already exists"
         and elapsed_time > time_out
     ):
         time.sleep(0.1)

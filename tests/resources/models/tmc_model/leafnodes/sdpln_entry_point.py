@@ -184,8 +184,8 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         :return: brd
         """
         brd = get_message_board_builder()
-        subarray_name = self._tel.sdp.subarray(sub_array_id)
-        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to("EMPTY",ignore_first=False)
+        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
+        brd.set_waiting_on(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to("EMPTY",ignore_first=False)
         self.long_running_command_subscriber = brd.set_wait_for_long_running_command_on(
             subarray_name
         )

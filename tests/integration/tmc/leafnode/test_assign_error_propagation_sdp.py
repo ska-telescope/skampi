@@ -69,19 +69,13 @@ def lrcr_event(
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     tel = names.TEL()
+    subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-
+    time.sleep(10)
+    # context_monitoring.wait_for(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to(
+    #     "3", ignore_first=False, settings=integration_test_exec_settings
+    # )
     _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
-    start_time = time.time()
-    elapsed_time = 0
-    time_out = 30
-    while (
-        resultcode_or_message != "Execution block eb-mvp01-20210623-00000 already exists"
-        and elapsed_time > time_out
-    ):
-        time.sleep(0.1)
-        _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
-        elapsed_time = time.time() - start_time
 
     assert resultcode_or_message == "3"
     # "Execution block eb-mvp01-20210623-00000 already exists"

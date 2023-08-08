@@ -71,17 +71,14 @@ def i_assign_resources_to_it_twice(
     observation = Observation()
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
     subarray = con_config.get_device_proxy(subarray_name)
-    subarray_id = sut_settings.subarray_id
-    receptors = sut_settings.receptors
-    with context_monitoring.context_monitoring():
-        with running_telescope.wait_for_allocating_a_subarray(
-            subarray_id, receptors, integration_test_exec_settings
-        ):
-            entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
-
-
     config = observation.generate_sdp_assign_resources_config().as_json
+    subarray.command_inout("AssignResources", config)
+    context_monitoring.wait_for(subarray_name).for_attribute("sdpSubarrayObsState").to_become_equal_to(
+        "IDLE", ignore_first=False, settings=integration_test_exec_settings
+    )
+ 
     allocated_subarray.disable_automatic_teardown()
+    time.sleep(3)
     subarray.command_inout("AssignResources", config)
 
 

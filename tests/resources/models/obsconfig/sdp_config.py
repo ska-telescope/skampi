@@ -440,8 +440,7 @@ class ExecutionBlockSpecs(ScanTypes, Channelization, Polarisations, Fields, Targ
         beams = self.beams
         channels = self.channels
         return ExecutionBlockConfiguration(
-            # eb_id=None,
-            eb_id="eb-mvp01-20210623-00000",
+            eb_id=self.eb_id,
             context=context,
             max_length=max_length,
             beams=beams,

@@ -58,6 +58,7 @@ def i_assign_resources_to_sdpsln(
     config = observation.generate_sdp_assign_resources_config().as_json
     allocated_subarray.disable_automatic_teardown()
     subarray.command_inout("AssignResources", config)
+    time.sleep(3)
 
 
 @then("the lrcr event throws error")

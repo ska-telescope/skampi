@@ -50,26 +50,28 @@ def i_assign_resources_to_sdpsln(
     sut_settings: SutTestSettings,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
+    composition: conf_types.Composition,
+    sb_config: fxt_types.sb_config,
+    entry_point: fxt_types.entry_point,
     ):
     """
     I assign resources to it
     """
     global unique_id
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+
+    entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
+
     tel = names.TEL()
     observation = Observation()
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
     subarray = con_config.get_device_proxy(subarray_name)
     config = observation.generate_sdp_assign_resources_config().as_json
-    subarray.command_inout("AssignResources", config)
-    context_monitoring.wait_for(subarray_name).for_attribute(
-        "sdpSubarrayObsState"
-    ).to_become_equal_to("IDLE", ignore_first=False, settings=integration_test_exec_settings)
 
     unique_id = subarray.command_inout("AssignResources", config)
     logger.info(f"--------------> unique_id {unique_id}")
-    context_monitoring.wait_for(subarray_name).for_attribute(
-        "sdpSubarrayObsState"
-    ).to_become_equal_to("IDLE", ignore_first=False, settings=integration_test_exec_settings)
+
 
 
 @then("the lrcr event throws error")
@@ -84,6 +86,11 @@ def lrcr_event(
     context_monitoring.re_init_builder()
     subarray = con_config.get_device_proxy(subarray_name)
 
+    context_monitoring.wait_for(subarray_name).for_attribute(
+        "sdpSubarrayObsState"
+    ).to_become_equal_to("IDLE", ignore_first=False, settings=integration_test_exec_settings)
+
+    
     context_monitoring.wait_for(subarray_name).for_attribute(
         "longRunningCommandResult"
     ).to_become_equal_to(

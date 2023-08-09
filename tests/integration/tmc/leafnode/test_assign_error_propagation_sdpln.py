@@ -46,7 +46,11 @@ def an_telescope_subarray(
 
 
 @when("I assign resources for the second time with same eb_id")
-def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings):
+def i_assign_resources_to_sdpsln(
+    sut_settings: SutTestSettings,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    ):
     """
     I assign resources to it
     """
@@ -56,8 +60,12 @@ def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings):
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
     subarray = con_config.get_device_proxy(subarray_name)
     config = observation.generate_sdp_assign_resources_config().as_json
+    unique_id = subarray.command_inout("AssignResources", config)
+    context_monitoring.wait_for(subarray_name).for_attribute(
+        "sdpSubarrayObsState"
+    ).to_become_equal_to("IDLE", ignore_first=False, settings=integration_test_exec_settings)
 
-    result_code, unique_id = subarray.command_inout("AssignResources", config)
+    unique_id = subarray.command_inout("AssignResources", config)
 
 
 @then("the lrcr event throws error")

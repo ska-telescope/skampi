@@ -45,8 +45,27 @@ def an_telescope_subarray(
     return base_composition
 
 
-@when("I assign resources for the second time with same eb_id")
+@when("I assign resources for first time")
 def i_assign_resources_to_sdpsln(
+    sut_settings: SutTestSettings,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+    ):
+    """
+    I assign resources to it
+    """
+    tel = names.TEL()
+    observation = Observation()
+    subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
+    subarray = con_config.get_device_proxy(subarray_name)
+    config = observation.generate_sdp_assign_resources_config().as_json
+    subarray.command_inout("AssignResources", config)
+    context_monitoring.wait_for(subarray_name).for_attribute(
+        "sdpSubarrayObsState"
+    ).to_become_equal_to("IDLE", ignore_first=False, settings=integration_test_exec_settings)
+
+@then("I assign resources for the second time with same eb_id")
+def i_assign_resources_to_sdpsln_for_second_time(
     sut_settings: SutTestSettings,
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
@@ -60,14 +79,11 @@ def i_assign_resources_to_sdpsln(
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
     subarray = con_config.get_device_proxy(subarray_name)
     config = observation.generate_sdp_assign_resources_config().as_json
-    subarray.command_inout("AssignResources", config)
+    unique_id = subarray.command_inout("AssignResources", config)
+    logger.info(f"--------------> unique_id {unique_id}")
     context_monitoring.wait_for(subarray_name).for_attribute(
         "sdpSubarrayObsState"
     ).to_become_equal_to("IDLE", ignore_first=False, settings=integration_test_exec_settings)
-
-    unique_id = subarray.command_inout("AssignResources", config)
-    logger.info(f"--------------> unique_id {unique_id}")
-
 
 @then("the lrcr event throws error")
 def lrcr_event(
@@ -79,11 +95,6 @@ def lrcr_event(
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
 
     context_monitoring.re_init_builder()
-    subarray = con_config.get_device_proxy(subarray_name)
-
-    context_monitoring.wait_for(subarray_name).for_attribute(
-        "sdpSubarrayObsState"
-    ).to_become_equal_to("IDLE", ignore_first=False, settings=integration_test_exec_settings)
 
     context_monitoring.wait_for(subarray_name).for_attribute(
         "longRunningCommandResult"

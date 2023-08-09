@@ -15,9 +15,10 @@ from .. import conftest
 """
 test_XTP-18866
 ----------------------------------
-Tests to Run a scan on low subarray from OET (XTP-19865)
-"""
+Test to Run a scan on
+low subarray from OET(XTP-19865),
 
+"""
 """Scan on telescope subarray feature tests."""
 
 

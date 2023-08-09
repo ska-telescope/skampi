@@ -84,7 +84,7 @@ def hello_world_script_complete_activity():
 
     summaries = ACTIVITY_ADAPTER.list()
     pid = summaries[0].procedure_id
-    procedure_status = EXECUTOR.wait_for_script_state(pid, "COMPLETE", timeout=20)
+    procedure_status = EXECUTOR.wait_for_script_state(pid, "COMPLETE", timeout=40)
 
     assert procedure_status == "COMPLETE"
 

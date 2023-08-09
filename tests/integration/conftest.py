@@ -567,3 +567,13 @@ def the_subarray_should_go_into_an_aborted_state(
     subarray = con_config.get_device_proxy(sut_settings.default_subarray_name)
     result = subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.ABORTED)
+
+
+# scans
+@given("the subarray has just completed it's first scan for given configuration")
+@given("an subarray that has just completed it's first scan")
+def an_subarray_that_has_just_completed_its_first_scan(
+    configured_subarray: fxt_types.configured_subarray,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    configured_subarray.scan(integration_test_exec_settings)

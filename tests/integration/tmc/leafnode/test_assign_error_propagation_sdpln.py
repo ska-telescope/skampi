@@ -42,18 +42,29 @@ def an_telescope_subarray(
 
 
 @when("I assign resources for the second time with same eb_id")
-def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings):
+def i_assign_resources_to_sdpsln(
+    entry_point: fxt_types.entry_point,
+    sb_config: fxt_types.sb_config,
+    composition: conf_types.Composition,
+    sut_settings: SutTestSettings,
+):
     """
     I assign resources to it
-    """
-    global unique_id
-    tel = names.TEL()
-    observation = Observation()
-    subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
-    subarray = con_config.get_device_proxy(subarray_name)
-    config = observation.generate_sdp_assign_resources_config().as_json
 
-    result_code, unique_id = subarray.command_inout("AssignResources", config)
+    :param running_telescope: Dictionary containing the running telescope's devices
+    :param context_monitoring: Object containing information about
+        the context in which the test is being executed
+    :param entry_point: Information about the entry point used for the test
+    :param sb_config: Object containing the Subarray Configuration
+    :param composition: Object containing information about the composition of the subarray
+    :param integration_test_exec_settings: Object containing
+        the execution settings for the integration test
+    :param sut_settings: Object containing the system under test settings
+    """
+
+    subarray_id = sut_settings.subarray_id
+    receptors = sut_settings.receptors
+    entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
 
 @then("the lrcr event throws error")

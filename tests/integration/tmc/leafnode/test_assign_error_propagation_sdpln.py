@@ -68,13 +68,15 @@ def i_assign_resources_to_sdpsln(
     ):
         entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
-    tel = names.TEL()
-    observation = Observation()
-    subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
-    subarray = con_config.get_device_proxy(subarray_name)
-    config = observation.generate_sdp_assign_resources_config().as_json
+        unique_id = entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
-    unique_id = subarray.command_inout("AssignResources", config)
+    # tel = names.TEL()
+    # observation = Observation()
+    # subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
+    # subarray = con_config.get_device_proxy(subarray_name)
+    # config = observation.generate_sdp_assign_resources_config().as_json
+
+    # unique_id = subarray.command_inout("AssignResources", config)
     logger.info(f"--------------> unique_id {unique_id}")
 
 

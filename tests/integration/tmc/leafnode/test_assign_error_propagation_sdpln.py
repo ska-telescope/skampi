@@ -67,8 +67,13 @@ def i_assign_resources_to_sdpsln(
         subarray_id, receptors, integration_test_exec_settings
     ):
         entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
-
-        unique_id = entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
+        tel = names.TEL()
+        subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
+        context_monitoring.wait_for(subarray_name).for_attribute(
+        "sdpSubarrayObsState"
+        ).to_become_equal_to("IDLE", ignore_first=False, settings=integration_test_exec_settings)
+    
+        entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
     # tel = names.TEL()
     # observation = Observation()

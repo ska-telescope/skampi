@@ -53,6 +53,7 @@ def i_assign_resources_to_sdpsln(
     composition: conf_types.Composition,
     sb_config: fxt_types.sb_config,
     entry_point: fxt_types.entry_point,
+    running_telescope: fxt_types.running_telescope
     ):
     """
     I assign resources to it
@@ -61,7 +62,11 @@ def i_assign_resources_to_sdpsln(
     subarray_id = sut_settings.subarray_id
     receptors = sut_settings.receptors
 
-    entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
+
+    with running_telescope.wait_for_allocating_a_subarray(
+        subarray_id, receptors, integration_test_exec_settings
+    ):
+        entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
     tel = names.TEL()
     observation = Observation()
@@ -89,7 +94,6 @@ def lrcr_event(
     context_monitoring.wait_for(subarray_name).for_attribute(
         "sdpSubarrayObsState"
     ).to_become_equal_to("IDLE", ignore_first=False, settings=integration_test_exec_settings)
-
     
     context_monitoring.wait_for(subarray_name).for_attribute(
         "longRunningCommandResult"

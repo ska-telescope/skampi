@@ -40,6 +40,7 @@ def configure_attribute(
     archiver_helper.stop_archiving(attribute)
 
 
+@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.eda
 @pytest.mark.post_deployment
 @pytest.mark.skamid

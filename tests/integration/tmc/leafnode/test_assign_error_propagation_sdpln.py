@@ -82,7 +82,7 @@ def lrcr_event(
 
     context_monitoring.wait_for(subarray_name).for_attribute(
         "sdpSubarrayObsState"
-    ).to_become_equal_to("EMPTY", ignore_first=False, settings=integration_test_exec_settings)
+    ).to_become_equal_to("IDLE", ignore_first=False, settings=integration_test_exec_settings)
 
     context_monitoring.wait_for(subarray_name).for_attribute(
         "longRunningCommandResult"

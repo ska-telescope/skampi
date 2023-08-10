@@ -66,7 +66,7 @@ def i_assign_resources_to_sdpsln(
     error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
     new_config = json.dumps(error_json)
 
-    unique_id = subarray.command_inout("AssignResources", new_config)
+    result_code, unique_id = subarray.command_inout("AssignResources", new_config)
     logger.info(f"--------------> unique_id {unique_id}")
 
 
@@ -81,7 +81,6 @@ def lrcr_event(
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
 
     context_monitoring.re_init_builder()
-    subarray = con_config.get_device_proxy(subarray_name)
 
     context_monitoring.wait_for(subarray_name).for_attribute(
         "sdpSubarrayObsState"

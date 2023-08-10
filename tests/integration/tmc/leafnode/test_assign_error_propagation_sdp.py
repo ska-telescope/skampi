@@ -1,8 +1,9 @@
+
 import logging
-import os
-import time
+import json
 
 import pytest
+
 from pytest_bdd import given, scenario, then, when
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @scenario(
-    "features/sdpln_assign_resources_mid.feature",
+    "features/sdpln_assign_resources_error.feature",
     "Error propagation",
 )
 def test_error_propogation_from_tmc_subarray_in_low():
@@ -31,7 +32,7 @@ def test_error_propogation_from_tmc_subarray_in_low():
 
 @given("a TMC SDP subarray Leaf Node", target_fixture="composition")
 def an_telescope_subarray(
-    set_sdp_ln_entry_point,
+    set_sdp_ln_error_entry_point,
     base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """
@@ -43,23 +44,30 @@ def an_telescope_subarray(
     """
     return base_composition
 
-@given("subarray again in empty")
-def subarray_in_empty(set_sdp_ln_error_entry_point):
-    pass
-
 
 @when("I assign resources for the second time with same eb_id")
-def i_assign_resources_to_sdpsln(sut_settings: SutTestSettings, allocated_subarray: fxt_types.allocated_subarray):
+def i_assign_resources_to_sdpsln(
+    sut_settings: SutTestSettings,
+    entry_point: fxt_types.entry_point,
+    ):
     """
     I assign resources to it
     """
+    global unique_id
+
+
+
     tel = names.TEL()
     observation = Observation()
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
     subarray = con_config.get_device_proxy(subarray_name)
     config = observation.generate_sdp_assign_resources_config().as_json
-    allocated_subarray.disable_automatic_teardown()
-    subarray.command_inout("AssignResources", config)
+    error_json = json.loads(config)
+    error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
+    new_config = json.dumps(error_json)
+
+    result_code, unique_id = subarray.command_inout("AssignResources", new_config)
+
 
 
 @then("the lrcr event throws error")
@@ -70,12 +78,16 @@ def lrcr_event(
 ):
     tel = names.TEL()
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
-    subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node)
-    time.sleep(10)
-    # context_monitoring.wait_for(subarray_name).for_attribute("longRunningCommandResult").to_become_equal_to(
-    #     "3", ignore_first=False, settings=integration_test_exec_settings
-    # )
-    _, resultcode_or_message = subarray.read_attribute("longRunningCommandResult").value
 
-    assert resultcode_or_message == "3"
-    # "Execution block eb-mvp01-20210623-00000 already exists"
+    context_monitoring.re_init_builder()
+
+    context_monitoring.wait_for(subarray_name).for_attribute(
+        "sdpSubarrayObsState"
+    ).to_become_equal_to("EMPTY", ignore_first=False, settings=integration_test_exec_settings)
+    
+    context_monitoring.wait_for(subarray_name).for_attribute(
+        "longRunningCommandResult"
+    ).to_become_equal_to(
+        [f"('{unique_id[0]}', 'Execution block eb-mvp01-20230809-49670 already exists')",f"('{unique_id[0]}', '3')"],
+        settings=integration_test_exec_settings,
+    )

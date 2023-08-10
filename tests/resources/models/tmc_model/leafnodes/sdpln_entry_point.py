@@ -200,7 +200,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         return brd
 
 
-class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
+class SdpLnErrorAssignResourcesStep(SdpLnAssignResourcesStep, WithCommandID):
     """Implementation of Assign Resources Step for SDP LN."""
 
     def __init__(self, observation: Observation) -> None:

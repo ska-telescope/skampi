@@ -84,7 +84,6 @@ def test_abort_in_resourcing_sdp_subarray_in_mid(
     :param composition: A fixture that represents the composition of the subarray.
     """
 
-@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.assign
 @pytest.mark.sdp

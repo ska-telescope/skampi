@@ -468,7 +468,6 @@ class SDPLnEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = SdpLnAssignResourcesStep(observation)
         self.configure_scan_step = SdpLnConfigureStep(observation)
         self.scan_step = SDPLnScanStep(observation)
-        # self.assign_resources_error_step = SdpLnErrorAssignResourcesStep(observation)
 
 class SDPLnErrorEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP LN element."""
@@ -488,4 +487,4 @@ class SDPLnErrorEntryPoint(CompositeEntryPoint):
         self.observation = observation
         self.set_online_step = NoOpStep()
         self.start_up_step = StartUpLnStep(self.nr_of_subarrays)
-        self.assign_resources_error_step = SdpLnErrorAssignResourcesStep(observation)
+        self.assign_resources_step = SdpLnErrorAssignResourcesStep(observation)

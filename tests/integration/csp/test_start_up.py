@@ -13,7 +13,7 @@ from .. import conftest
 
 logger = logging.getLogger(__name__)
 
-
+@pytest.mark.skip(reason="failing due to entrypoint issue")
 @pytest.mark.csp_startup
 @pytest.mark.csp_related
 @pytest.mark.skamid

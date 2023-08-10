@@ -200,74 +200,74 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         return brd
 
 
-# class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
-#     """Implementation of Assign Resources Step for SDP LN."""
+class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
+    """Implementation of Assign Resources Step for SDP LN."""
 
-#     def __init__(self, observation: Observation) -> None:
-#         """
-#         Init object.
+    def __init__(self, observation: Observation) -> None:
+        """
+        Init object.
 
-#         :param observation: An instance of the Observation class or None.
-#             If None, a new instance of Observation will be created.
-#         """
-#         super().__init__(observation)
-#         self.unique_id: str | None = None
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
+        super().__init__(observation)
+        self.unique_id: str | None = None
 
-#     def do_assign_resources(
-#         self,
-#         sub_array_id: int,
-#         dish_ids: List[int],
-#         composition: types.Composition,
-#         sb_id: str,
-#     ):
-#         """Domain logic for assigning resources to a subarray in sdp LN.
+    def do_assign_resources(
+        self,
+        sub_array_id: int,
+        dish_ids: List[int],
+        composition: types.Composition,
+        sb_id: str,
+    ):
+        """Domain logic for assigning resources to a subarray in sdp LN.
 
-#         This implements the compose_subarray method on the entry_point.
+        This implements the compose_subarray method on the entry_point.
 
-#         :param sub_array_id: The index id of the subarray to control
-#         :param dish_ids: this dish indices (in case of mid) to control
-#         :param composition: The assign resources configuration paramaters
-#         :param sb_id: a generic id to identify a sb to assign resources
-#         """
-#         # currently ignore composition as all types will be standard
-#         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-#         subarray = con_config.get_device_proxy(subarray_name)
-#         config = self.observation.generate_sdp_assign_resources_config().as_json
-#         error_json = json.loads(config)
-#         error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
-#         new_config = json.dumps(error_json)
-#         # we retry this command three times in case there is a transitory race
-#         # condition
+        :param sub_array_id: The index id of the subarray to control
+        :param dish_ids: this dish indices (in case of mid) to control
+        :param composition: The assign resources configuration paramaters
+        :param sb_id: a generic id to identify a sb to assign resources
+        """
+        # currently ignore composition as all types will be standard
+        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
+        subarray = con_config.get_device_proxy(subarray_name)
+        config = self.observation.generate_sdp_assign_resources_config().as_json
+        error_json = json.loads(config)
+        error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
+        new_config = json.dumps(error_json)
+        # we retry this command three times in case there is a transitory race
+        # condition
         
-#         command_id = subarray.command_inout("AssignResources", new_config)
-#         if command_success(command_id):
-#             self.long_running_command_subscriber.set_command_id(command_id)
-#         else:
-#             self.long_running_command_subscriber.unsubscribe_all()
-#             raise CommandException(command_id)
-#         self._log(f"commanding {subarray_name} with AssignResources: {new_config} ")
+        command_id = subarray.command_inout("AssignResources", new_config)
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
+        self._log(f"commanding {subarray_name} with AssignResources: {new_config} ")
 
-#     def undo_assign_resources(self, sub_array_id: int):
-#         """Domain logic for releasing resources on a subarray in sdp.
+    def undo_assign_resources(self, sub_array_id: int):
+        """Domain logic for releasing resources on a subarray in sdp.
 
-#         This implments the tear_down_subarray method on the entry_point.
+        This implments the tear_down_subarray method on the entry_point.
 
-#         :param sub_array_id: The index id of the subarray to control
-#         """
-#         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
-#         subarray = con_config.get_device_proxy(subarray_name)
+        :param sub_array_id: The index id of the subarray to control
+        """
+        subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
+        subarray = con_config.get_device_proxy(subarray_name)
 
-#         # we retry this command three times in case there is a transitory race
-#         # condition
+        # we retry this command three times in case there is a transitory race
+        # condition
 
-#         command_id = subarray.command_inout("ReleaseAllResources")
-#         if command_success(command_id):
-#             self.long_running_command_subscriber.set_command_id(command_id)
-#         else:
-#             self.long_running_command_subscriber.unsubscribe_all()
-#             raise CommandException(command_id)
+        command_id = subarray.command_inout("ReleaseAllResources")
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
 
-#         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
+        self._log(f"Commanding {subarray_name} to ReleaseAllResources")
 
 class SdpLnConfigureStep(SdpConfigureStep):
     """Implementation of Configure Scan Step for SDP LN."""
@@ -418,3 +418,22 @@ class SDPLnEntryPoint(CompositeEntryPoint):
         self.scan_step = SDPLnScanStep(observation)
         # self.assign_resources_error_step = SdpLnErrorAssignResourcesStep(observation)
 
+class SDPLnErrorEntryPoint(CompositeEntryPoint):
+    """Derived Entrypoint scoped to SDP LN element."""
+
+    nr_of_subarrays = 2
+
+    def __init__(self, observation: Observation = None) -> None:
+        """
+        Init Object
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
+        super().__init__()
+        if not observation:
+            observation = Observation()
+        self.observation = observation
+        self.set_online_step = NoOpStep()
+        self.start_up_step = StartUpLnStep(self.nr_of_subarrays)
+        self.assign_resources_error_step = SdpLnErrorAssignResourcesStep(observation)

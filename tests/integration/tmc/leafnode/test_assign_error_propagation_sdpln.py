@@ -128,7 +128,7 @@ def test_error_propogation_from_tmc_subarray_in_low():
 
 @given("a TMC SDP subarray Leaf Node", target_fixture="composition")
 def an_telescope_subarray(
-    set_sdp_ln_entry_point,
+    set_sdp_ln_error_entry_point,
     base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """
@@ -201,6 +201,6 @@ def lrcr_event(
     context_monitoring.wait_for(subarray_name).for_attribute(
         "longRunningCommandResult"
     ).to_become_equal_to(
-        [f"('{unique_id[0]}', 'Execution block eb-mvp01-20210623-00000 already exists')",f"('{unique_id[0]}', '3')"],
+        [f"('{unique_id[0]}', 'Execution block eb-mvp01-20230809-49670 already exists')",f"('{unique_id[0]}', '3')"],
         settings=integration_test_exec_settings,
     )

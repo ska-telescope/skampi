@@ -110,19 +110,20 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
-        # config = self.observation.generate_sdp_assign_resources_config().as_json
-        
-        config_json = copy.deepcopy(ASSIGN_LOW_JSON)
+        config = self.observation.generate_sdp_assign_resources_config().as_json
+        error_json = json.loads(config)
+        error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
+        new_config = json.dumps(error_json)   
         # we retry this command three times in case there is a transitory race
         # condition
-        config = json.dumps(config_json)
-        command_id = subarray.command_inout("AssignResources", config)
+
+        command_id = subarray.command_inout("AssignResources", new_config)
         if command_success(command_id):
             self.long_running_command_subscriber.set_command_id(command_id)
         else:
             self.long_running_command_subscriber.unsubscribe_all()
             raise CommandException(command_id)
-        self._log(f"commanding {subarray_name} with AssignResources: {config} ")
+        self._log(f"commanding {subarray_name} with AssignResources: {new_config} ")
 
     def undo_assign_resources(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -198,6 +199,75 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         )
         return brd
 
+
+# class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
+#     """Implementation of Assign Resources Step for SDP LN."""
+
+#     def __init__(self, observation: Observation) -> None:
+#         """
+#         Init object.
+
+#         :param observation: An instance of the Observation class or None.
+#             If None, a new instance of Observation will be created.
+#         """
+#         super().__init__(observation)
+#         self.unique_id: str | None = None
+
+#     def do_assign_resources(
+#         self,
+#         sub_array_id: int,
+#         dish_ids: List[int],
+#         composition: types.Composition,
+#         sb_id: str,
+#     ):
+#         """Domain logic for assigning resources to a subarray in sdp LN.
+
+#         This implements the compose_subarray method on the entry_point.
+
+#         :param sub_array_id: The index id of the subarray to control
+#         :param dish_ids: this dish indices (in case of mid) to control
+#         :param composition: The assign resources configuration paramaters
+#         :param sb_id: a generic id to identify a sb to assign resources
+#         """
+#         # currently ignore composition as all types will be standard
+#         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
+#         subarray = con_config.get_device_proxy(subarray_name)
+#         config = self.observation.generate_sdp_assign_resources_config().as_json
+#         error_json = json.loads(config)
+#         error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
+#         new_config = json.dumps(error_json)
+#         # we retry this command three times in case there is a transitory race
+#         # condition
+        
+#         command_id = subarray.command_inout("AssignResources", new_config)
+#         if command_success(command_id):
+#             self.long_running_command_subscriber.set_command_id(command_id)
+#         else:
+#             self.long_running_command_subscriber.unsubscribe_all()
+#             raise CommandException(command_id)
+#         self._log(f"commanding {subarray_name} with AssignResources: {new_config} ")
+
+#     def undo_assign_resources(self, sub_array_id: int):
+#         """Domain logic for releasing resources on a subarray in sdp.
+
+#         This implments the tear_down_subarray method on the entry_point.
+
+#         :param sub_array_id: The index id of the subarray to control
+#         """
+#         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
+#         subarray = con_config.get_device_proxy(subarray_name)
+
+#         # we retry this command three times in case there is a transitory race
+#         # condition
+
+#         command_id = subarray.command_inout("ReleaseAllResources")
+#         if command_success(command_id):
+#             self.long_running_command_subscriber.set_command_id(command_id)
+#         else:
+#             self.long_running_command_subscriber.unsubscribe_all()
+#             raise CommandException(command_id)
+
+#         self._log(f"Commanding {subarray_name} to ReleaseAllResources")
 
 class SdpLnConfigureStep(SdpConfigureStep):
     """Implementation of Configure Scan Step for SDP LN."""
@@ -346,94 +416,5 @@ class SDPLnEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = SdpLnAssignResourcesStep(observation)
         self.configure_scan_step = SdpLnConfigureStep(observation)
         self.scan_step = SDPLnScanStep(observation)
+        # self.assign_resources_error_step = SdpLnErrorAssignResourcesStep(observation)
 
-ASSIGN_LOW_JSON = {
-  "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
-  "execution_block": {
-    "eb_id": "eb-mvp01-20230809-49670",
-    "max_length": 100.0,
-    "context": {},
-    "beams": [
-      {
-        "beam_id": "vis0",
-        "function": "visibilities"
-      }
-    ],
-    "channels": [
-      {
-        "channels_id": "vis_channels",
-        "spectral_windows": [
-          {
-            "count": 13824,
-            "start": 0,
-            "stride": 2,
-            "freq_min": 350000000.0,
-            "freq_max": 368000000.0,
-            "link_map": [
-              [0, 0],
-              [200, 1],
-              [744, 2],
-              [944, 3]
-            ],
-            "spectral_window_id": "fsp_1_channels"
-          }
-        ]
-      }
-    ],
-    "polarisations": [
-      {
-        "polarisations_id": "all",
-        "corr_type": ["XX", "XY", "YY", "YX"]
-      }
-    ],
-    "scan_types": [
-      {
-        "scan_type_id": "target:a",
-        "beams": {
-          "vis0": {
-            "field_id": "field_a"
-          }
-        },
-        "derive_from": ".default"
-      },
-      {
-        "scan_type_id": ".default",
-        "beams": {
-          "vis0": {
-            "channels_id": "vis_channels",
-            "polarisations_id": "all"
-          }
-        }
-      }
-    ],
-    "fields": [
-      {
-        "field_id": "field_a",
-        "phase_dir": {
-          "ra": [123.0],
-          "dec": [-60.0],
-          "reference_time": "2023-02-16T01:23:45.678900",
-          "reference_frame": "ICRF3"
-        },
-        "pointing_fqdn": "..."
-      }
-    ]
-  },
-  "processing_blocks": [
-    {
-      "pb_id": "pb-mvp01-20230809-49670",
-      "parameters": {
-        "time-to-ready": 5
-      },
-      "sbi_ids": ["sbi-mvp01-20230809-49670"],
-      "script": {
-        "kind": "realtime",
-        "name": "test-receive-addresses",
-        "version": "0.6.1"
-      }
-    }
-  ],
-  "resources": {
-    "receptors": ["SKA001", "SKA002"]
-  }
-}

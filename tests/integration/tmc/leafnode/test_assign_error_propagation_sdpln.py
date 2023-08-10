@@ -168,17 +168,16 @@ def i_assign_resources_to_sdpsln(
     observation = Observation()
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
     subarray = con_config.get_device_proxy(subarray_name)
-    # config = observation.generate_sdp_assign_resources_config().as_json
-    config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
-        # we retry this command three times in case there is a transitory race
-        # condition
-    config = json.dumps(config_json)
-    subarray.command_inout("AssignResources", config)
+    config = observation.generate_sdp_assign_resources_config().as_json
+    error_json = json.loads(config)
+    error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
+    new_config = json.dumps(error_json)
+    # subarray.command_inout("AssignResources", new_config)
     # context_monitoring.wait_for(subarray_name).for_attribute(
     #     "sdpSubarrayObsState"
     # ).to_become_equal_to("IDLE", ignore_first=False, settings=integration_test_exec_settings)
     # subarray.command_inout("ReleaseAllResources")
-    unique_id = subarray.command_inout("AssignResources", config)
+    unique_id = subarray.command_inout("AssignResources", new_config)
     logger.info(f"--------------> unique_id {unique_id}")
 
 
@@ -205,94 +204,3 @@ def lrcr_event(
         [f"('{unique_id[0]}', 'Execution block eb-mvp01-20210623-00000 already exists')",f"('{unique_id[0]}', '3')"],
         settings=integration_test_exec_settings,
     )
-
-ASSIGN_RESOURCE_JSON_LOW = {
-  "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
-  "execution_block": {
-    "eb_id": "eb-mvp01-20230809-49670",
-    "max_length": 100.0,
-    "context": {},
-    "beams": [
-      {
-        "beam_id": "vis0",
-        "function": "visibilities"
-      }
-    ],
-    "channels": [
-      {
-        "channels_id": "vis_channels",
-        "spectral_windows": [
-          {
-            "count": 13824,
-            "start": 0,
-            "stride": 2,
-            "freq_min": 350000000.0,
-            "freq_max": 368000000.0,
-            "link_map": [
-              [0, 0],
-              [200, 1],
-              [744, 2],
-              [944, 3]
-            ],
-            "spectral_window_id": "fsp_1_channels"
-          }
-        ]
-      }
-    ],
-    "polarisations": [
-      {
-        "polarisations_id": "all",
-        "corr_type": ["XX", "XY", "YY", "YX"]
-      }
-    ],
-    "scan_types": [
-      {
-        "scan_type_id": "target:a",
-        "beams": {
-          "vis0": {
-            "field_id": "field_a"
-          }
-        },
-        "derive_from": ".default"
-      },
-      {
-        "scan_type_id": ".default",
-        "beams": {
-          "vis0": {
-            "channels_id": "vis_channels",
-            "polarisations_id": "all"
-          }
-        }
-      }
-    ],
-    "fields": [
-      {
-        "field_id": "field_a",
-        "phase_dir": {
-          "ra": [123.0],
-          "dec": [-60.0],
-          "reference_time": "2023-02-16T01:23:45.678900",
-          "reference_frame": "ICRF3"
-        },
-        "pointing_fqdn": "..."
-      }
-    ]
-  },
-  "processing_blocks": [
-    {
-      "pb_id": "pb-mvp01-20230809-49670",
-      "parameters": {
-        "time-to-ready": 5
-      },
-      "sbi_ids": ["sbi-mvp01-20230809-49670"],
-      "script": {
-        "kind": "realtime",
-        "name": "test-receive-addresses",
-        "version": "0.6.1"
-      }
-    }
-  ],
-  "resources": {
-    "receptors": ["SKA001", "SKA002"]
-  }
-}

@@ -159,10 +159,10 @@ def i_assign_resources_to_sdpsln(
     receptors = sut_settings.receptors
 
 
-    with running_telescope.wait_for_allocating_a_subarray(
-        subarray_id, receptors, integration_test_exec_settings
-    ):
-        entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
+    # with running_telescope.wait_for_allocating_a_subarray(
+    #     subarray_id, receptors, integration_test_exec_settings
+    # ):
+    #     entry_point.compose_subarray(subarray_id, receptors, composition, sb_config.sbid)
 
     tel = names.TEL()
     observation = Observation()

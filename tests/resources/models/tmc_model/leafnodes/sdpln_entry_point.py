@@ -111,19 +111,16 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
         config = self.observation.generate_sdp_assign_resources_config().as_json
-        error_json = json.loads(config)
-        error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
-        new_config = json.dumps(error_json)   
         # we retry this command three times in case there is a transitory race
         # condition
 
-        command_id = subarray.command_inout("AssignResources", new_config)
+        command_id = subarray.command_inout("AssignResources", config)
         if command_success(command_id):
             self.long_running_command_subscriber.set_command_id(command_id)
         else:
             self.long_running_command_subscriber.unsubscribe_all()
             raise CommandException(command_id)
-        self._log(f"commanding {subarray_name} with AssignResources: {new_config} ")
+        self._log(f"commanding {subarray_name} with AssignResources: {config} ")
 
     def undo_assign_resources(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.

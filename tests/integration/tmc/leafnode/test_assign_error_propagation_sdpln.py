@@ -1,10 +1,11 @@
-import logging
 
+import logging
 import json
 
-
 import pytest
+
 from pytest_bdd import given, scenario, then, when
+from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
@@ -46,7 +47,8 @@ def an_telescope_subarray(
 
 @when("I assign resources for the second time with same eb_id")
 def i_assign_resources_to_sdpsln(
-    sut_settings: SutTestSettings
+    sut_settings: SutTestSettings,
+    entry_point: fxt_types.entry_point,
     ):
     """
     I assign resources to it
@@ -64,7 +66,7 @@ def i_assign_resources_to_sdpsln(
     error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
     new_config = json.dumps(error_json)
 
-    _, unique_id = subarray.command_inout("AssignResources", new_config)
+    unique_id = subarray.command_inout("AssignResources", new_config)
     logger.info(f"--------------> unique_id {unique_id}")
 
 

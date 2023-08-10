@@ -61,12 +61,12 @@ def i_assign_resources_to_sdpsln(
     observation = Observation()
     subarray_name = tel.tm.subarray(sut_settings.subarray_id).sdp_leaf_node
     subarray = con_config.get_device_proxy(subarray_name)
-    config = observation.generate_sdp_assign_resources_config().as_json
-    error_json = json.loads(config)
-    error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
-    new_config = json.dumps(error_json)
+    config = observation.generate_sdp_assign_resources_config()
+    config.eb_id = "eb-mvp01-20230809-49670"
+    # error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
+    config.as_json
 
-    result_code, unique_id = subarray.command_inout("AssignResources", new_config)
+    result_code, unique_id = subarray.command_inout("AssignResources", config)
     logger.info(f"--------------> unique_id {unique_id}")
 
 

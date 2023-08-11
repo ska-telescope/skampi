@@ -7,6 +7,8 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from resources.models.mvp_model.states import ObsState
+from assertpy import assert_that
 
 from tests.resources.models.obsconfig.config import Observation
 from tests.resources.models.tmc_model.entry_point import ASSIGN_RESOURCE_JSON_LOW
@@ -80,15 +82,18 @@ def lrcr_event(
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
     tel = names.TEL()
-    central_node_name = tel.tm.central_node
+    subarray_name = tel.tm.subarray(sut_settings.subarray_id)
 
     context_monitoring.re_init_builder()
 
-    context_monitoring.wait_for(central_node_name).for_attribute("obsstate").to_become_equal_to(
-        "EMPTY", ignore_first=False, settings=integration_test_exec_settings
+    context_monitoring.wait_for(subarray_name).for_attribute("obsstate").to_become_equal_to(
+        "RESOURCING", ignore_first=False, settings=integration_test_exec_settings
     )
+    sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
+    result = sdp_subarray.read_attribute("obsstate").value
+    assert_that(result).is_equal_to(ObsState.EMPTY)
 
-    context_monitoring.wait_for(central_node_name).for_attribute(
+    context_monitoring.wait_for(subarray_name).for_attribute(
         "longRunningCommandResult"
     ).to_become_equal_to(
         [

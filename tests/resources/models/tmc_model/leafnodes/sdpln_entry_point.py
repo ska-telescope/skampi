@@ -1,8 +1,6 @@
 """Domain logic for the sdp."""
-import logging
-import os
 import json
-import copy
+import logging
 from time import sleep
 from typing import List
 
@@ -17,8 +15,6 @@ from ska_ser_skallop.mvp_control.entry_points.composite import (
     NoOpStep,
 )
 from ska_ser_skallop.utils.singleton import Memo
-
-from tests.resources.models.obsconfig.config import Observation
 
 from ...obsconfig.config import Observation
 from ...sdp_model.entry_point import (
@@ -106,6 +102,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         :param dish_ids: this dish indices (in case of mid) to control
         :param composition: The assign resources configuration paramaters
         :param sb_id: a generic id to identify a sb to assign resources
+        :raises CommandException: a exception for failed command
         """
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
@@ -128,6 +125,7 @@ class SdpLnAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         This implments the tear_down_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :raises CommandException: a exception for failed command
         """
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
@@ -225,17 +223,18 @@ class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         :param dish_ids: this dish indices (in case of mid) to control
         :param composition: The assign resources configuration paramaters
         :param sb_id: a generic id to identify a sb to assign resources
+        :raises CommandException: a exception for failed command
         """
         # currently ignore composition as all types will be standard
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
         config = self.observation.generate_sdp_assign_resources_config().as_json
         error_json = json.loads(config)
-        error_json['execution_block']['eb_id'] = "eb-mvp01-20230809-49670"
+        error_json["execution_block"]["eb_id"] = "eb-mvp01-20230809-49670"
         new_config = json.dumps(error_json)
         # we retry this command three times in case there is a transitory race
         # condition
-        
+
         command_id = subarray.command_inout("AssignResources", new_config)
         if command_success(command_id):
             self.long_running_command_subscriber.set_command_id(command_id)
@@ -250,6 +249,7 @@ class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
         This implments the tear_down_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :raises CommandException: a exception for failed command
         """
         subarray_name = self._tel.tm.subarray(sub_array_id).sdp_leaf_node
         subarray = con_config.get_device_proxy(subarray_name)
@@ -317,6 +317,7 @@ class SdpLnErrorAssignResourcesStep(SdpAssignResourcesStep, WithCommandID):
             subarray_name
         )
         return brd
+
 
 class SdpLnConfigureStep(SdpConfigureStep):
     """Implementation of Configure Scan Step for SDP LN."""
@@ -465,6 +466,7 @@ class SDPLnEntryPoint(CompositeEntryPoint):
         self.assign_resources_step = SdpLnAssignResourcesStep(observation)
         self.configure_scan_step = SdpLnConfigureStep(observation)
         self.scan_step = SDPLnScanStep(observation)
+
 
 class SDPLnErrorEntryPoint(CompositeEntryPoint):
     """Derived Entrypoint scoped to SDP LN element."""

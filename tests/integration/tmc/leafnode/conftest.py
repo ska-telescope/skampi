@@ -7,7 +7,10 @@ import os
 import pytest
 from pytest_bdd import given
 from resources.models.tmc_model.leafnodes.cspln_entry_point import CSPLnEntryPoint
-from resources.models.tmc_model.leafnodes.sdpln_entry_point import SDPLnEntryPoint, SDPLnErrorEntryPoint
+from resources.models.tmc_model.leafnodes.sdpln_entry_point import (
+    SDPLnEntryPoint,
+    SDPLnErrorEntryPoint,
+)
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
@@ -69,6 +72,7 @@ def fxt_set_sdp_error_ln_entry_point(
         "sdp",
         "sdp control",
     ]
+
 
 @pytest.fixture(name="set_csp_ln_entry_point")
 @pytest.mark.usefixtures("set_up_subarray_log_checking_for_csp_ln")

@@ -18,8 +18,7 @@ ska-landingpage:
   enabled: true
 
 # Mid specific products
-ska-mid-cbf:
-  legacy_compatibility: true
+ska-mid-cbf-mcs:
   enabled: true
 ska-csp-lmc-mid:
   legacy_compatibility: true

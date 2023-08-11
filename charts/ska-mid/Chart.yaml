@@ -21,6 +21,10 @@ dependencies:
     version: 0.10.5
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-mid-cbf-tmleafnode.enabled
+  - name: ska-csp-lmc-mid
+    version: 0.16.2
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-csp-lmc-mid.enabled
   - name: ska-log-consumer
     version: 0.1.6
     repository: https://artefact.skao.int/repository/helm-internal

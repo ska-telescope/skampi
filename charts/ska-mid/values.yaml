@@ -163,3 +163,6 @@ ska-sim-dishmaster:
 ska-tango-alarmhandler:
   enabled: true
 
+ska-csp-lmc-mid:
+  legacy_compatibility: true
+

@@ -38,8 +38,7 @@ def test_assign_resources_to_tmc_subarray_in_low():
 def test_release_resources_from_tmc_subarray_in_low():
     """Release resources from tmc subarrays in low."""
 
-
-@pytest.mark.skip(reason="temp skip for at-489")
+@pytest.mark.tmc
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid

@@ -28,7 +28,7 @@ def test_recover_subarraynode_stuck_in_resourcing_tmc_in_low():
     """Test recovery of subarraynode stuck in resourcing"""
 
 
-@given("an TMC", target_fixture="composition")
+@given("a TMC", target_fixture="composition")
 def an_telescope_subarray(
     set_tmc_error_entry_point,
     base_composition: conf_types.Composition,

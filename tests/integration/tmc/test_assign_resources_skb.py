@@ -21,10 +21,13 @@ logger = logging.getLogger(__name__)
 @pytest.mark.k8sonly
 @pytest.mark.skalow
 @scenario(
-    "features/tmc_skb_185.feature",
+    "features/tmc_assign_skb.feature",
     "Verification of skb-185",
 )
+def test_error_propogation_from_tmc_subarray_in_low():
+    """Assign resources from tmc subarrays in mid."""
 
+    
 # And I assign resources and release for the first time from the central node
 
 

@@ -173,7 +173,7 @@ ska-tango-archiver:
   dbname: default_mvp_archiver_db
 
 ## dishmasters
-ska-sim-dishmaster:
+ska-dish-lmc:
   legacy_compatibility: true
   enabled: true
 

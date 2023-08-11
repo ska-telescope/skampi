@@ -207,6 +207,7 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         :param dish_ids: this dish indices (in case of mid) to control
         :param composition: The assign resources configuration paramaters
         :param sb_id: a generic id to identify a sb to assign resources
+        :raises CommandException: raises command exception
         """
         # currently ignore composition as all types will be standard
         central_node_name = self._tel.tm.central_node
@@ -235,6 +236,7 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         This implements the tear_down_subarray method on the entry_point.
 
         :param sub_array_id: The index id of the subarray to control
+        :raises CommandException: raises command exception
         """
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)

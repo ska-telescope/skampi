@@ -476,6 +476,8 @@ def i_command_it_to_scan(
     with context_monitoring.context_monitoring():
         configured_subarray.set_to_scanning(integration_test_exec_settings)
 
+
+@given("the resources are assigned and released on the subarray")
 @given("I assign resources and release for the first time from the central node")
 @given("I assign resources and release for the first time")
 @when("I release all resources assigned to it")

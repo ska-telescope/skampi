@@ -8,7 +8,6 @@ from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-from tests.resources.models.obsconfig.config import Observation
 from tests.resources.models.tmc_model.entry_point import ASSIGN_RESOURCE_JSON_LOW
 
 from ..conftest import SutTestSettings
@@ -16,7 +15,7 @@ from ..conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.tmc
+
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
@@ -27,7 +26,7 @@ logger = logging.getLogger(__name__)
 def test_error_propogation_from_tmc_subarray_in_low():
     """Assign resources from tmc subarrays in mid."""
 
-    
+
 # And I assign resources and release for the first time from the central node
 
 
@@ -62,7 +61,6 @@ def i_assign_resources_to_sdpsln(
     global unique_id
 
     tel = names.TEL()
-    observation = Observation()
     central_node_name = tel.tm.central_node
     central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
     error_json = ASSIGN_RESOURCE_JSON_LOW

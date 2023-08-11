@@ -45,13 +45,11 @@ def an_telescope_subarray(
 
 @given("resources are again assigned to the subarray with same eb_id")
 def assign_resources_with_same_eb_id(
-    sut_settings: SutTestSettings,
-    entry_point: fxt_types.entry_point,
+
 ):
     """
     I assign resources to it
-    :param sut_settings: settings for system under test
-    :param entry_point: entry point fixture
+
     """
     global unique_id
 

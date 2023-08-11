@@ -6,8 +6,10 @@ import os
 from time import sleep
 from typing import Any, List
 
+from resources.utils.validation import CommandException, command_success
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.event_handling.builders import get_message_board_builder
+from ska_ser_skallop.event_handling.handlers import WaitForLRCComplete
 from ska_ser_skallop.mvp_control.configuration import types
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import base
@@ -36,6 +38,19 @@ class LogEnabled:
     def _log(self, mssage: str):
         if self._live_logging:
             logger.info(mssage)
+
+
+class WithCommandID:
+    def __init__(self) -> None:
+        self._long_running_command_subscriber = None
+
+    @property
+    def long_running_command_subscriber(self) -> WaitForLRCComplete | None:
+        return Memo().get("long_running_command_subscriber")
+
+    @long_running_command_subscriber.setter
+    def long_running_command_subscriber(self, subscriber: WaitForLRCComplete):
+        Memo(long_running_command_subscriber=subscriber)
 
 
 class StartUpStep(base.StartUpStep, LogEnabled):
@@ -152,6 +167,155 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
         self._log(f"Commanding {central_node_name} with TelescopeOff")
         central_node.command_inout("TelescopeOff")
+
+
+class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommandID):
+    """Implementation of Assign Resources Step for TMC"""
+
+    def __init__(self, observation: Observation) -> None:
+        """
+        Init object.
+
+        :param observation: An instance of the Observation class or None.
+            If None, a new instance of Observation will be created.
+        """
+        super().__init__()
+        self._tel = names.TEL()
+        self.observation = observation
+
+    def _generate_unique_eb_sb_ids(self, config_json: dict[str, Any]):
+        """This method will generate unique eb and sb ids.
+        Update it in config json
+        :param config_json: Config json for Assign Resource command
+        """
+        config_json["sdp"]["execution_block"]["eb_id"] = "eb-mvp01-20230809-49670"
+        for pb in config_json["sdp"]["processing_blocks"]:
+            pb["pb_id"] = get_id("pb-test-********-*****")
+
+    def do_assign_resources(
+        self,
+        sub_array_id: int,
+        dish_ids: List[int],
+        composition: types.Composition,  # pylint: disable=
+        sb_id: str,
+    ):
+        """Domain logic for assigning resources to a subarray in sdp.
+
+        This implements the compose_subarray method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        :param dish_ids: this dish indices (in case of mid) to control
+        :param composition: The assign resources configuration paramaters
+        :param sb_id: a generic id to identify a sb to assign resources
+        """
+        # currently ignore composition as all types will be standard
+        central_node_name = self._tel.tm.central_node
+        central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
+        if self._tel.skamid:
+            config = self.observation.generate_assign_resources_config(sub_array_id).as_json
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available.
+            # Once it is available pull json from CDM
+            config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
+            self._generate_unique_eb_sb_ids(config_json)
+            config = json.dumps(config_json)
+
+        self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
+
+        command_id = central_node.command_inout("AssignResources", config)
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
+
+    def undo_assign_resources(self, sub_array_id: int):
+        """Domain logic for releasing resources on a subarray in sdp.
+
+        This implements the tear_down_subarray method on the entry_point.
+
+        :param sub_array_id: The index id of the subarray to control
+        """
+        central_node_name = self._tel.tm.central_node
+        central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
+        if self._tel.skamid:
+            config = self.observation.generate_release_all_resources_config_for_central_node(  # noqa: disable=E501
+                sub_array_id
+            )
+        elif self._tel.skalow:
+            # TODO Low json from CDM is not available.
+            # Once it is available pull json from CDM
+            config = json.dumps(RELEASE_RESOURCE_JSON_LOW)
+        self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
+        command_id = central_node.command_inout("ReleaseResources", config)
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
+
+    def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
+        """Domain logic specifying what needs to be waited
+         for subarray assign resources is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: brd
+        """
+        brd = get_message_board_builder()
+
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("IDLE")
+        return brd
+
+    def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
+        """Domain logic specifyig what needs to be done
+         for waiting for subarray to be scanning.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: brd
+        """
+        brd = get_message_board_builder()
+        subarray_name = self._tel.tm.subarray(sub_array_id)
+        brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
+            "RESOURCING"
+        )
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+            # ).to_become_equal_to("RESOURCING")
+        ).to_become_equal_to("IDLE")
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("RESOURCING")
+        return brd
+
+    def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
+        """Domain logic specifying what needs to be waited
+         for subarray releasing resources is done.
+
+        :param sub_array_id: The index id of the subarray to control
+        :return: brd
+        """
+        brd = get_message_board_builder()
+        brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+        brd.set_waiting_on(self._tel.csp.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+
+        brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
+            "obsState"
+        ).to_become_equal_to("EMPTY")
+
+        return brd
 
 
 class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
@@ -703,6 +867,24 @@ class TMCEntryPoint(CompositeEntryPoint, HasObservation):
         # IDLE
         self.obsreset_step = TMCObsReset()
         self.restart_step = TMCRestart()
+        self.wait_ready = TMCWaitReadyStep(self.nr_of_subarrays)
+
+
+class TMCErrorEntryPoint(CompositeEntryPoint, HasObservation):
+    """Derived Entrypoint scoped to SDP element."""
+
+    nr_of_subarrays = 2
+    nr_of_receptors = 4
+    receptors = [1, 2, 3, 4]
+
+    def __init__(self) -> None:
+        """Init Object"""
+        super().__init__()
+        HasObservation.__init__(self)
+        observation = self.observation
+        self.set_online_step = CSPSetOnlineStep(self.nr_of_subarrays)  # Temporary fix
+        self.start_up_step = StartUpStep(self.nr_of_subarrays, self.receptors)
+        self.assign_resources_step = AssignResourcesErrorStep(observation)
         self.wait_ready = TMCWaitReadyStep(self.nr_of_subarrays)
 
 

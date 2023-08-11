@@ -5,7 +5,7 @@ import os
 from typing import Callable
 
 import pytest
-from resources.models.tmc_model.entry_point import TMCEntryPoint
+from resources.models.tmc_model.entry_point import TMCEntryPoint, TMCErrorEntryPoint
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
@@ -35,6 +35,39 @@ def fxt_set_entry_point(
     TMCEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
     TMCEntryPoint.receptors = sut_settings.receptors
     exec_env.entrypoint = TMCEntryPoint
+    # exec_env.maintain_on = True
+    #  TODO  determine correct scope for readiness checks to work
+    exec_env.scope = [
+        # "tm",
+        # "mid",
+        "sdp",
+        "csp",
+        # "tmc scope",
+        "csp scope",
+        "csp control",
+        "sdp control",
+    ]
+
+
+@pytest.fixture(name="set_tmc_error_entry_point", autouse=True)
+@pytest.mark.usefixtures("set_up_subarray_log_checking_for_tmc")
+def fxt_set_error_entry_point(
+    nr_of_subarrays: int,
+    set_session_exec_env: fxt_types.set_session_exec_env,
+    sut_settings: conftest.SutTestSettings,
+):
+    """Fixture to use for setting up the entry point as from only the
+    interface to sdp.
+    :param nr_of_subarrays: The number of subarrays to set in the SUT settings.
+    :param set_session_exec_env: A fixture to set session execution environment
+    :param sut_settings: A class representing the settings for the system under test.
+    """
+    exec_env = set_session_exec_env
+    sut_settings.nr_of_subarrays = nr_of_subarrays
+    sut_settings.nr_of_receptors = 4
+    TMCErrorEntryPoint.nr_of_subarrays = sut_settings.nr_of_subarrays
+    TMCErrorEntryPoint.receptors = sut_settings.receptors
+    exec_env.entrypoint = TMCErrorEntryPoint
     # exec_env.maintain_on = True
     #  TODO  determine correct scope for readiness checks to work
     exec_env.scope = [

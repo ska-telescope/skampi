@@ -57,7 +57,7 @@ def assign_resources_with_same_eb_id(
     central_node_name = tel.tm.central_node
     central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
     error_json = ASSIGN_RESOURCE_JSON_LOW
-    error_json["execution_block"]["eb_id"] = "eb-mvp01-20230809-49670"
+    error_json["sdp"]["execution_block"]["eb_id"] = "eb-mvp01-20230809-49670"
     new_config = json.dumps(error_json)
 
     result_code, unique_id = central_node.command_inout("AssignResources", new_config)

@@ -108,7 +108,7 @@ def check_subarray_in_resourcing(sut_settings: SutTestSettings):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.IDLE)
+    assert_that(result).is_equal_to(ObsState.RESOURCING)
 
 
 @when("I release resources from the csp subarray")

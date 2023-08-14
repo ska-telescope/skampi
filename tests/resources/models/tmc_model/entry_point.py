@@ -242,6 +242,7 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         :param sub_array_id: The index id of the subarray to control
         :raises CommandException: raises command exception
         """
+        assert self.long_running_command_subscriber
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
         if self._tel.skamid:
@@ -254,11 +255,12 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
             config = json.dumps(RELEASE_RESOURCE_JSON_LOW)
         self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
         command_id = central_node.command_inout("ReleaseResources", config)
-        if command_success(command_id):
-            self.long_running_command_subscriber.set_command_id(command_id)
-        else:
-            self.long_running_command_subscriber.unsubscribe_all()
-            raise CommandException(command_id)
+        if self.long_running_command_subscriber:
+            if command_success(command_id):
+                self.long_running_command_subscriber.set_command_id(command_id)
+            else:
+                self.long_running_command_subscriber.unsubscribe_all()
+                raise CommandException(command_id)
 
     def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited

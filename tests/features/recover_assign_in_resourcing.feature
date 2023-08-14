@@ -1,6 +1,6 @@
 	
     Scenario: fix skb-185		  
-        Given a TMC 
+        Given an TMC 
 		And the resources are assigned and released on the subarray 
 		And resources are again assigned to the subarray with same eb_id	
 		And sdp subarray throws error and stays in obsState EMPTY

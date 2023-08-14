@@ -45,12 +45,11 @@ def an_telescope_subarray(
 
 
 @given(parsers.parse("resources are again assigned to the subarray with same eb_id {eb_id}"))
-@given("resources are again assigned to the subarray with same eb_id")
-def assign_resources_with_same_eb_id(composition, eb_id):
+def assign_resources_with_same_eb_id(composition: dict, eb_id: str):
     """
     I assign resources to it
-
-
+    :param composition: The low json dictionary.
+    :param eb_id: eb id provided by the user.x
     """
     global unique_id
 

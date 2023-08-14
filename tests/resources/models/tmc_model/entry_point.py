@@ -104,7 +104,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         # set dish master to be waited before startup completes
         if self._tel.skamid:
             for receptor_id in self.receptors:
-                dish = f"ska00{receptor_id}/dish/master"
+                dish = f"ska00{receptor_id}/elt/master"
                 brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
                     "ON", ignore_first=False
                 )
@@ -149,7 +149,7 @@ class StartUpStep(base.StartUpStep, LogEnabled):
                     "state"
                 ).to_become_equal_to("OFF", ignore_first=False)
             for receptor_id in self.receptors:
-                dish = f"ska00{receptor_id}/dish/master"
+                dish = f"ska00{receptor_id}/elt/master"
                 brd.set_waiting_on(dish).for_attribute("state").to_become_equal_to(
                     "STANDBY", ignore_first=False
                 )
@@ -212,6 +212,7 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         :raises CommandException: raises command exception
         """
         # currently ignore composition as all types will be standard
+        assert self.long_running_command_subscriber
         central_node_name = self._tel.tm.central_node
         central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
         if self._tel.skamid:
@@ -226,11 +227,12 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
 
         command_id = central_node.command_inout("AssignResources", config)
-        if command_success(command_id):
-            self.long_running_command_subscriber.set_command_id(command_id)
-        else:
-            self.long_running_command_subscriber.unsubscribe_all()
-            raise CommandException(command_id)
+        if self.long_running_command_subscriber:
+            if command_success(command_id):
+                self.long_running_command_subscriber.set_command_id(command_id)
+            else:
+                self.long_running_command_subscriber.unsubscribe_all()
+                raise CommandException(command_id)
 
     def undo_assign_resources(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.

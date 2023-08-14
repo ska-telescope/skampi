@@ -95,12 +95,16 @@ def check_long_running_command_result_error(
 
 
 @given("the resources are assigned to csp subarray")
-def check_csp_subarray__in_idle(sut_settings: SutTestSettings):
+def check_csp_subarray__in_idle(    sut_settings: SutTestSettings,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings):
     tel = names.TEL()
     subarray_name = tel.csp.subarray(sut_settings.subarray_id)
     subarray = con_config.get_device_proxy(subarray_name)
     result = subarray.read_attribute("obsState").value
-    assert_that(result).is_equal_to(ObsState.IDLE)
+    context_monitoring.wait_for(subarray_name).for_attribute("obsState").to_become_equal_to(
+        "IDLE", ignore_first=False, settings=integration_test_exec_settings
+    )
 
 
 @given("the subarray node stucks in obsState RESOURCING")

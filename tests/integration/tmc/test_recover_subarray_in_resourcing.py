@@ -4,7 +4,7 @@ import logging
 
 import pytest
 from assertpy import assert_that
-from pytest_bdd import given, scenario, then, when
+from pytest_bdd import given, parsers, scenario, then, when
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -44,10 +44,12 @@ def an_telescope_subarray(
     return ASSIGN_RESOURCE_JSON_LOW
 
 
+@given(parsers.parse("resources are again assigned to the subarray with same eb_id {eb_id}"))
 @given("resources are again assigned to the subarray with same eb_id")
-def assign_resources_with_same_eb_id():
+def assign_resources_with_same_eb_id(composition, eb_id):
     """
     I assign resources to it
+
 
     """
     global unique_id
@@ -55,9 +57,8 @@ def assign_resources_with_same_eb_id():
     tel = names.TEL()
     central_node_name = tel.tm.central_node
     central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
-    error_json = ASSIGN_RESOURCE_JSON_LOW
-    # error_json["sdp"]["execution_block"]["eb_id"] = "eb-mvp01-20230809-49670"
-    new_config = json.dumps(error_json)
+    composition["sdp"]["execution_block"]["eb_id"] = eb_id
+    new_config = json.dumps(composition)
 
     result_code, unique_id = central_node.command_inout("AssignResources", new_config)
     logger.info(f"Result code for second assign resources {result_code}")

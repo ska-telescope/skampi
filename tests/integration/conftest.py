@@ -477,6 +477,7 @@ def i_command_it_to_scan(
         configured_subarray.set_to_scanning(integration_test_exec_settings)
 
 
+@given(parsers.parse("the resources are assigned with {eb_id} and released on the subarray"))
 @given("the resources are assigned and released on the subarray")
 @given("I assign resources and release for the first time from the central node")
 @given("I assign resources and release for the first time")
@@ -486,6 +487,8 @@ def i_release_all_resources_assigned_to_it(
     context_monitoring: fxt_types.context_monitoring,
     entry_point: fxt_types.entry_point,
     integration_test_exec_settings: fxt_types.exec_settings,
+    composition,
+    eb_id,
 ):
     """
     I release all resources assigned to it.
@@ -496,7 +499,7 @@ def i_release_all_resources_assigned_to_it(
     :param integration_test_exec_settings: The integration test execution settings.
     """
     sub_array_id = allocated_subarray.id
-
+    composition["sdp"]["execution_block"]["eb_id"] = eb_id
     with context_monitoring.context_monitoring():
         with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
             entry_point.tear_down_subarray(sub_array_id)

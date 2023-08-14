@@ -227,12 +227,12 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")
 
         command_id = central_node.command_inout("AssignResources", config)
-        if self.long_running_command_subscriber:
-            if command_success(command_id):
-                self.long_running_command_subscriber.set_command_id(command_id)
-            else:
-                self.long_running_command_subscriber.unsubscribe_all()
-                raise CommandException(command_id)
+
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
 
     def undo_assign_resources(self, sub_array_id: int):
         """Domain logic for releasing resources on a subarray in sdp.
@@ -255,12 +255,12 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
             config = json.dumps(RELEASE_RESOURCE_JSON_LOW)
         self._log(f"Commanding {central_node_name} with ReleaseResources {config}")
         command_id = central_node.command_inout("ReleaseResources", config)
-        if self.long_running_command_subscriber:
-            if command_success(command_id):
-                self.long_running_command_subscriber.set_command_id(command_id)
-            else:
-                self.long_running_command_subscriber.unsubscribe_all()
-                raise CommandException(command_id)
+
+        if command_success(command_id):
+            self.long_running_command_subscriber.set_command_id(command_id)
+        else:
+            self.long_running_command_subscriber.unsubscribe_all()
+            raise CommandException(command_id)
 
     def set_wait_for_do_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
         """Domain logic specifying what needs to be waited
@@ -281,6 +281,10 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("IDLE")
+        central_node_name = self._tel.tm.central_node
+        self.long_running_command_subscriber = brd.set_wait_for_long_running_command_on(
+            central_node_name
+        )
         return brd
 
     def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -302,6 +306,10 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("RESOURCING")
+        central_node_name = self._tel.tm.central_node
+        self.long_running_command_subscriber = brd.set_wait_for_long_running_command_on(
+            central_node_name
+        )
         return brd
 
     def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -322,7 +330,10 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("EMPTY")
-
+        central_node_name = self._tel.tm.central_node
+        self.long_running_command_subscriber = brd.set_wait_for_long_running_command_on(
+            central_node_name
+        )
         return brd
 
 
@@ -420,6 +431,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         brd.set_waiting_on(self._tel.tm.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("IDLE")
+
         return brd
 
     def set_wait_for_doing_assign_resources(self, sub_array_id: int) -> MessageBoardBuilder:
@@ -430,6 +442,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         :return: brd
         """
         brd = get_message_board_builder()
+
         subarray_name = self._tel.tm.subarray(sub_array_id)
         brd.set_waiting_on(subarray_name).for_attribute("obsState").to_become_equal_to(
             "RESOURCING"
@@ -441,6 +454,7 @@ class AssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         brd.set_waiting_on(self._tel.sdp.subarray(sub_array_id)).for_attribute(
             "obsState"
         ).to_become_equal_to("RESOURCING")
+
         return brd
 
     def set_wait_for_undo_resources(self, sub_array_id: int) -> MessageBoardBuilder:

@@ -221,7 +221,7 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
             # TODO Low json from CDM is not available.
             # Once it is available pull json from CDM
             config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
-            #self._generate_unique_eb_sb_ids(config_json)
+            # self._generate_unique_eb_sb_ids(config_json)
             config = json.dumps(config_json)
 
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")

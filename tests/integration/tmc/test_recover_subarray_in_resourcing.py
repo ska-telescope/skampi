@@ -17,6 +17,7 @@ from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
 
+
 @pytest.mark.tmc
 @pytest.mark.skalow
 @pytest.mark.assign
@@ -44,9 +45,7 @@ def an_telescope_subarray(
 
 
 @given("resources are again assigned to the subarray with same eb_id")
-def assign_resources_with_same_eb_id(
-
-):
+def assign_resources_with_same_eb_id():
     """
     I assign resources to it
 
@@ -57,7 +56,7 @@ def assign_resources_with_same_eb_id(
     central_node_name = tel.tm.central_node
     central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
     error_json = ASSIGN_RESOURCE_JSON_LOW
-    #error_json["sdp"]["execution_block"]["eb_id"] = "eb-mvp01-20230809-49670"
+    # error_json["sdp"]["execution_block"]["eb_id"] = "eb-mvp01-20230809-49670"
     new_config = json.dumps(error_json)
 
     result_code, unique_id = central_node.command_inout("AssignResources", new_config)
@@ -95,13 +94,13 @@ def check_long_running_command_result_error(
 
 
 @given("the resources are assigned to csp subarray")
-def check_csp_subarray__in_idle(    sut_settings: SutTestSettings,
+def check_csp_subarray__in_idle(
+    sut_settings: SutTestSettings,
     context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings):
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
     tel = names.TEL()
     subarray_name = tel.csp.subarray(sut_settings.subarray_id)
-    subarray = con_config.get_device_proxy(subarray_name)
-    result = subarray.read_attribute("obsState").value
     context_monitoring.wait_for(subarray_name).for_attribute("obsState").to_become_equal_to(
         "IDLE", ignore_first=False, settings=integration_test_exec_settings
     )

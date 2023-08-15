@@ -30,6 +30,3 @@ ska-landingpage:
 ska-tango-archiver:
   legacy_compatibility: true
   enabled: false
-ska-dish-lmc:
-  legacy_compatibility: true
-  enabled: false

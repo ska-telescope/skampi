@@ -173,10 +173,20 @@ ska-tango-archiver:
   telescope: SKA-mid
   dbname: default_mvp_archiver_db
 
-## dishmasters
+## dishmanager
 ska-dish-lmc:
-  legacy_compatibility: true
   enabled: true
+  ska-mid-dish-manager:
+    enabled: true
+    ska-mid-dish-simulators:
+      enabled: true
+      ska-tango-base:
+        enabled: false
+      deviceServers:
+        spfdevice:
+          enabled: true
+        spfrxdevice:
+          enabled: true
 
 # alarm-handler
 ska-tango-alarmhandler:

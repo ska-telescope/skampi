@@ -94,9 +94,11 @@ def check_long_running_command_result_error(
     context_monitoring.wait_for(central_node_name).for_attribute(
         "longRunningCommandResult"
     ).to_become_equal_to(
-        [
-            f"('{unique_id[0]}', 'Exception occured on device: ska_low/tm_subarray_node/1: Exception occurred on the following devices:\nska_low/tm_leaf_node/csp_subarray01: [2, \"Task queued\"]\nska_low/tm_leaf_node/sdp_subarray01: Execution block eb-test-20220916-00000 already exists\n')"
-        ],
+            f"('{unique_id[0]}','Exception occured on device: ska_low/tm_subarray_node/1: \
+                Exception occurred on the following devices:\nska_low/tm_leaf_node/csp_subarray01: \
+                [2, \"Task queued\"]\nska_low/tm_leaf_node/sdp_subarray01: \
+                Execution block eb-test-20220916-00000 already exists\n')"
+        ,
         settings=integration_test_exec_settings,
     )
 

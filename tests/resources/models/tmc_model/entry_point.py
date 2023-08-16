@@ -795,10 +795,15 @@ ASSIGN_RESOURCE_JSON_LOW = {
                 "script": {
                     "kind": "realtime",
                     "name": "test-receive-addresses",
-                    "version": "0.5.0",
+                    "version": "0.6.1",
                 },
                 "sbi_ids": ["sbi-test-20220916-00000"],
-                "parameters": {},
+                "parameters": {
+                    # makes sure that Configure transitions to READY
+                    # after 5 seconds of being in CONFIGURING;
+                    # this is only needed for `test-receive-addresses` script (v0.6.1+)
+                    "time-to-ready": 5
+                },
             }
         ],
     },

@@ -6,4 +6,5 @@
         And the subarray node stucks in obsState RESOURCING
         When I release resources from the csp subarray
         Then csp subarray changes obsState to EMPTY
+        And subarray node changes its obsState back to EMPTY
  

@@ -185,12 +185,11 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         self._tel = names.TEL()
         self.observation = observation
 
-    def _generate_unique_eb_sb_ids(self, config_json: dict[str, Any]):
+    def _generate_unique_pb_id(self, config_json: dict[str, Any]):
         """This method will generate unique eb and sb ids.
         Update it in config json
         :param config_json: Config json for Assign Resource command
         """
-        config_json["sdp"]["execution_block"]["eb_id"] = "eb-mvp01-20230809-49670"
         for pb in config_json["sdp"]["processing_blocks"]:
             pb["pb_id"] = get_id("pb-test-********-*****")
 
@@ -220,8 +219,8 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         elif self._tel.skalow:
             # TODO Low json from CDM is not available.
             # Once it is available pull json from CDM
-            config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
-            # self._generate_unique_eb_sb_ids(config_json)
+            config_json = copy.deepcopy(composition)
+            self._generate_unique_pb_id(config_json)
             config = json.dumps(config_json)
 
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")

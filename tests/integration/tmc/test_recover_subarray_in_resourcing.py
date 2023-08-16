@@ -96,9 +96,7 @@ def check_long_running_command_result_error(
     error_msg = msg1+msg2+msg3
     context_monitoring.wait_for(central_node_name).for_attribute(
         "longRunningCommandResult"
-    ).to_become_equal_to(
-        [
-        f"('{unique_id[0]}',{error_msg})",f"('{unique_id[0]}','3')"],
+    ).to_become_equal_to( f"('{unique_id[0]}', '{error_msg}')",
         settings=integration_test_exec_settings,
     )
 

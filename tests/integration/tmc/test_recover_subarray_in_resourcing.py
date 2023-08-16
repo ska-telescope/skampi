@@ -90,17 +90,23 @@ def check_long_running_command_result_error(
     sdp_subarray = con_config.get_device_proxy(tel.sdp.subarray(sut_settings.subarray_id))
     result = sdp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.EMPTY)
-    msg1 = 'Exception occured on device: ska_low/tm_subarray_node/1: '
-    msg2 = 'Exception occurred on the following devices:\\nska_low/tm_leaf_node/csp_subarray01: [2, \"Task queued\"]\\n'
-    msg3 = 'ska_low/tm_leaf_node/sdp_subarray01: Execution block eb-test-20220916-00000 already exists\\n'
-    error_msg = msg1+msg2+msg3
+    subarraynode_error_msg = 'Exception occured on device: ska_low/tm_subarray_node/1: '
+    csp_error_msg = 'Exception occurred on the following devices:\\nska_low/tm_leaf_node/csp_subarray01: [2, \"Task queued\"]\\n'
+    sdp_error_msg = 'ska_low/tm_leaf_node/sdp_subarray01: Execution block eb-test-20220916-00000 already exists\\n'
+    error_msg = subarraynode_error_msg+csp_error_msg+sdp_error_msg
     integration_test_exec_settings.attr_synching = False
     context_monitoring.wait_for(central_node_name).for_attribute(
         "longRunningCommandResult"
     ).to_become_equal_to(f"('{unique_id[0]}', '{error_msg}')",
         settings=integration_test_exec_settings,
     )
+    integration_test_exec_settings.attr_synching = True
 
+    context_monitoring.wait_for(central_node_name).for_attribute(
+        "longRunningCommandResult"
+    ).to_become_equal_to(f"('{unique_id[0]}', '3')",
+        settings=integration_test_exec_settings,
+    )
 
 @given("the resources are assigned to csp subarray")
 def check_csp_subarray__in_idle(

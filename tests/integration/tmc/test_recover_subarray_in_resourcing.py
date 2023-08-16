@@ -86,8 +86,7 @@ def check_long_running_command_result_error(
         "longRunningCommandResult"
     ).to_become_equal_to(
         [
-            f"('{unique_id[0]}', 'Execution block eb-mvp01-20230809-49670 already exists')",
-            f"('{unique_id[0]}', '3')",
+            f"('{unique_id[0]}', 'Exception occured on device: ska_low/tm_subarray_node/1: Exception occurred on the following devices:\nska_low/tm_leaf_node/csp_subarray01: [2, \"Task queued\"]\nska_low/tm_leaf_node/sdp_subarray01: Execution block eb-mvp01-20230809-49670 already exists\n')"
         ],
         settings=integration_test_exec_settings,
     )

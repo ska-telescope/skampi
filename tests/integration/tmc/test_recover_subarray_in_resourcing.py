@@ -91,8 +91,8 @@ def check_long_running_command_result_error(
     result = sdp_subarray.read_attribute("obsstate").value
     assert_that(result).is_equal_to(ObsState.EMPTY)
     msg1 = 'Exception occured on device: ska_low/tm_subarray_node/1: '
-    msg2 = 'Exception occurred on the following devices:\nska_low/tm_leaf_node/csp_subarray01: [2, \"Task queued\"]\n'
-    msg3 = 'ska_low/tm_leaf_node/sdp_subarray01: Execution block eb-test-20220916-00000 already exists\n'
+    msg2 = 'Exception occurred on the following devices:\\nska_low/tm_leaf_node/csp_subarray01: [2, \"Task queued\"]\\n'
+    msg3 = 'ska_low/tm_leaf_node/sdp_subarray01: Execution block eb-test-20220916-00000 already exists\\n'
     error_msg = msg1+msg2+msg3
     context_monitoring.wait_for(central_node_name).for_attribute(
         "longRunningCommandResult"

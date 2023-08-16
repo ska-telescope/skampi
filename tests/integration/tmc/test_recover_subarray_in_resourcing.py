@@ -43,8 +43,7 @@ def an_telescope_subarray(
     """
     return base_composition
 
-
-@given("the resources are re-assigned to Tmc SubarrayNode with duplicate eb-id")
+@given("the resources are re-assigned to tmc with duplicate eb-id")
 def assign_with_same_eb_id(
     allocated_subarray: fxt_types.allocated_subarray,
     context_monitoring: fxt_types.context_monitoring,

@@ -197,7 +197,7 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         self,
         sub_array_id: int,
         dish_ids: List[int],
-        composition: types.Composition,  # pylint: disable=
+        composition: dict,  # pylint: disable=
         sb_id: str,
     ):
         """Domain logic for assigning resources to a subarray in sdp.
@@ -219,6 +219,7 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         elif self._tel.skalow:
             # TODO Low json from CDM is not available.
             # Once it is available pull json from CDM
+            self._log(f"composition is {composition} and type is {type(composition)}")
             config_json = copy.deepcopy(composition)
             self._generate_unique_pb_id(config_json)
             config = json.dumps(config_json)

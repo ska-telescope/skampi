@@ -43,6 +43,8 @@ global:
       image: ska-tango-images-tango-itango
       tag: 9.3.5
       pullPolicy: IfNotPresent
+  data-product-pvc-name: shared
+  dishes: ["001", "002", "003", "004"]
 
 ska-landingpage:
   legacy_compatibility: true
@@ -180,10 +182,20 @@ ska-tango-archiver:
   telescope: SKA-mid
   dbname: default_mvp_archiver_db
 
-## dishmasters
+## dishmanager
 ska-dish-lmc:
-  legacy_compatibility: true
   enabled: true
+  ska-mid-dish-manager:
+    enabled: true
+    ska-mid-dish-simulators:
+      enabled: true
+      ska-tango-base:
+        enabled: false
+      deviceServers:
+        spfdevice:
+          enabled: true
+        spfrxdevice:
+          enabled: true
 
 # alarm-handler
 ska-tango-alarmhandler:

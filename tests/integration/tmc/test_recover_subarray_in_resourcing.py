@@ -49,7 +49,7 @@ def assign_resources_with_same_eb_id(composition: dict, eb_id: str):
     """
     I assign resources to it
     :param composition: The low json dictionary.
-    :param eb_id: eb id provided by the user.x
+    :param eb_id: eb id provided by the user.
     """
     global unique_id
 

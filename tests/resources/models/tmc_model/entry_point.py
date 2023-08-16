@@ -185,7 +185,7 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         self._tel = names.TEL()
         self.observation = observation
 
-    def _generate_unique_pb_id(self, config_json: dict[str, Any]):
+    def _generate_unique_pb_ids(self, config_json: dict[str, Any]):
         """This method will generate unique eb and sb ids.
         Update it in config json
         :param config_json: Config json for Assign Resource command
@@ -197,7 +197,7 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         self,
         sub_array_id: int,
         dish_ids: List[int],
-        composition: dict,  # pylint: disable=
+        composition: types.Composition,  # pylint: disable=
         sb_id: str,
     ):
         """Domain logic for assigning resources to a subarray in sdp.
@@ -219,9 +219,8 @@ class AssignResourcesErrorStep(base.AssignResourcesStep, LogEnabled, WithCommand
         elif self._tel.skalow:
             # TODO Low json from CDM is not available.
             # Once it is available pull json from CDM
-            self._log(f"composition is {composition} and type is {type(composition)}")
-            config_json = copy.deepcopy(composition)
-            self._generate_unique_pb_id(config_json)
+            config_json = copy.deepcopy(ASSIGN_RESOURCE_JSON_LOW)
+            self._generate_unique_pb_ids(config_json)
             config = json.dumps(config_json)
 
         self._log(f"Commanding {central_node_name} with AssignRescources: {config}")

@@ -4,7 +4,7 @@ import logging
 
 import pytest
 from assertpy import assert_that
-from pytest_bdd import given, parsers, scenario, then, when
+from pytest_bdd import given, scenario, then, when
 from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
@@ -41,24 +41,34 @@ def an_telescope_subarray(
     :param base_composition : An object for base composition
     :return: base composition
     """
-    return ASSIGN_RESOURCE_JSON_LOW
+    return base_composition
 
 
-@given(parsers.parse("resources are again assigned to the subarray with same eb_id {eb_id}"))
-def assign_resources_with_same_eb_id(composition: dict, eb_id: str):
+@given("the resources are re-assigned to Tmc SubarrayNode with duplicate eb-id")
+def assign_with_same_eb_id(
+    allocated_subarray: fxt_types.allocated_subarray,
+    context_monitoring: fxt_types.context_monitoring,
+    entry_point: fxt_types.entry_point,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
     """
-    I assign resources to it
-    :param composition: The low json dictionary.
-    :param eb_id: eb id provided by the user.
+    I release all resources assigned to it.
+
+    :param allocated_subarray: The allocated subarray to be configured.
+    :param context_monitoring: Context monitoring object.
+    :param entry_point: The entry point to be used for the configuration.
+    :param integration_test_exec_settings: The integration test execution settings.
     """
+    sub_array_id = allocated_subarray.id
+    with context_monitoring.context_monitoring():
+        with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
+            entry_point.tear_down_subarray(sub_array_id)
+
     global unique_id
-
     tel = names.TEL()
     central_node_name = tel.tm.central_node
     central_node = con_config.get_device_proxy(central_node_name, fast_load=True)
-    composition["sdp"]["execution_block"]["eb_id"] = eb_id
-    new_config = json.dumps(composition)
-
+    new_config = json.dumps(ASSIGN_RESOURCE_JSON_LOW)
     result_code, unique_id = central_node.command_inout("AssignResources", new_config)
     logger.info(f"Result code for second assign resources {result_code}")
 
@@ -86,7 +96,7 @@ def check_long_running_command_result_error(
         "longRunningCommandResult"
     ).to_become_equal_to(
         [
-            f"('{unique_id[0]}', 'Exception occured on device: ska_low/tm_subarray_node/1: Exception occurred on the following devices:\nska_low/tm_leaf_node/csp_subarray01: [2, \"Task queued\"]\nska_low/tm_leaf_node/sdp_subarray01: Execution block eb-mvp01-20230809-49670 already exists\n')"
+            f"('{unique_id[0]}', 'Exception occured on device: ska_low/tm_subarray_node/1: Exception occurred on the following devices:\nska_low/tm_leaf_node/csp_subarray01: [2, \"Task queued\"]\nska_low/tm_leaf_node/sdp_subarray01: Execution block eb-test-20220916-00000 already exists\n')"
         ],
         settings=integration_test_exec_settings,
     )

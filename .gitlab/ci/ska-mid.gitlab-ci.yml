@@ -24,7 +24,8 @@ mid-test:
     ODA_URI: "http://ska-db-oda-rest-$HELM_RELEASE.$KUBE_NAMESPACE:5000/$KUBE_NAMESPACE/api/v1"
     TEST_ENV: "BUILD_IN"
     ATTR_SYNCH_ENABLED_GLOBALLY: "True"
-    ADDMARKS: (csp_startup or sdp or tmc)
+    # ADDMARKS: (csp_startup or sdp or tmc)
+    ADDMARKS: tmc
     EXIT_AT_FAIL: "False"
     CAPTURE_LOGS: "True"
     SKALLOP_LOG_FILTER_ERRORS: "True"

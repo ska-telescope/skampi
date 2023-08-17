@@ -102,7 +102,7 @@ def check_long_running_command_result_error(
     # )
     context_monitoring.wait_for(central_node_name).for_attribute(
         "longRunningCommandResult"
-    ).to_become_equal_to([f"('{unique_id[0]}', '{error_msg}')"],
+    ).to_become_equal_to(f"('{unique_id[0]}', '{error_msg}')",
         settings=integration_test_exec_settings,
     )
       

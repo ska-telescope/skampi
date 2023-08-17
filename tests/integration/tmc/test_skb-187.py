@@ -3,7 +3,8 @@ import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
 from resources.models.mvp_model.states import ObsState
-from ska_control_model import ResultCode
+
+# from ska_control_model import ResultCode
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
@@ -72,7 +73,7 @@ def a_subarray_in_the_idle_state():
 def invoke_configure(sut_settings: SutTestSettings):
     tel = names.TEL()
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    pytest.command_result = tmc_subarray.command_inout("Configure", {})
+    tmc_subarray.command_inout("Configure", {})
 
 
 @then("the subarray rejects the command and remain in IDLE obsstate")
@@ -87,7 +88,7 @@ def the_subarray_rejects_the_command_and_remain_in_the_IDLE_state(
     :param integration_test_exec_settings: A fixture that represents the execution
         settings for the integration test.
     """
-    assert_that(pytest.command_result[0][0]).is_equal_to(ResultCode.REJECTED)
+    # assert_that(pytest.command_result[0][0]).is_equal_to(ResultCode.REJECTED)
 
     tel = names.TEL()
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501

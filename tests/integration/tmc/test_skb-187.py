@@ -73,7 +73,8 @@ def a_subarray_in_the_idle_state():
 def invoke_configure(sut_settings: SutTestSettings):
     tel = names.TEL()
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    tmc_subarray.command_inout("Configure", {})
+    with pytest.raises(Exception):
+        tmc_subarray.command_inout("Configure", {})
 
 
 @then("the subarray rejects the command and remain in IDLE obsstate")

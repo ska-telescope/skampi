@@ -99,6 +99,7 @@ def check_long_running_command_result_error(
     ).to_change_in_order([f"('{unique_id[0]}', '{error_msg}')",f"('{unique_id[0]}', '3')"],
         settings=integration_test_exec_settings,
     )
+    integration_test_exec_settings.attr_synching = False
 
 
 @given("the resources are assigned to csp subarray")

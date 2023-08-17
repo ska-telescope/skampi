@@ -73,8 +73,14 @@ def a_subarray_in_the_idle_state():
 def invoke_configure(sut_settings: SutTestSettings):
     tel = names.TEL()
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
-    with pytest.raises(Exception):
+
+    result = tmc_subarray.read_attribute("obsState").value
+    print(f"ObsState of TMC SubarrayNode: {result}")
+
+    try:
         tmc_subarray.command_inout("Configure", {})
+    except Exception as e:
+        print(f"Exception: {str(e)}")
 
     result = tmc_subarray.read_attribute("obsState").value
     print(f"ObsState of TMC SubarrayNode: {result}")

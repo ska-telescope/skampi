@@ -12,5 +12,5 @@ Feature: Test Configure functionality with the subarray using TMC with invalid i
 		Given an TMC
 		Given an telescope subarray
 		Given a subarray in the IDLE state
-		When I configure it for a scan
+		When I configure it for a scan with invalid input
 		Then the subarray rejects the command and remain in IDLE obsstate

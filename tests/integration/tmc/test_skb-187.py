@@ -69,7 +69,7 @@ def a_subarray_in_the_idle_state():
     """a subarray in the IDLE state."""
 
 
-@when("I configure it for scan")
+@when("I configure it for a scan with invalid input")
 def invoke_configure(sut_settings: SutTestSettings):
     tel = names.TEL()
     tmc_subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))

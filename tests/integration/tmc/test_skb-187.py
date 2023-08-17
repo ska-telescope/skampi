@@ -64,9 +64,9 @@ def an_telescope_subarray(
     return base_configuration
 
 
-@given("I assign resources to it")
-def i_assign_resources_to_it():
-    """I assign resources to it."""
+# @given("I assign resources to it")
+# def i_assign_resources_to_it():
+#     """I assign resources to it."""
 
 
 @when("I configure it for a scan with invalid input")

@@ -58,7 +58,6 @@ def assign_with_same_eb_id(
     :param entry_point: The entry point to be used for the configuration.
     :param integration_test_exec_settings: The integration test execution settings.
     """
-    integration_test_exec_settings.attr_synching = False
     sub_array_id = allocated_subarray.id
     with context_monitoring.context_monitoring():
         with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
@@ -109,7 +108,6 @@ def check_csp_subarray__in_idle(
     context_monitoring: fxt_types.context_monitoring,
     integration_test_exec_settings: fxt_types.exec_settings,
 ):
-    integration_test_exec_settings.attr_synching = True
     tel = names.TEL()
     subarray_name = tel.csp.subarray(sut_settings.subarray_id)
     context_monitoring.wait_for(subarray_name).for_attribute("obsState").to_become_equal_to(

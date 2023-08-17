@@ -201,3 +201,6 @@ ska-dish-lmc:
 ska-tango-alarmhandler:
   legacy_compatibility: true
   enabled: true
+
+ska-portal:
+  enabled: true

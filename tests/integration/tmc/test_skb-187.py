@@ -64,9 +64,9 @@ def an_telescope_subarray(
     return base_configuration
 
 
-@given("a subarray in the IDLE state")
+@given("I assign resources to the subarray")
 def a_subarray_in_the_idle_state():
-    """a subarray in the IDLE state."""
+    """I assign resources to the subarray."""
 
 
 @when("I configure it for a scan with invalid input")

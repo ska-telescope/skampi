@@ -20,10 +20,10 @@ from ..conftest import SutTestSettings
 @pytest.mark.configure
 @scenario(
     "features/tmc_skb_187.feature",
-    "Configure the mid telescope subarray using TMC with invaid input",
+    "Configure the mid telescope subarray using TMC with invaild input",
 )
 def test_tmc_configure_scan_with_invalid_input_on_mid_subarray():
-    """Configure scan on TMC mid telescope subarray with invaid input."""
+    """Configure scan on TMC mid telescope subarray with invaild input."""
 
 
 @pytest.mark.sdpln

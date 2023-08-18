@@ -1,9 +1,9 @@
 Feature: Test Configure functionality with the subarray using TMC with invalid input
 	@XTP-14719
-	Scenario: Configure the mid telescope subarray using TMC with invaid input
+	Scenario: Configure the mid telescope subarray using TMC with invaild input
 		Given an TMC
 		Given an telescope subarray
-		When I assign resources to the subarray
+		I assign resources to it
 		When I configure it for a scan with invalid input
 		Then the subarray rejects the command and remain in IDLE obsstate
 
@@ -11,6 +11,6 @@ Feature: Test Configure functionality with the subarray using TMC with invalid i
 	Scenario: Configure the low telescope subarray using TMC with invalid input
 		Given an TMC
 		Given an telescope subarray
-		When I assign resources to the subarray
+		I assign resources to it
 		When I configure it for a scan with invalid input
 		Then the subarray rejects the command and remain in IDLE obsstate

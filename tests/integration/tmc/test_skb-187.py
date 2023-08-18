@@ -3,8 +3,7 @@ import pytest
 from assertpy import assert_that
 from pytest_bdd import given, scenario, then, when
 from resources.models.mvp_model.states import ObsState
-
-# from ska_control_model import ResultCode
+from ska_control_model import ResultCode
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
@@ -73,12 +72,16 @@ def invoke_configure(sut_settings: SutTestSettings):
     print(f"ObsState of TMC SubarrayNode: {result}")
 
     try:
-        tmc_subarray.command_inout("Configure", {})
+        result_code, msg = tmc_subarray.command_inout("Configure", {})
     except Exception as e:
         print(f"Exception: {str(e)}")
 
     result = tmc_subarray.read_attribute("obsState").value
     print(f"ObsState of TMC SubarrayNode: {result}")
+
+    print(f"ResultCode: {result_code}")
+
+    assert_that(result_code).is_equal_to(ResultCode.REJECTED)
 
 
 @then("the subarray rejects the command and remain in IDLE obsstate")
@@ -93,8 +96,6 @@ def the_subarray_rejects_the_command_and_remain_in_the_IDLE_state(
     :param integration_test_exec_settings: A fixture that represents the execution
         settings for the integration test.
     """
-    # assert_that(pytest.command_result[0][0]).is_equal_to(ResultCode.REJECTED)
-
     tel = names.TEL()
     integration_test_exec_settings.recorder.assert_no_devices_transitioned_after(  # noqa: E501
         str(tel.tm.subarray(sut_settings.subarray_id)), time_source="local"

@@ -16,7 +16,7 @@ dependencies:
   - name: ska-mid-cbf-mcs # CIPA team
     version: 0.10.6
     repository: https://artefact.skao.int/repository/helm-internal
-    condition: ska-mid-cbf.enabled
+    condition: ska-mid-cbf-mcs.enabled
   - name: ska-csp-lmc-mid # https://gitlab.com/ska-telescope/ska-csp-lmc-mid/-/merge_requests/7/diffs
     version: 0.11.5
     repository: https://artefact.skao.int/repository/helm-internal

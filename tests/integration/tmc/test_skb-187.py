@@ -44,24 +44,19 @@ def a_tmc():
     """an TMC"""
 
 
-@given("an telescope subarray", target_fixture="configuration")
+@given("an telescope subarray", target_fixture="composition")
 def an_telescope_subarray(
     set_up_subarray_log_checking_for_tmc,
-    base_configuration: conf_types.ScanConfiguration,
-    subarray_allocation_spec: fxt_types.subarray_allocation_spec,
-    sut_settings: SutTestSettings,
-) -> conf_types.ScanConfiguration:
+    base_composition: conf_types.Composition,
+) -> conf_types.Composition:
     """
     an telescope subarray.
 
     :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
-    :param base_configuration: the base scan configuration.
-    :param subarray_allocation_spec: specification for the subarray allocation
-    :param sut_settings: A class representing the settings for the system under test.
-    :return: the updated base configuration for the subarray
-
+    :param base_composition : An object for base composition
+    :return: base composition
     """
-    return base_configuration
+    return base_composition
 
 
 # @given("I assign resources to it")

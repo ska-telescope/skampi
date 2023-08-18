@@ -71,9 +71,9 @@ def invoke_configure(sut_settings: SutTestSettings):
     result = tmc_subarray.read_attribute("obsState").value
     print(f"ObsState of TMC SubarrayNode: {result}")
 
-    with pytest.raises(Exception):
-        result_code, _ = tmc_subarray.Configure({})
-        print(f"ResultCode: {result_code}")
+    # with pytest.raises(Exception):
+    result_code, _ = tmc_subarray.Configure({})
+    print(f"ResultCode: {result_code}")
 
     assert_that(result_code[0]).is_equal_to(ResultCode.REJECTED)
 

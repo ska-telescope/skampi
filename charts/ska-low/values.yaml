@@ -193,6 +193,12 @@ ska-tmc-low:
   legacy_compatibility: true
   enabled: true
   telescope: SKA-low
+  subarraynode:
+    image:
+      registry: artefact.skao.int
+      image: ska-tmc-subarraynode
+      tag: 0.11.10
+      pullPolicy: IfNotPresent
 
 ska-portal:
   enabled: true

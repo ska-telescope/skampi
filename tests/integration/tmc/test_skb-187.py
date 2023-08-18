@@ -82,6 +82,7 @@ def invoke_configure(sut_settings: SutTestSettings):
 
     result = tmc_subarray.read_attribute("obsState").value
     print(f"ObsState of TMC SubarrayNode: {result}")
+    assert 0
 
 
 @then("the subarray rejects the command and remain in IDLE obsstate")

@@ -18,7 +18,6 @@ from ..conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip("temporary")
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(

@@ -9,7 +9,6 @@ global:
   labels:
     app: ska-skampi
   minikube: true
-  operator: true
   exposeAllDS: true
   annotations:
     skampi: "true"

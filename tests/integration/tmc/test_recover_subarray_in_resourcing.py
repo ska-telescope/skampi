@@ -58,10 +58,10 @@ def assign_with_same_eb_id(
     :param entry_point: The entry point to be used for the configuration.
     :param integration_test_exec_settings: The integration test execution settings.
     """
-    sub_array_id = allocated_subarray.id
-    with context_monitoring.context_monitoring():
-        with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
-            entry_point.tear_down_subarray(sub_array_id)
+    # sub_array_id = allocated_subarray.id
+    # with context_monitoring.context_monitoring():
+    #     with allocated_subarray.wait_for_releasing_a_subarray(integration_test_exec_settings):
+    #         entry_point.tear_down_subarray(sub_array_id)
 
     global unique_id
     tel = names.TEL()

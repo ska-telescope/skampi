@@ -73,8 +73,8 @@ def invoke_configure(sut_settings: SutTestSettings):
 
     # with pytest.raises(Exception):
     try:
-        result_code, _ = tmc_subarray.Configure({})
-        # print(f"ResultCode: {result_code}")
+        result_code, _ = tmc_subarray.Configure("{}")
+        print(f"ResultCode: {result_code}")
     except Exception as e:
         print(f"Exception: {e}")
 

@@ -917,7 +917,7 @@ ASSIGN_RESOURCE_JSON_LOW = {
     "mccs": {
         "subarray_beam_ids": [1],
         "station_ids": [[1, 2]],
-        "channel_blocks": [3],
+        "channel_blocks": [3]
     },
     "sdp": {
         "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
@@ -933,20 +933,20 @@ ASSIGN_RESOURCE_JSON_LOW = {
                     "beams": {
                         "vis0": {
                             "channels_id": "vis_channels",
-                            "polarisations_id": "all",
+                            "polarisations_id": "all"
                         }
-                    },
+                    }
                 },
                 {
                     "scan_type_id": "target:a",
                     "derive_from": ".default",
-                    "beams": {"vis0": {"field_id": "field_a"}},
+                    "beams": {"vis0": {"field_id": "field_a"}}
                 },
                 {
                     "scan_type_id": "calibration:b",
                     "derive_from": ".default",
-                    "beams": {"vis0": {"field_id": "field_b"}},
-                },
+                    "beams": {"vis0": {"field_id": "field_b"}}
+                }
             ],
             "channels": [
                 {
@@ -959,15 +959,15 @@ ASSIGN_RESOURCE_JSON_LOW = {
                             "stride": 2,
                             "freq_min": 350000000.0,
                             "freq_max": 368000000.0,
-                            "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]],
+                            "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]]
                         }
-                    ],
+                    ]
                 }
             ],
             "polarisations": [
                 {
                     "polarisations_id": "all",
-                    "corr_type": ["XX", "XY", "YX", "YY"],
+                    "corr_type": ["XX", "XY", "YX", "YY"]
                 }
             ],
             "fields": [
@@ -977,9 +977,9 @@ ASSIGN_RESOURCE_JSON_LOW = {
                         "ra": [123.0],
                         "dec": [-60.0],
                         "reference_time": "...",
-                        "reference_frame": "ICRF3",
+                        "reference_frame": "ICRF3"
                     },
-                    "pointing_fqdn": "...",
+                    "pointing_fqdn": "..."
                 },
                 {
                     "field_id": "field_b",
@@ -987,11 +987,11 @@ ASSIGN_RESOURCE_JSON_LOW = {
                         "ra": [123.0],
                         "dec": [-60.0],
                         "reference_time": "...",
-                        "reference_frame": "ICRF3",
+                        "reference_frame": "ICRF3"
                     },
-                    "pointing_fqdn": "...",
-                },
-            ],
+                    "pointing_fqdn": "..."
+                }
+            ]
         },
         "processing_blocks": [
             {
@@ -999,38 +999,15 @@ ASSIGN_RESOURCE_JSON_LOW = {
                 "script": {
                     "kind": "realtime",
                     "name": "test-receive-addresses",
-                    "version": "0.6.1",
+                    "version": "0.6.1"
                 },
                 "sbi_ids": ["sbi-test-20220916-00000"],
                 "parameters": {
-                    # makes sure that Configure transitions to READY
-                    # after 5 seconds of being in CONFIGURING;
-                    # this is only needed for `test-receive-addresses` script (v0.6.1+)
                     "time-to-ready": 5
-                },
+                }
             }
-        ],
-    },
-    "csp": {
-        "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",
-        "common": {"subarray_id": 1},
-        "lowcbf": {
-            "resources": [
-                {
-                    "device": "fsp_01",
-                    "shared": True,
-                    "fw_image": "pst",
-                    "fw_mode": "unused",
-                },
-                {
-                    "device": "p4_01",
-                    "shared": True,
-                    "fw_image": "p4.bin",
-                    "fw_mode": "p4",
-                },
-            ]
-        },
-    },
+        ]
+    }
 }
 
 

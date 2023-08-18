@@ -17,11 +17,11 @@ logger = logging.getLogger(__name__)
 # log capturing
 
 
-@pytest.mark.skip(reason="Bug discovered at-489, bug issue key SKB-224")
+# @pytest.mark.skip(reason="Bug discovered at-489, bug issue key SKB-224")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow
-@pytest.mark.assign
+@pytest.mark.assign_tmc
 @scenario("features/tmc_assign_resources.feature", "Assign resources to low subarray")
 def test_assign_resources_to_tmc_subarray_in_low():
     """Assign resources to tmc subarray in low."""
@@ -39,11 +39,11 @@ def test_release_resources_from_tmc_subarray_in_low():
     """Release resources from tmc subarrays in low."""
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
+# @pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
-@pytest.mark.assign
+@pytest.mark.assign_tmc
 @scenario("features/tmc_assign_resources.feature", "Assign resources to mid subarray")
 def test_assign_resources_to_tmc_subarray_in_mid():
     """Assign resources to tmc subarray in mid."""

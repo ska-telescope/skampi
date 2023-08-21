@@ -18,14 +18,25 @@ from ..conftest import SutTestSettings
 logger = logging.getLogger(__name__)
 
 
+# @pytest.mark.tmc
+# @pytest.mark.skalow
+# @pytest.mark.assign
+# @scenario(
+#     "features/tmc_recover_assign_in_resourcing.feature",
+#     "Fix bug skb-185 in TMC",
+# )
+# def test_recover_subarraynode_stuck_in_resourcing_tmc_in_low():
+#     """Test recovery of subarraynode stuck in resourcing"""
+
+
 @pytest.mark.tmc
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
     "features/tmc_recover_assign_in_resourcing.feature",
-    "Fix bug skb-185 in TMC",
+    "fix skb-230",
 )
-def test_recover_subarraynode_stuck_in_resourcing_tmc_in_low():
+def test_recover_subarraynode_stuck_in_resourcing_with_abort_in_low():
     """Test recovery of subarraynode stuck in resourcing"""
 
 

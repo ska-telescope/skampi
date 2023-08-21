@@ -909,7 +909,6 @@ class TMCErrorEntryPoint(CompositeEntryPoint, HasObservation):
         self.wait_ready = TMCWaitReadyStep(self.nr_of_subarrays)
 
 
-
 ASSIGN_RESOURCE_JSON_LOW = {
     "interface": "https://schema.skao.int/ska-low-tmc-assignresources/3.0",
     "transaction_id": "txn-....-00001",

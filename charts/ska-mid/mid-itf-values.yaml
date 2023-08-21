@@ -26,6 +26,6 @@ ska-csp-lmc-mid:
 ska-tmc-mid:
   legacy_compatibility: true
   enabled: true
-ska-dish-lmc:
+ska-sim-dishmaster:
   legacy_compatibility: true
   enabled: false

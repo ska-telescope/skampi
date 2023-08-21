@@ -1,4 +1,4 @@
-@XTP-27237
+@XTP-3325 @XTP-27257
 Scenario: Fix bug skb-185 in TMC
     Given an TMC
     And the resources are re-assigned to tmc with duplicate eb-id 
@@ -8,4 +8,3 @@ Scenario: Fix bug skb-185 in TMC
     When I release the resources from the csp subarray
     Then the csp subarray changes its obsState to EMPTY
     And the subarray node changes its obsState back to EMPTY
- 

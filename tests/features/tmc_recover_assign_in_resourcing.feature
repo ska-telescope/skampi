@@ -17,5 +17,5 @@ Scenario: fix skb-230
         And the resources are assigned to csp subarray
         And the subarray node is stuck in obsState RESOURCING
         When I command subarray node to Abort
-        Then the subarray should go into an aborted state
+        Then the subarray goes to aborted state
  

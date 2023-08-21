@@ -186,3 +186,18 @@ def check_subarray_in_empty(
     context_monitoring.wait_for(subarray_name).for_attribute("obsState").to_become_equal_to(
         "EMPTY", ignore_first=False, settings=integration_test_exec_settings
     )
+
+
+@then("the subarray goes to aborted state")
+def check_subarray_in_aborted(
+    sut_settings: SutTestSettings,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
+    tel = names.TEL()
+    subarray_name = tel.tm.subarray(sut_settings.subarray_id)
+    context_monitoring.re_init_builder()
+
+    context_monitoring.wait_for(subarray_name).for_attribute("obsState").to_become_equal_to(
+        "ABORTED", ignore_first=False, settings=integration_test_exec_settings
+    )

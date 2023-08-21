@@ -73,7 +73,7 @@ def assign_with_same_eb_id(
     logger.info(f"Result code for second assign resources {result_code}")
 
 
-@given("sdp subarray throws error and stays in obsState EMPTY")
+@given("the sdp subarray throws an error and remains in obsState EMPTY")
 def check_long_running_command_result_error(
     sut_settings: SutTestSettings,
     context_monitoring: fxt_types.context_monitoring,
@@ -121,7 +121,7 @@ def check_csp_subarray__in_idle(
     )
 
 
-@given("the subarray node stucks in obsState RESOURCING")
+@given("the subarray node is stuck in obsState RESOURCING")
 def check_subarray_in_resourcing(sut_settings: SutTestSettings):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
@@ -129,7 +129,7 @@ def check_subarray_in_resourcing(sut_settings: SutTestSettings):
     assert_that(result).is_equal_to(ObsState.RESOURCING)
 
 
-@when("I release resources from the csp subarray")
+@when("I release the resources from the csp subarray")
 def invoke_release_resources_on_csp_subarray(sut_settings: SutTestSettings):
     tel = names.TEL()
     subarray_name = tel.csp.subarray(sut_settings.subarray_id)
@@ -138,7 +138,7 @@ def invoke_release_resources_on_csp_subarray(sut_settings: SutTestSettings):
     _ = subarray.command_inout("ReleaseAllResources")
 
 
-@then("csp subarray changes obsState to EMPTY")
+@then("the csp subarray changes its obsState to EMPTY")
 def check_csp_suabrray_in_empty(
     sut_settings: SutTestSettings,
     context_monitoring: fxt_types.context_monitoring,
@@ -153,7 +153,7 @@ def check_csp_suabrray_in_empty(
     )
 
 
-@then("subarray node changes its obsState back to EMPTY")
+@then("the subarray node changes its obsState back to EMPTY")
 def check_subarray_in_empty(
     sut_settings: SutTestSettings,
     context_monitoring: fxt_types.context_monitoring,

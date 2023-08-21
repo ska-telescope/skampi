@@ -1,11 +1,11 @@
 @XTP-27237
-Scenario: fix skb-185
+Scenario: Fix bug skb-185
     Given an TMC
     And the resources are re-assigned to tmc with duplicate eb-id 
-    And sdp subarray throws error and stays in obsState EMPTY
+    And the sdp subarray throws an error and remains in obsState EMPTY
     And the resources are assigned to csp subarray 
-    And the subarray node stucks in obsState RESOURCING
-    When I release resources from the csp subarray
-    Then csp subarray changes obsState to EMPTY
-    And subarray node changes its obsState back to EMPTY
+    And the subarray node is stuck in obsState RESOURCING
+    When I release the resources from the csp subarray
+    Then the csp subarray changes its obsState to EMPTY
+    And the subarray node changes its obsState back to EMPTY
  

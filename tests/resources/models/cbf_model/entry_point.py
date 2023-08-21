@@ -403,12 +403,12 @@ class CBFSetOnlineStep(base.SetOnlineStep, LogEnabled):
         controller_name = self._tel.csp.cbf.controller
         controller = con_config.get_device_proxy(controller_name)
         self._log(f"Setting adminMode for {controller_name} to '0' (ONLINE)")
-        controller.write_attribute("adminmode", 0)
+        controller.write_attribute("adminMode", 0)
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.csp.cbf.subarray(index)
             subarray = con_config.get_device_proxy(subarray_name)
             self._log(f"Setting adminMode for {subarray_name} to '0' (ONLINE)")
-            subarray.write_attribute("adminmode", 0)
+            subarray.write_attribute("adminMode", 0)
 
     def set_wait_for_do_set_online(self) -> MessageBoardBuilder:
         """
@@ -439,12 +439,12 @@ class CBFSetOnlineStep(base.SetOnlineStep, LogEnabled):
         controller_name = self._tel.csp.cbf.controller
         controller = con_config.get_device_proxy(controller_name)
         self._log(f"Setting adminMode for {controller_name} to '1' (OFFLINE)")
-        controller.write_attribute("adminmode", 1)
+        controller.write_attribute("adminMode", 1)
         for index in range(1, self.nr_of_subarrays + 1):
             subarray_name = self._tel.csp.cbf.subarray(index)
             subarray = con_config.get_device_proxy(subarray_name)
             self._log(f"Setting adminMode for {subarray_name} to '1' (OFFLINE)")
-            subarray.write_attribute("adminmode", 1)
+            subarray.write_attribute("adminMode", 1)
 
     def set_wait_for_undo_set_online(self) -> MessageBoardBuilder:
         """

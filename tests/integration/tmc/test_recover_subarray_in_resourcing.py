@@ -100,7 +100,6 @@ def check_long_running_command_result_error(
        ignore_first=False, settings=integration_test_exec_settings
     )
     
-# Exception occurred on device: ska_low/tm_subarray_node/1: Exception occurred on the following devices:\nska_low/tm_leaf_node/sdp_subarray01: Execution block eb-test-20220916-00000 already exists\n'
 
 @given("the resources are assigned to csp subarray")
 def check_csp_subarray__in_idle(

@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.assign
 @scenario(
     "features/tmc_recover_assign_in_resourcing.feature",
-    "fix skb-185",
+    "Fix bug skb-185 in TMC",
 )
 def test_recover_subarraynode_stuck_in_resourcing_tmc_in_low():
     """Test recovery of subarraynode stuck in resourcing"""

@@ -1,5 +1,5 @@
 @XTP-27237
-Scenario: Fix bug skb-185
+Scenario: Fix bug skb-185 in TMC
     Given an TMC
     And the resources are re-assigned to tmc with duplicate eb-id 
     And the sdp subarray throws an error and remains in obsState EMPTY

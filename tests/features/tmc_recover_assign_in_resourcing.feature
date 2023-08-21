@@ -16,6 +16,6 @@ Scenario: fix skb-230
         And the sdp subarray throws an error and remains in obsState EMPTY
         And the resources are assigned to csp subarray
         And the subarray node is stuck in obsState RESOURCING
-        When I command it to Abort
+        When I command subarray node to Abort
         Then the subarray should go into an aborted state
  

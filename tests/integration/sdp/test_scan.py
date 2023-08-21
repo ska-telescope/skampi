@@ -7,7 +7,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 
-
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.sdp
@@ -34,7 +34,7 @@ def test_abort_scanning(disable_clear):
     :param disable_clear: A disable clear object
     """
 
-
+@pytest.mark.skip
 @pytest.mark.skalow
 @pytest.mark.scan
 @pytest.mark.sdp

@@ -148,6 +148,15 @@ def invoke_release_resources_on_csp_subarray(sut_settings: SutTestSettings):
     subarray.set_timeout_millis(6000)
     _ = subarray.command_inout("ReleaseAllResources")
 
+@when("I command subarray node to Abort")
+def invoke_abort_on_tmc_subarray(sut_settings: SutTestSettings):
+    tel = names.TEL()
+    subarray_name = tel.csp.subarray(sut_settings.subarray_id)
+    subarray = con_config.get_device_proxy(subarray_name)
+    subarray.set_timeout_millis(6000)
+    _ = subarray.command_inout("Abort")
+
+
 
 @then("the csp subarray changes its obsState to EMPTY")
 def check_csp_suabrray_in_empty(

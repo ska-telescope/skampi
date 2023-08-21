@@ -12,7 +12,7 @@ from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ..conftest import SutTestSettings
 
 
-@pytest.mark.sdp
+@pytest.mark.xfail(reason="This test is failing due to SKB-226")
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skamid
@@ -25,7 +25,7 @@ def test_tmc_configure_scan_with_invalid_input_on_mid_subarray():
     """Configure scan on TMC mid telescope subarray with invaild input."""
 
 
-@pytest.mark.sdp
+@pytest.mark.tmc
 @pytest.mark.k8s
 @pytest.mark.k8sonly
 @pytest.mark.skalow

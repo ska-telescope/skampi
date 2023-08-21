@@ -910,127 +910,289 @@ class TMCErrorEntryPoint(CompositeEntryPoint, HasObservation):
 
 
 ASSIGN_RESOURCE_JSON_LOW = {
-    "interface": "https://schema.skao.int/ska-low-tmc-assignresources/3.0",
-    "transaction_id": "txn-....-00001",
-    "subarray_id": 1,
-    "mccs": {
-        "subarray_beam_ids": [1],
-        "station_ids": [[1, 2]],
-        "channel_blocks": [3],
+  "interface": "https://schema.skao.int/ska-low-tmc-assignresources/3.1",
+  "transaction_id": "txn-....-00001",
+  "subarray_id": 1,
+  "mccs": {
+    "subarray_beam_ids": [
+      1
+    ],
+    "station_ids": [
+      [
+        1,
+        2
+      ]
+    ],
+    "channel_blocks": [
+      3
+    ]
+  },
+  "sdp": {
+    "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
+    "resources": {
+      "receptors": [
+        "SKA001",
+        "SKA002",
+        "SKA003",
+        "SKA004"
+      ]
     },
-    "sdp": {
-        "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
-        "resources": {"receptors": ["SKA001", "SKA002", "SKA003", "SKA004"]},
-        "execution_block": {
-            "eb_id": "eb-test-20220916-00000",
-            "context": {},
-            "max_length": 3600.0,
-            "beams": [{"beam_id": "vis0", "function": "visibilities"}],
-            "scan_types": [
-                {
-                    "scan_type_id": ".default",
-                    "beams": {
-                        "vis0": {
-                            "channels_id": "vis_channels",
-                            "polarisations_id": "all",
-                        }
-                    },
-                },
-                {
-                    "scan_type_id": "target:a",
-                    "derive_from": ".default",
-                    "beams": {"vis0": {"field_id": "field_a"}},
-                },
-                {
-                    "scan_type_id": "calibration:b",
-                    "derive_from": ".default",
-                    "beams": {"vis0": {"field_id": "field_b"}},
-                },
-            ],
-            "channels": [
-                {
-                    "channels_id": "vis_channels",
-                    "spectral_windows": [
-                        {
-                            "spectral_window_id": "fsp_1_channels",
-                            "count": 4,
-                            "start": 0,
-                            "stride": 2,
-                            "freq_min": 350000000.0,
-                            "freq_max": 368000000.0,
-                            "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]],
-                        }
-                    ],
-                }
-            ],
-            "polarisations": [
-                {
-                    "polarisations_id": "all",
-                    "corr_type": ["XX", "XY", "YX", "YY"],
-                }
-            ],
-            "fields": [
-                {
-                    "field_id": "field_a",
-                    "phase_dir": {
-                        "ra": [123.0],
-                        "dec": [-60.0],
-                        "reference_time": "...",
-                        "reference_frame": "ICRF3",
-                    },
-                    "pointing_fqdn": "...",
-                },
-                {
-                    "field_id": "field_b",
-                    "phase_dir": {
-                        "ra": [123.0],
-                        "dec": [-60.0],
-                        "reference_time": "...",
-                        "reference_frame": "ICRF3",
-                    },
-                    "pointing_fqdn": "...",
-                },
-            ],
-        },
-        "processing_blocks": [
-            {
-                "pb_id": "pb-test-20220916-00000",
-                "script": {
-                    "kind": "realtime",
-                    "name": "test-receive-addresses",
-                    "version": "0.6.1",
-                },
-                "sbi_ids": ["sbi-test-20220916-00000"],
-                "parameters": {
-                    # makes sure that Configure transitions to READY
-                    # after 5 seconds of being in CONFIGURING;
-                    # this is only needed for `test-receive-addresses` script (v0.6.1+)
-                    "time-to-ready": 5
-                },
+    "execution_block": {
+      "eb_id": "eb-test-20220916-00000",
+      "context": {
+
+      },
+      "max_length": 3600.0,
+      "beams": [
+        {
+          "beam_id": "vis0",
+          "function": "visibilities"
+        }
+      ],
+      "scan_types": [
+        {
+          "scan_type_id": ".default",
+          "beams": {
+            "vis0": {
+              "channels_id": "vis_channels",
+              "polarisations_id": "all"
             }
-        ],
-    },
-    "csp": {
-        "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",
-        "common": {"subarray_id": 1},
-        "lowcbf": {
-            "resources": [
-                {
-                    "device": "fsp_01",
-                    "shared": True,
-                    "fw_image": "pst",
-                    "fw_mode": "unused",
-                },
-                {
-                    "device": "p4_01",
-                    "shared": True,
-                    "fw_image": "p4.bin",
-                    "fw_mode": "p4",
-                },
-            ]
+          }
         },
+        {
+          "scan_type_id": "target:a",
+          "derive_from": ".default",
+          "beams": {
+            "vis0": {
+              "field_id": "field_a"
+            }
+          }
+        },
+        {
+          "scan_type_id": "calibration:b",
+          "derive_from": ".default",
+          "beams": {
+            "vis0": {
+              "field_id": "field_b"
+            }
+          }
+        }
+      ],
+      "channels": [
+        {
+          "channels_id": "vis_channels",
+          "spectral_windows": [
+            {
+              "spectral_window_id": "fsp_1_channels",
+              "count": 4,
+              "start": 0,
+              "stride": 2,
+              "freq_min": 350000000.0,
+              "freq_max": 368000000.0,
+              "link_map": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  200,
+                  1
+                ],
+                [
+                  744,
+                  2
+                ],
+                [
+                  944,
+                  3
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "polarisations": [
+        {
+          "polarisations_id": "all",
+          "corr_type": [
+            "XX",
+            "XY",
+            "YX",
+            "YY"
+          ]
+        }
+      ],
+      "fields": [
+        {
+          "field_id": "field_a",
+          "phase_dir": {
+            "ra": [
+              123.0
+            ],
+            "dec": [
+              -60.0
+            ],
+            "reference_time": "...",
+            "reference_frame": "ICRF3"
+          },
+          "pointing_fqdn": "..."
+        },
+        {
+          "field_id": "field_b",
+          "phase_dir": {
+            "ra": [
+              123.0
+            ],
+            "dec": [
+              -60.0
+            ],
+            "reference_time": "...",
+            "reference_frame": "ICRF3"
+          },
+          "pointing_fqdn": "..."
+        }
+      ]
     },
+    "processing_blocks": [
+      {
+        "pb_id": "pb-test-20220916-00000",
+        "script": {
+          "kind": "realtime",
+          "name": "test-receive-addresses",
+          "version": "0.5.0"
+        },
+        "sbi_ids": [
+          "sbi-test-20220916-00000"
+        ],
+        "parameters": {
+
+        }
+      }
+    ]
+  }
 }
+# ASSIGN_RESOURCE_JSON_LOW = {
+#     "interface": "https://schema.skao.int/ska-low-tmc-assignresources/3.0",
+#     "transaction_id": "txn-....-00001",
+#     "subarray_id": 1,
+#     "mccs": {
+#         "subarray_beam_ids": [1],
+#         "station_ids": [[1, 2]],
+#         "channel_blocks": [3],
+#     },
+#     "sdp": {
+#         "interface": "https://schema.skao.int/ska-sdp-assignres/0.4",
+#         "resources": {"receptors": ["SKA001", "SKA002", "SKA003", "SKA004"]},
+#         "execution_block": {
+#             "eb_id": "eb-test-20220916-00000",
+#             "context": {},
+#             "max_length": 3600.0,
+#             "beams": [{"beam_id": "vis0", "function": "visibilities"}],
+#             "scan_types": [
+#                 {
+#                     "scan_type_id": ".default",
+#                     "beams": {
+#                         "vis0": {
+#                             "channels_id": "vis_channels",
+#                             "polarisations_id": "all",
+#                         }
+#                     },
+#                 },
+#                 {
+#                     "scan_type_id": "target:a",
+#                     "derive_from": ".default",
+#                     "beams": {"vis0": {"field_id": "field_a"}},
+#                 },
+#                 {
+#                     "scan_type_id": "calibration:b",
+#                     "derive_from": ".default",
+#                     "beams": {"vis0": {"field_id": "field_b"}},
+#                 },
+#             ],
+#             "channels": [
+#                 {
+#                     "channels_id": "vis_channels",
+#                     "spectral_windows": [
+#                         {
+#                             "spectral_window_id": "fsp_1_channels",
+#                             "count": 4,
+#                             "start": 0,
+#                             "stride": 2,
+#                             "freq_min": 350000000.0,
+#                             "freq_max": 368000000.0,
+#                             "link_map": [[0, 0], [200, 1], [744, 2], [944, 3]],
+#                         }
+#                     ],
+#                 }
+#             ],
+#             "polarisations": [
+#                 {
+#                     "polarisations_id": "all",
+#                     "corr_type": ["XX", "XY", "YX", "YY"],
+#                 }
+#             ],
+#             "fields": [
+#                 {
+#                     "field_id": "field_a",
+#                     "phase_dir": {
+#                         "ra": [123.0],
+#                         "dec": [-60.0],
+#                         "reference_time": "...",
+#                         "reference_frame": "ICRF3",
+#                     },
+#                     "pointing_fqdn": "...",
+#                 },
+#                 {
+#                     "field_id": "field_b",
+#                     "phase_dir": {
+#                         "ra": [123.0],
+#                         "dec": [-60.0],
+#                         "reference_time": "...",
+#                         "reference_frame": "ICRF3",
+#                     },
+#                     "pointing_fqdn": "...",
+#                 },
+#             ],
+#         },
+#         "processing_blocks": [
+#             {
+#                 "pb_id": "pb-test-20220916-00000",
+#                 "script": {
+#                     "kind": "realtime",
+#                     "name": "test-receive-addresses",
+#                     "version": "0.6.1",
+#                 },
+#                 "sbi_ids": ["sbi-test-20220916-00000"],
+#                 "parameters": {
+#                     # makes sure that Configure transitions to READY
+#                     # after 5 seconds of being in CONFIGURING;
+#                     # this is only needed for `test-receive-addresses` script (v0.6.1+)
+#                     "time-to-ready": 5
+#                 },
+#             }
+#         ],
+#     },
+#     "csp": {
+#         "interface": "https://schema.skao.int/ska-low-csp-assignresources/2.0",
+#         "common": {"subarray_id": 1},
+#         "lowcbf": {
+#             "resources": [
+#                 {
+#                     "device": "fsp_01",
+#                     "shared": True,
+#                     "fw_image": "pst",
+#                     "fw_mode": "unused",
+#                 },
+#                 {
+#                     "device": "p4_01",
+#                     "shared": True,
+#                     "fw_image": "p4.bin",
+#                     "fw_mode": "p4",
+#                 },
+#             ]
+#         },
+#     },
+# }
 
 
 RELEASE_RESOURCE_JSON_LOW = {

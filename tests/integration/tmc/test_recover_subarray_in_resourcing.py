@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
-    "features/recover_assign_in_resourcing.feature",
+    "features/tmc_recover_assign_in_resourcing.feature",
     "fix skb-185",
 )
 def test_recover_subarraynode_stuck_in_resourcing_tmc_in_low():

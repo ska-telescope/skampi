@@ -154,6 +154,7 @@ def invoke_abort_on_tmc_subarray(sut_settings: SutTestSettings):
     subarray_name = tel.csp.subarray(sut_settings.subarray_id)
     subarray = con_config.get_device_proxy(subarray_name)
     subarray.set_timeout_millis(6000)
+    logger.info("Invoking Abort")
     _ = subarray.command_inout("Abort")
 
 
@@ -201,3 +202,6 @@ def check_subarray_in_aborted(
     context_monitoring.wait_for(subarray_name).for_attribute("obsState").to_become_equal_to(
         "ABORTED", ignore_first=False, settings=integration_test_exec_settings
     )
+    logger.info("Aborted Check")
+
+    logger.info(f"Result code for second assign resources {result_code}")

@@ -32,7 +32,7 @@ def test_recover_subarraynode_stuck_in_resourcing_tmc_in_low():
 @pytest.mark.skalow
 @pytest.mark.assign
 @scenario(
-    "features/recover_assign_in_resourcing.feature",
+    "features/tmc_recover_assign_in_resourcing.feature",
     "fix skb-230",
 )
 def test_recover_subarraynode_stuck_in_resourcing_with_abort_tmc_in_low():

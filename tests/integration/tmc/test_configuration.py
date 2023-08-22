@@ -12,7 +12,7 @@ from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-
+from archiver.archiver_helper import ArchiverHelper
 from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ EVENT_SUBSCRIBER = f"{CONFIG}-eda/es/01"
 CONFIGURATION_MANAGER = f"{CONFIG}-eda/cm/01"
 DB_HOST = f"timescaledb.ska-eda-{CONFIG}-db.svc.cluster.local"
 TANGO_DATABASE_DS = "databaseds-tango-base"
-
+archiver_helper = ArchiverHelper(CONFIGURATION_MANAGER, EVENT_SUBSCRIBER)
 
 @pytest.mark.skip(reason="Raised bug SKB-226")
 @pytest.mark.eda
@@ -129,7 +129,7 @@ def configure_archiver():
             data={"option": "add_update"},
             timeout=None,
         )
-    time.sleep(5)
+    archiver_helper.wait_for_start(f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
     assert response.status_code == 200
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
     event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])

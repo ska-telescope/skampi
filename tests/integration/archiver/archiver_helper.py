@@ -148,6 +148,6 @@ def get_proxy(device: str ,retries: int = 3):
             retry += 1
             if retry ==4:
                 raise cf
-            sleep(1)
+            sleep(10)
             
 

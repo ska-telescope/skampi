@@ -52,7 +52,7 @@ def test_archiver_configuration_in_mid():
 def test_archiver_in_mid():
     """Archive an change event on EDA database instance for Mid"""
 
-
+@pytest.mark.edalow
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -61,7 +61,7 @@ def test_archiver_in_mid():
 def test_archiver_configuration_in_low():
     """Configure an EDA database instance for Low"""
 
-
+@pytest.mark.edalow
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly

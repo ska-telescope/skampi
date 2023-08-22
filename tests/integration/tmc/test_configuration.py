@@ -104,13 +104,13 @@ def configuration_file():
 
 @given("an telescope subarray", target_fixture="composition")
 def an_telescope_subarray(
-    set_up_subarray_log_checking_for_tmc,
+    set_tmc_entry_point,
     base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """
     an telescope subarray.
 
-    :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
+    :param set_tmc_entry_point: To set up subarray log checking for tmc.
     :param base_composition : An object for base composition
     :return: base composition
     """

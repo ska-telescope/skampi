@@ -104,7 +104,7 @@ def configuration_file():
 
 @given("an telescope subarray", target_fixture="composition")
 def an_telescope_subarray(
-    set_tmc_entry_point,
+    set_up_subarray_log_checking_for_tmc,
     base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """

@@ -121,7 +121,7 @@ def check_obsstate_attribute():
     while True:
         attribute_list = eda_es.read_attribute("AttributeList")
         logger.info(f"-------------->list{attribute_list.value}")
-        if len(attribute_list.value) == 1:
+        if len(attribute_list.value) >= 1:
             return True
         time.sleep(1) 
 

@@ -133,12 +133,13 @@ def configure_archiver(
             timeout=None,
         )
     assert response.status_code == 200
-    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedNumber").to_become_equal_to(
-        "1", ignore_first=False, settings=integration_test_exec_settings
-    )
     context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedList").to_become_equal_to(
         f'["ska_{CONFIG}/tm_subarray_node/1/obsstate"]', ignore_first=False, settings=integration_test_exec_settings
     )
+    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedNumber").to_become_equal_to(
+        "1", ignore_first=False, settings=integration_test_exec_settings
+    )
+
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
     event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
     assert event_count == 1

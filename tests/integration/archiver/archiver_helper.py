@@ -1,14 +1,16 @@
 from time import sleep
 
-from tango import AttributeProxy, DeviceProxy
+from tango import AttributeProxy, DeviceProxy,ConnectionFailed
 
 
 class ArchiverHelper:
     def __init__(self, conf_manager, eventsubscriber):
         self.conf_manager = conf_manager
         self.eventsubscriber = eventsubscriber
-        self.conf_manager_proxy = DeviceProxy(self.conf_manager)
-        self.evt_subscriber_proxy = DeviceProxy(self.eventsubscriber)
+        self.conf_manager_proxy = get_proxy(self.conf_manager)
+        self.evt_subscriber_proxy = get_proxy(self.eventsubscriber)
+    
+
 
     def attribute_add(self, fqdn, strategy, polling_period, value):
         """
@@ -133,3 +135,19 @@ class ArchiverHelper:
             sleep(sleep_time)
             total_sleep_time += 1
         return total_sleep_time * sleep_time
+
+
+def get_proxy(device: str ,retries: int = 3):
+    """Method retries if connection failed during proxy creation"""
+    retry = 0
+    no_of_retries = retries
+    while retry <= no_of_retries:
+        try:
+            return DeviceProxy(device)
+        except ConnectionFailed as cf:
+            retry += 1
+            if retry ==4:
+                raise cf
+            sleep(1)
+            
+

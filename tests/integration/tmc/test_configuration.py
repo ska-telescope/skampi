@@ -120,9 +120,10 @@ def check_obsstate_attribute():
     eda_es = con_config.get_device_proxy(EVENT_SUBSCRIBER)
     while True:
         attribute_list = eda_es.read_attribute("AttributeList")
-        logger.info(f"-------------->list{attribute_list}")
-        if "obsstate" in attribute_list:
+        logger.info(f"-------------->list{attribute_list.value}")
+        if len(attribute_list.value) == 1:
             return True
+        time.sleep(1) 
 
 @given("a EDA database instance configured to archive an change event on the subarray obsstate")
 @when("I upload the configuration file")

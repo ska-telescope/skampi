@@ -1,7 +1,7 @@
 """Configure an EDA database instance for Mid"""
 import logging
 import os
-
+import time
 import httpx
 import psycopg2
 import pytest
@@ -130,10 +130,10 @@ def configure_archiver():
             timeout=None,
         )
     assert response.status_code == 200
+    time.sleep(5)
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
     event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
     assert event_count == 1
-
 
 # @when("I assign resources to the subarray") from conftest
 

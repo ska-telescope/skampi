@@ -116,6 +116,13 @@ def an_telescope_subarray(
     """
     return base_composition
 
+def check_obsstate_attribute():
+    eda_es = con_config.get_device_proxy(EVENT_SUBSCRIBER)
+    while True:
+        attribute_list = eda_es.read_attribute("AttributeList")
+        logger.info(f"-------------->list{attribute_list}")
+        if "obsstate" in attribute_list:
+            return True
 
 @given("a EDA database instance configured to archive an change event on the subarray obsstate")
 @when("I upload the configuration file")
@@ -128,7 +135,7 @@ def configure_archiver():
             data={"option": "add_update"},
             timeout=None,
         )
-    archiver_helper.wait_for_start(f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
+    check_obsstate_attribute()
     assert response.status_code == 200
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
     event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])

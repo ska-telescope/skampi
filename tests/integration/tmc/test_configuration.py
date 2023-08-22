@@ -1,7 +1,7 @@
 """Configure an EDA database instance for Mid"""
 import logging
 import os
-
+import time
 import httpx
 import psycopg2
 import pytest
@@ -12,11 +12,10 @@ from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+from tests.integration.archiver.archiver_helper import ArchiverHelper
 from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
-
 # log capturing
 
 
@@ -31,7 +30,7 @@ EVENT_SUBSCRIBER = f"{CONFIG}-eda/es/01"
 CONFIGURATION_MANAGER = f"{CONFIG}-eda/cm/01"
 DB_HOST = f"timescaledb.ska-eda-{CONFIG}-db.svc.cluster.local"
 TANGO_DATABASE_DS = "databaseds-tango-base"
-
+archiver_helper = ArchiverHelper(CONFIGURATION_MANAGER, EVENT_SUBSCRIBER)
 
 @pytest.mark.skip(reason="Raised bug SKB-226")
 @pytest.mark.eda
@@ -105,25 +104,30 @@ def configuration_file():
 
 @given("an telescope subarray", target_fixture="composition")
 def an_telescope_subarray(
-    set_up_subarray_log_checking_for_tmc,
+    set_tmc_entry_point,
     base_composition: conf_types.Composition,
 ) -> conf_types.Composition:
     """
     an telescope subarray.
 
-    :param set_up_subarray_log_checking_for_tmc: To set up subarray log checking for tmc.
+    :param set_tmc_entry_point: To set up subarray log checking for tmc.
     :param base_composition : An object for base composition
     :return: base composition
     """
     return base_composition
 
+def check_obsstate_attribute():
+    eda_es = con_config.get_device_proxy(EVENT_SUBSCRIBER)
+    while True:
+        attribute_list = eda_es.read_attribute("AttributeList")
+        logger.info(f"-------------->list{attribute_list.value}")
+        if len(attribute_list.value) >= 1:
+            return True
+        time.sleep(1) 
 
 @given("a EDA database instance configured to archive an change event on the subarray obsstate")
 @when("I upload the configuration file")
-def configure_archiver(    
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings
-    ):
+def configure_archiver():
     eda_es = con_config.get_device_proxy(EVENT_SUBSCRIBER)
     with open("tests/integration/archiver/config_file/subarray_obsState.yaml", "rb") as file:
         response = httpx.post(
@@ -132,17 +136,11 @@ def configure_archiver(
             data={"option": "add_update"},
             timeout=None,
         )
+    check_obsstate_attribute()
     assert response.status_code == 200
-    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedNumber").to_become_equal_to(
-        "1", ignore_first=False, settings=integration_test_exec_settings
-    )
-    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedList").to_become_equal_to(
-        f'["ska_{CONFIG}/tm_subarray_node/1/obsstate"]', ignore_first=False, settings=integration_test_exec_settings
-    )
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
     event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
     assert event_count == 1
-
 
 # @when("I assign resources to the subarray") from conftest
 

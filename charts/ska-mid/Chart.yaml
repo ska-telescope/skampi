@@ -69,7 +69,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sim-dishmaster.enabled
   - name: ska-tango-archiver
-    version: 2.5.0
+    version: 2.5.1
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tango-archiver.enabled
   # ## DISH LMC Prototype was disabled in the old version of skampi

@@ -1,14 +1,14 @@
 from time import sleep
 
-from tango import AttributeProxy, DeviceProxy
-
+from tango import AttributeProxy
+from ska_ser_skallop.connectors import configuration as con_config
 
 class ArchiverHelper:
     def __init__(self, conf_manager, eventsubscriber):
         self.conf_manager = conf_manager
         self.eventsubscriber = eventsubscriber
-        self.conf_manager_proxy = DeviceProxy(self.conf_manager)
-        self.evt_subscriber_proxy = DeviceProxy(self.eventsubscriber)
+        self.conf_manager_proxy = con_config.get_device_proxy(conf_manager)
+        self.evt_subscriber_proxy = con_config.get_device_proxy(eventsubscriber)
 
     def attribute_add(self, fqdn, strategy, polling_period, value):
         """

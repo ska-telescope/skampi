@@ -12,7 +12,7 @@ from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
-
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
 from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
@@ -120,7 +120,10 @@ def an_telescope_subarray(
 
 @given("a EDA database instance configured to archive an change event on the subarray obsstate")
 @when("I upload the configuration file")
-def configure_archiver():
+def configure_archiver(    
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings
+    ):
     eda_es = con_config.get_device_proxy(EVENT_SUBSCRIBER)
     with open("tests/integration/archiver/config_file/subarray_obsState.yaml", "rb") as file:
         response = httpx.post(
@@ -130,6 +133,12 @@ def configure_archiver():
             timeout=None,
         )
     assert response.status_code == 200
+    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedNumber").to_become_equal_to(
+        "1", ignore_first=False, settings=integration_test_exec_settings
+    )
+    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedList").to_become_equal_to(
+        f'["ska_{CONFIG}/tm_subarray_node/1/obsstate"]', ignore_first=False, settings=integration_test_exec_settings
+    )
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
     event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
     assert event_count == 1

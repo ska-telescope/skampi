@@ -40,15 +40,15 @@ dependencies:
     version: 0.8.3
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
-  - name: ska-tango-archiver
-    version: 2.4.3
-    repository: https://artefact.skao.int/repository/helm-internal
-    condition: ska-tango-archiver.enabled
+#  - name: ska-tango-archiver
+#    version: 2.4.3
+#    repository: https://artefact.skao.int/repository/helm-internal
+#    condition: ska-tango-archiver.enabled
   - name: ska-csp-lmc-low
     version: 0.8.2
     repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-low-cbf
-    version: 0.5.7
+    version: 0.6.1
     repository: https://artefact.skao.int/repository/helm-internal
   # Commenting it to fix Service Account issue and ska-low-cbf-proc is already defined in low cbf chart.
   # https://gitlab.com/ska-telescope/low-cbf/ska-low-cbf/-/blob/0.5.7/charts/ska-low-cbf/Chart.yaml

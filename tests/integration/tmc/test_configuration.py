@@ -177,11 +177,10 @@ def check_archived_attribute(sut_settings: SutTestSettings,
             data={"option": "remove"},
             timeout=None,
         )
+        assert response.status_code == 200
     context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeNumber").to_become_equal_to(
         "0", settings=integration_test_exec_settings
     )
-
-    assert response.status_code == 200
 
     # check obsState IDLE in database
     conn = psycopg2.connect(

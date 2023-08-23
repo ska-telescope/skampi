@@ -147,7 +147,9 @@ def configure_archiver(
 
 
 @then("the subarray went to obststate to IDLE event must be archived")
-def check_archived_attribute(sut_settings: SutTestSettings):
+def check_archived_attribute(sut_settings: SutTestSettings,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value
@@ -165,6 +167,11 @@ def check_archived_attribute(sut_settings: SutTestSettings):
             data={"option": "remove"},
             timeout=None,
         )
+    integration_test_exec_settings.time_out = 200
+    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeNumber").to_become_equal_to(
+        "0", settings=integration_test_exec_settings
+    )
+
         assert response.status_code == 200
 
     # check obsState IDLE in database

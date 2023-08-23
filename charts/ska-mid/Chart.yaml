@@ -81,7 +81,7 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-log-consumer.enabled
   - name: ska-oso-oet
-    version: 5.0.0
+    version: 5.2.1
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-oso-oet.enabled
   - name: ska-tango-alarmhandler

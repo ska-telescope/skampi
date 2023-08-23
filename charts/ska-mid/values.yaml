@@ -98,7 +98,7 @@ ska-oso-oet:
       enabled: false
     oda:
       backendType: rest
-      url: http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1
+      url: http://ska-db-oda-rest-test.staging-ska-db-oda:5000/staging-ska-db-oda/api/v1
   resources:
     requests:
       cpu: 200m

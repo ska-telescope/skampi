@@ -125,7 +125,7 @@ def check_obsstate_attribute():
             attribute_list = eda_es.read_attribute("AttributeList")
             logger.info(f"Attribute list: {attribute_list.value}")
             
-            target_substring = f"ska_{CONFIG}/tm_subarray_node/1/obsstate"
+            target_substring = "/tm_subarray_node/1/obsstate"
             if any(target_substring in attribute for attribute in attribute_list.value):
                 return True
             

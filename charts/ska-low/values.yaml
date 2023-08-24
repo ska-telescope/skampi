@@ -172,9 +172,21 @@ ska-low-cbf:
 #      image: ska-low-cbf
 #      tag: 0.5.7-dev.cb7162029
 
+#ska-low-cbf-proc:
+#  legacy_compatibility: true
+#  enabled: true
+
 ska-low-cbf-proc:
-  legacy_compatibility: true
-  enabled: true
+    enabled: true
+    deviceServers:
+      processor:
+        instances: ["0", "1", "2"]  # 2x CNIC, 1x SUT
+        # TODO - check if the resources section is needed - in principle, it should be set in -proc chart
+        resources:
+          limits:
+            xilinx.com/fpga-xilinx_u55c_gen3x16_xdma_base_3-0: 0  # no FPGA hardware
+            memory: 512Mi  # reduced
+
 
 ska-csp-lmc-low:
   legacy_compatibility: true

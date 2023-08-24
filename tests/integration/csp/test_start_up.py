@@ -14,7 +14,6 @@ from .. import conftest
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="temp skip for at-489")
 @pytest.mark.csp_startup
 @pytest.mark.csp_related
 @pytest.mark.skamid

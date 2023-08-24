@@ -64,9 +64,10 @@ class StartUpStep(base.StartUpStep, LogEnabled):
         # it seems it does not change state subarrays
         if self._tel.skamid:
             # we wait for cbf vccs to be in proper initialised state
-            brd.set_waiting_on(self._tel.csp.cbf.controller).for_attribute(
-                "reportVccState"
-            ).to_become_equal_to(["[0, 0, 0, 0]", "[0 0 0 0]"], ignore_first=False)
+            for index in range(1, 5):
+                brd.set_waiting_on(self._tel.csp.cbf.vcc(index)).for_attribute(
+                "state"
+                ).to_become_equal_to(["ON"], ignore_first=False)
         for index in range(1, self.nr_of_subarrays + 1):
             brd.set_waiting_on(self._tel.csp.subarray(index)).for_attribute(
                 "state"
@@ -149,7 +150,8 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-            config = self.observation.generate_assign_resources_config().as_json
+            #config = self.observation.generate_assign_resources_config().as_json
+            csp_mid_configuration = json.dumps(csp_mid_assign_resources_template)
             self._log(f"commanding {subarray_name} with AssignResources: {config} ")
             subarray.set_timeout_millis(6000)
             subarray.command_inout("AssignResources", config)
@@ -626,10 +628,11 @@ class CSPEntryPoint(CompositeEntryPoint):
 
 
 csp_mid_assign_resources_template = {
-    "interface": "https://schema.skao.int/ska-csp-configure/2.0",
     "subarray_id": 1,
-    "dish": {"receptor_ids": ["001", "002"]},
-}
+    "dish":{ 
+        "receptor_ids":["MKT000", "MKT001", "MKT002", "MKT003"]
+    }}
+
 
 csp_mid_configure_scan_template = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",

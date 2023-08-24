@@ -133,9 +133,8 @@ def configure_archiver(
             timeout=None,
         )
     assert response.status_code == 200
-    integration_test_exec_settings.time_out = 200
-    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedNumber").to_become_equal_to(
-        "3", ignore_first=False , settings=integration_test_exec_settings
+    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedNumber").to_become_equal_to(3
+    , ignore_first=False , settings=integration_test_exec_settings
     )
 
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
@@ -169,7 +168,6 @@ def check_archived_attribute(sut_settings: SutTestSettings,
         )
 
         assert response.status_code == 200
-    integration_test_exec_settings.time_out = 200
     context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeNumber").to_become_equal_to(
         "0",ignore_first=False, settings=integration_test_exec_settings
     )

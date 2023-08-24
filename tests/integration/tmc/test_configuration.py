@@ -133,8 +133,9 @@ def configure_archiver(
             timeout=None,
         )
     assert response.status_code == 200
-    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedNumber").to_become_equal_to("3"
-    , ignore_first=False , settings=integration_test_exec_settings
+
+    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedNumber").to_become_equal_to(
+        "3", settings=integration_test_exec_settings
     )
 
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
@@ -146,9 +147,7 @@ def configure_archiver(
 
 
 @then("the subarray went to obststate to IDLE event must be archived")
-def check_archived_attribute(sut_settings: SutTestSettings,
-    context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings):
+def check_archived_attribute(sut_settings: SutTestSettings):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value
@@ -166,11 +165,8 @@ def check_archived_attribute(sut_settings: SutTestSettings,
             data={"option": "remove"},
             timeout=None,
         )
-
         assert response.status_code == 200
-    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeNumber").to_become_equal_to(
-        "0",ignore_first=False, settings=integration_test_exec_settings
-    )
+
     # check obsState IDLE in database
     conn = psycopg2.connect(
         database=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT

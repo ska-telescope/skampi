@@ -133,7 +133,7 @@ def configure_archiver(
             timeout=None,
         )
     assert response.status_code == 200
-    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedNumber").to_become_equal_to(3
+    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedNumber").to_become_equal_to("3"
     , ignore_first=False , settings=integration_test_exec_settings
     )
 

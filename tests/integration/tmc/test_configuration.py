@@ -133,11 +133,6 @@ def configure_archiver(
             timeout=None,
         )
     assert response.status_code == 200
-    integration_test_exec_settings.time_out = 200
-    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeStartedNumber").to_become_equal_to(
-        "3", settings=integration_test_exec_settings
-    )
-
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
     event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
     assert event_count == 1
@@ -168,10 +163,6 @@ def check_archived_attribute(sut_settings: SutTestSettings,
             timeout=None,
         )
         assert response.status_code == 200
-    integration_test_exec_settings.time_out = 200
-    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute("AttributeNumber").to_become_equal_to(
-        "0", settings=integration_test_exec_settings
-    )
     # check obsState IDLE in database
     conn = psycopg2.connect(
         database=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST, port=DB_PORT

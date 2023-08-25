@@ -1,7 +1,8 @@
 from time import sleep
 
-from tango import AttributeProxy
 from ska_ser_skallop.connectors import configuration as con_config
+from tango import AttributeProxy
+
 
 class ArchiverHelper:
     def __init__(self, conf_manager, eventsubscriber):

@@ -113,7 +113,7 @@ ska-db-oda:
 
 #telescope control
 ## mid-cbf
-ska-mid-cbf:
+ska-mid-cbf-mcs:
   legacy_compatibility: true
   enabled: true
   global:

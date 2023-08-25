@@ -117,11 +117,12 @@ def an_telescope_subarray(
     """
     return base_composition
 
-def check_obsstate_attribute():
+def check_obsstate_attribute(timeout_seconds):
     try:
         eda_es = con_config.get_device_proxy(EVENT_SUBSCRIBER)
+        start_time = time.time()  # Record the start time
         
-        while True:
+        while time.time() - start_time < timeout_seconds:
             attribute_list = eda_es.read_attribute("AttributeList")
             logger.info(f"Attribute list: {attribute_list.value}")
             
@@ -131,6 +132,9 @@ def check_obsstate_attribute():
             
             time.sleep(1)
             
+        # If the loop runs for the specified timeout duration
+        return False
+        
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         return False
@@ -146,7 +150,7 @@ def configure_archiver():
             data={"option": "add_update"},
             timeout=None,
         )
-    check_obsstate_attribute()
+    check_obsstate_attribute(30)
     assert response.status_code == 200
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
     event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])

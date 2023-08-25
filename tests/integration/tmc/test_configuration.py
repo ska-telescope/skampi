@@ -13,6 +13,7 @@ from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+
 from ..conftest import SutTestSettings
 
 logger = logging.getLogger(__name__)
@@ -52,6 +53,7 @@ def test_archiver_configuration_in_mid():
 def test_archiver_in_mid():
     """Archive an change event on EDA database instance for Mid"""
 
+
 @pytest.mark.edalow
 @pytest.mark.eda
 @pytest.mark.k8s
@@ -60,6 +62,7 @@ def test_archiver_in_mid():
 @scenario("features/archiver.feature", "Configure an EDA database instance for Low")
 def test_archiver_configuration_in_low():
     """Configure an EDA database instance for Low"""
+
 
 @pytest.mark.edalow
 @pytest.mark.eda
@@ -120,10 +123,10 @@ def an_telescope_subarray(
 
 @given("a EDA database instance configured to archive an change event on the subarray obsstate")
 @when("I upload the configuration file")
-def configure_archiver(    
+def configure_archiver(
     context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings
-    ):
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
     eda_es = con_config.get_device_proxy(EVENT_SUBSCRIBER)
     with open("tests/integration/archiver/config_file/subarray_obsState.yaml", "rb") as file:
         response = httpx.post(
@@ -142,9 +145,11 @@ def configure_archiver(
 
 
 @then("the subarray went to obststate to IDLE event must be archived")
-def check_archived_attribute(sut_settings: SutTestSettings,
+def check_archived_attribute(
+    sut_settings: SutTestSettings,
     context_monitoring: fxt_types.context_monitoring,
-    integration_test_exec_settings: fxt_types.exec_settings):
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value

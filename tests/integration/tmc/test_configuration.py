@@ -150,7 +150,7 @@ def configure_archiver():
             data={"option": "add_update"},
             timeout=None,
         )
-    check_obsstate_attribute(30)
+    check_obsstate_attribute(300)
     assert response.status_code == 200
     status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
     event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])

@@ -2,10 +2,12 @@
 tests."""
 import logging
 import os
+import time
 from typing import Callable
 
 import pytest
 from resources.models.tmc_model.entry_point import TMCEntryPoint
+from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
 from ska_ser_skallop.mvp_control.entry_points.base import EntryPoint
@@ -184,3 +186,38 @@ def override_timeouts(exec_settings):
     :param exec_settings: _Description_
     """
     exec_settings.time_out = 200
+
+
+def check_archived_attribute_list(
+    event_subscriber: str, archived_attribute: str, timeout_seconds: int = 300
+):
+    """
+    Method checks archived attribute in archived attribute list
+    :param event_subscriber: event subscriber name
+    :type event_subscriber: str
+    :param archived_attribute: name of archived attribute
+    :type archived_attribute: str
+    :param timeout_seconds: timeout for waiting in seconds
+    :type timeout_seconds: int
+    :return: bool value true or false.
+    :raises Exception: raises exception incase of failure
+    """
+    try:
+        eda_es = con_config.get_device_proxy(event_subscriber)
+        start_time = time.time()  # Record the start time
+
+        while time.time() - start_time < timeout_seconds:
+            attribute_list = eda_es.read_attribute("AttributeList")
+            logger.info(f"Attribute list: {attribute_list.value}")
+
+            if any(archived_attribute in attribute for attribute in attribute_list.value):
+                return True
+
+            time.sleep(1)
+
+        # If the loop runs for the specified timeout duration
+        return False
+
+    except Exception as exception:
+        logger.error(f"An error occurred: {exception}")
+        raise exception

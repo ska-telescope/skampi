@@ -12,11 +12,14 @@ from resources.models.mvp_model.states import ObsState
 from ska_ser_skallop.connectors import configuration as con_config
 from ska_ser_skallop.mvp_control.describing import mvp_names as names
 from ska_ser_skallop.mvp_control.entry_points import types as conf_types
+from ska_ser_skallop.mvp_fixtures.fixtures import fxt_types
+
+from tests.integration.archiver.archiver_helper import ArchiverHelper
 
 from ..conftest import SutTestSettings
+from .conftest import check_archived_attribute_list
 
 logger = logging.getLogger(__name__)
-
 # log capturing
 
 
@@ -31,6 +34,8 @@ EVENT_SUBSCRIBER = f"{CONFIG}-eda/es/01"
 CONFIGURATION_MANAGER = f"{CONFIG}-eda/cm/01"
 DB_HOST = f"timescaledb.ska-eda-{CONFIG}-db.svc.cluster.local"
 TANGO_DATABASE_DS = "databaseds-tango-base"
+archiver_helper = ArchiverHelper(CONFIGURATION_MANAGER, EVENT_SUBSCRIBER)
+ARCHIVED_ATTRIBUTE = f"ska_{CONFIG}/tm_subarray_node/1/obsstate"
 
 
 @pytest.mark.skip(reason="Raised bug SKB-226")
@@ -129,8 +134,9 @@ def configure_archiver():
             data={"option": "add_update"},
             timeout=None,
         )
+    assert check_archived_attribute_list(EVENT_SUBSCRIBER, ARCHIVED_ATTRIBUTE, 300)
     assert response.status_code == 200
-    status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
+    status = eda_es.command_inout("AttributeStatus", ARCHIVED_ATTRIBUTE)
     event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
     assert event_count == 1
 
@@ -139,13 +145,17 @@ def configure_archiver():
 
 
 @then("the subarray went to obststate to IDLE event must be archived")
-def check_archived_attribute(sut_settings: SutTestSettings):
+def check_archived_attribute(
+    sut_settings: SutTestSettings,
+    context_monitoring: fxt_types.context_monitoring,
+    integration_test_exec_settings: fxt_types.exec_settings,
+):
     tel = names.TEL()
     subarray = con_config.get_device_proxy(tel.tm.subarray(sut_settings.subarray_id))
     result = subarray.read_attribute("obsState").value
     assert_that(result).is_equal_to(ObsState.IDLE)
     eda_es = con_config.get_device_proxy(EVENT_SUBSCRIBER)
-    status = eda_es.command_inout("AttributeStatus", f"ska_{CONFIG}/tm_subarray_node/1/obsstate")
+    status = eda_es.command_inout("AttributeStatus", ARCHIVED_ATTRIBUTE)
     event_count = int(status.split("Started\nEvent OK counter   :")[1].split("-")[0])
     assert event_count > 1
 
@@ -158,6 +168,10 @@ def check_archived_attribute(sut_settings: SutTestSettings):
             timeout=None,
         )
         assert response.status_code == 200
+
+    context_monitoring.wait_for(EVENT_SUBSCRIBER).for_attribute(
+        "AttributeNumber"
+    ).to_become_equal_to("0", settings=integration_test_exec_settings)
 
     # check obsState IDLE in database
     conn = psycopg2.connect(

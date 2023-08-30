@@ -41,7 +41,7 @@ dependencies:
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
   - name: ska-tango-archiver
-    version: 2.4.3
+    version: 2.5.2
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tango-archiver.enabled
   - name: ska-csp-lmc-low
@@ -59,3 +59,7 @@ dependencies:
     version: 0.1.6
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-log-consumer.enabled
+  - name: ska-portal
+    version: 0.2.2
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-portal.enabled

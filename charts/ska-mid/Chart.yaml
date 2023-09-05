@@ -31,15 +31,15 @@ dependencies:
     condition: ska-tmc-mid.enabled
     alias: tmc-mid
   - name: ska-tango-taranta
-    version: 2.2.0
+    version: 2.4.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-taranta.enabled
   - name: ska-tango-tangogql
-    version: 1.3.6
+    version: 1.3.10
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-taranta.enabled
   - name: ska-tango-taranta-auth
-    version: 0.1.6
+    version: 0.1.7
     repository: https://artefact.skao.int/repository/helm-internal
     condition: global.taranta_auth_enabled
     tags:

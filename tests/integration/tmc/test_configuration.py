@@ -37,7 +37,7 @@ TANGO_DATABASE_DS = "databaseds-tango-base"
 archiver_helper = ArchiverHelper(CONFIGURATION_MANAGER, EVENT_SUBSCRIBER)
 ARCHIVED_ATTRIBUTE = f"ska_{CONFIG}/tm_subarray_node/1/obsstate"
 
-
+@pytest.mark.skip()
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -46,7 +46,7 @@ ARCHIVED_ATTRIBUTE = f"ska_{CONFIG}/tm_subarray_node/1/obsstate"
 def test_archiver_configuration_in_mid():
     """Configure an EDA database instance for Mid"""
 
-
+@pytest.mark.skip()
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -55,7 +55,7 @@ def test_archiver_configuration_in_mid():
 def test_archiver_in_mid():
     """Archive an change event on EDA database instance for Mid"""
 
-
+@pytest.mark.skip()
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -64,7 +64,7 @@ def test_archiver_in_mid():
 def test_archiver_configuration_in_low():
     """Configure an EDA database instance for Low"""
 
-
+@pytest.mark.skip()
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly

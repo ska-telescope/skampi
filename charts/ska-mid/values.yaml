@@ -114,6 +114,7 @@ ska-csp-lmc-mid:
 
 ## sdp
 ska-sdp:
+  legacy_compatibility: true
   enabled: true
   lmc:
     prefix: mid

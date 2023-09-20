@@ -33,6 +33,7 @@ def fxt_default_composition(csp_base_composition: conf_types.Composition):
 @pytest.mark.skalow
 @pytest.mark.csplmc
 @pytest.mark.assign
+@pytest.mark.csp_assign
 @scenario(
     "features/csp_assign_resources.feature",
     "Assign resources to CSP low subarray",
@@ -45,6 +46,7 @@ def test_assign_resources_to_csp_low_subarray():
 @pytest.mark.skamid
 @pytest.mark.csplmc
 @pytest.mark.assign
+@pytest.mark.csp_assign
 @scenario(
     "features/csp_assign_resources.feature",
     "Assign resources to CSP mid subarray",

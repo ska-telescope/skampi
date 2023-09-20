@@ -193,9 +193,6 @@ ska-tmc-low:
   legacy_compatibility: true
   enabled: true
   telescope: SKA-low
-<<<<<<< HEAD
 
 ska-portal:
   enabled: true
-=======
->>>>>>> fce9349305fb80b0d7f2333f027bfe693bbf8296

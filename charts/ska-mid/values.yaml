@@ -9,7 +9,6 @@ global:
   labels:
     app: ska-skampi
   minikube: true
-  operator: true
   exposeAllDS: true
   annotations:
     skampi: "true"
@@ -68,6 +67,12 @@ ska-tango-base:
     replicas: 1
   tangodb:
     use_pv: false
+  databaseds:
+    image:
+      registry: registry.gitlab.com/ska-telescope/ska-tango-images
+      image: ska-tango-images-tango-cpp
+      tag: 5185c546
+      pullPolicy: IfNotPresent
 
 ska-taranta:
   legacy_compatibility: true
@@ -114,7 +119,6 @@ ska-db-oda:
 #telescope control
 ## mid-cbf
 ska-mid-cbf-mcs:
-  legacy_compatibility: true
   enabled: true
   global:
     minikube: false
@@ -126,6 +130,8 @@ ska-mid-cbf-mcs:
 ska-csp-lmc-mid:
   legacy_compatibility: true
   enabled: true
+  dsconfig:
+    configuration_file: data/midcspconfigAA05.json
 
 ## sdp
 ska-sdp:
@@ -161,7 +167,7 @@ ska-sdp:
     enabled: false
 
 ## tmc
-tmc-mid:
+ska-tmc-mid:
   legacy_compatibility: true
   enabled: true
   telescope: SKA-mid
@@ -181,6 +187,9 @@ ska-sim-dishmaster:
 ska-tango-alarmhandler:
   legacy_compatibility: true
   enabled: true
+<<<<<<< HEAD
 
 ska-portal:
   enabled: true
+=======
+>>>>>>> fce9349305fb80b0d7f2333f027bfe693bbf8296

@@ -1,4 +1,4 @@
-from typing import Any, Literal, TypedDict
+from typing import Literal, TypedDict
 
 from ska_tmc_cdm.messages.central_node.common import DishAllocation
 from ska_tmc_cdm.messages.subarray_node.configure.core import (
@@ -6,7 +6,7 @@ from ska_tmc_cdm.messages.subarray_node.configure.core import (
     PointingConfiguration,
 )
 
-from .target_spec import TargetSpecs
+from .target_spec import ArraySpec, BaseTargetSpec, TargetSpecs
 
 ReceptorName = Literal[
     "SKA001",
@@ -20,41 +20,56 @@ ReceptorName = Literal[
     "SKA009",
 ]
 
+MeerkatDishHame = Literal["MKT000", "MKT001", "MKT002", "MKT003"]
+
+
+TempLow = Literal["C10", "C136", "C1", "C217", "C13", "C42"]
+
 
 class ResourceConfiguration(TypedDict):
-    receptors: list[ReceptorName]
+    receptors: list[str]
 
 
 class Dishes(TargetSpecs):
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.dish_specs: dict[str, list[ReceptorName]] = {
-            "two": ["SKA001", "SKA002"],
-            "three": ["SKA001", "SKA002", "SKA003"],
-            "four": ["SKA001", "SKA002", "SKA003", "SKA004"],
-            # vis-receive script doesn't allow the above resources
-            # in the current visibility-receive test because it is running
-            # for Low, and the above names are for Mid dishes,
-            # while below we have Low station names.
-            # TODO: set up the testing infrastructure to properly
-            #  distinguish between Mid and Low
-            #  (see tests/resources/models/obsconfig/vis_receive_config.py)
-            "vis-rec": ["C10", "C136", "C1", "C217", "C13", "C42"],
-        }
+
+    _dishes_initialized = False
+
+    def __init__(
+        self,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
+    ) -> None:
+        if not self._dishes_initialized:
+            TargetSpecs.__init__(self, base_target_specs, array)
+            self.dish_specs: dict[str, list[ReceptorName | MeerkatDishHame | TempLow]] = {
+                "two": ["SKA001", "SKA002"],
+                "three": ["SKA001", "SKA002", "SKA003"],
+                "four": ["SKA001", "SKA002", "SKA003", "SKA004"],
+                # vis-receive script doesn't allow the above resources
+                # in the current visibility-receive test because it is running
+                # for Low, and the above names are for Mid dishes,
+                # while below we have Low station names.
+                # TODO: set up the testing infrastructure to properly
+                #  distinguish between Mid and Low
+                #  (see tests/resources/models/obsconfig/vis_receive_config.py)
+                "vis-rec": ["C10", "C136", "C1", "C217", "C13", "C42"],
+                "mkt-default": ["MKT001", "MKT002"],
+            }
+            self._dishes_initialized = True
 
     @property
-    def dishes(self) -> list[ReceptorName]:
-        return list(
-            {
-                dish
-                for target in self.target_specs.values()
-                for dish in self.dish_specs[target.dishes]
-            }
-        )
+    def dishes(self) -> list[ReceptorName | TempLow | TempLow]:
+        dish_list = []
+        for target in self.target_specs.values():
+            if isinstance(target.dishes, list):
+                dish_list = list(set([*dish_list, *target.dishes]))
+            elif dishes := self.dish_specs.get(target.dishes):
+                dish_list = list(set([*dish_list, *dishes]))
+        return dish_list
 
     @property
     def dish_allocation(self):
-        adapted_dishes = [dish.replace("SKA", "0") for dish in self.dishes]
+        adapted_dishes = [dish for dish in self.dishes]
         return DishAllocation(adapted_dishes)
 
     @property

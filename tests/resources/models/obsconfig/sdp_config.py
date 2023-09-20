@@ -18,7 +18,7 @@ from ska_tmc_cdm.messages.subarray_node.configure import SDPConfiguration as SDP
 from .base import encoded
 from .channelisation import Channelization
 from .dishes import Dishes
-from .target_spec import TargetSpecs
+from .target_spec import ArraySpec, BaseTargetSpec, TargetSpecs
 
 
 class Beamgrouping(NamedTuple):
@@ -77,9 +77,10 @@ class ScanTypes(TargetSpecs):
         self,
         additional_beam_groupings: list[Beamgrouping] | None = None,
         additional_scan_types: list[EBScanType] | None = None,
-        **kwargs: Any,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
     ) -> None:
-        super().__init__(**kwargs)
+        TargetSpecs.__init__(self, base_target_specs, array)
         self._beam_configurations = DEFAULT_BEAMS
         self._scan_type_configurations = DEFAULT_SCAN_TYPES(self)
 
@@ -258,39 +259,55 @@ class ScanTypes(TargetSpecs):
 class Polarisations(TargetSpecs):
     def __init__(
         self,
-        additional_polarizations: list[PolarisationConfiguration] | None = None,
-        **kwargs: Any,
+        polarizations: list[PolarisationConfiguration] | None = None,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
     ) -> None:
-        super().__init__(**kwargs)
+        TargetSpecs.__init__(self, base_target_specs, array)
 
-        self.polarizations = DEFAULT_POLARISATIONS
-        if additional_polarizations is not None:
-            self.polarizations = {
-                **self.polarizations,
+        if polarizations is not None:
+            self._polarizations = {
                 **{
                     additional_polarization.polarisations_id: additional_polarization  # noqa: E501
-                    for additional_polarization in additional_polarizations
+                    for additional_polarization in polarizations
                 },
             }
+        else:
+            self._polarizations = DEFAULT_POLARISATIONS
 
-    def get_polarisations_from_target_specs(self):
+    def _get_polarizations_from_target_specs(self):
         unique_keys = {target.polarisation for target in self.target_specs.values()}
-        return [self.polarizations[key] for key in unique_keys]
+        return [self._polarizations[key] for key in unique_keys]
+
+    @property
+    def polarizations(self):
+        return self._get_polarizations_from_target_specs()
 
 
 class Fields(TargetSpecs):
     def __init__(
         self,
-        additional_field_configurations: list[FieldConfiguration] | None = None,
-        **kwargs: Any,
+        field_configurations: list[FieldConfiguration] | None = None,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
     ) -> None:
-        super().__init__(**kwargs)
-        if additional_field_configurations is None:
-            self.fields = DEFAULT_FIELDS
+        TargetSpecs.__init__(self, base_target_specs, array)
+        if field_configurations is None:
+            self._fields = DEFAULT_FIELDS
+        else:
+            self._fields = {field.field_id: field for field in field_configurations}
 
-    def get_fields_from_target_specs(self):
+    @property
+    def fields(self):
+        return self._get_fields_from_target_specs()
+
+    @property
+    def field_configurations(self):
+        return self._fields
+
+    def _get_fields_from_target_specs(self):
         unique_keys = {target.field for target in self.target_specs.values()}
-        return [self.fields[key] for key in unique_keys]
+        return [self._fields[key] for key in unique_keys]
 
 
 class ProcessingSpec(NamedTuple):
@@ -314,18 +331,21 @@ DEFAULT_SCRIPT = ScriptConfiguration(
 class ProcessingSpecs(TargetSpecs):
     def __init__(
         self,
-        additional_processing_specs: list[ProcessingSpec] | None = None,
-        **kwargs: Any,
+        processing_specs: list[ProcessingSpec] | None = None,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
     ) -> None:
-        super().__init__(**kwargs)
-        self._processing_specs = {"test-receive-addresses": ProcessingSpec(script=DEFAULT_SCRIPT)}
-        if additional_processing_specs is not None:
+        TargetSpecs.__init__(self, base_target_specs, array)
+        if processing_specs is not None:
             self._processing_specs = {
-                **self._processing_specs,
                 **{
                     processing_spec.script.name: processing_spec
-                    for processing_spec in additional_processing_specs
+                    for processing_spec in processing_specs
                 },
+            }
+        else:
+            self._processing_specs = {
+                "test-receive-addresses": ProcessingSpec(script=DEFAULT_SCRIPT)
             }
 
     @property
@@ -333,9 +353,7 @@ class ProcessingSpecs(TargetSpecs):
         return self._processing_specs
 
     @processing_specs.setter
-    def processing_specs(self, new_spec):
-        if not isinstance(new_spec, dict):
-            raise ValueError("Processing specs needs to be a dictionary")
+    def processing_specs(self, new_spec: dict[str, ProcessingSpec]):
         self._processing_specs = new_spec
 
     @property
@@ -370,8 +388,13 @@ class ProcessingSpecs(TargetSpecs):
 
 
 class ProcessingBlockSpec(ProcessingSpecs):
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        processing_specs: list[ProcessingSpec] | None = None,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
+    ) -> None:
+        ProcessingSpecs.__init__(self, processing_specs, base_target_specs, array)
 
     @property
     def processing_blocks(self):
@@ -386,24 +409,24 @@ class ProcessingBlockSpec(ProcessingSpecs):
         ]
 
 
-class ExecutionBlockSpecs(ScanTypes, Channelization, Polarisations, Fields):
+class ExecutionBlockSpecs(ScanTypes, Channelization, Polarisations, Fields, TargetSpecs):
     def __init__(
         self,
         context: dict[Any, Any] | None = None,
         max_length: float = 100.0,
-        target_specs: dict[Any, Any] | None = None,
-        additional_scan_types: list[EBScanType] | None = None,
-        additional_channels: dict[str, ChannelConfiguration] | None = None,
-        additional_polarizations: dict[str, PolarisationConfiguration] | None = None,
-        additional_field_configurations: list[FieldConfiguration] | None = None,
+        beam_groupings: list[Beamgrouping] | None = None,
+        scan_types: list[EBScanType] | None = None,
+        channels: list[ChannelConfiguration] | None = None,
+        polarizations: list[PolarisationConfiguration] | None = None,
+        field_configurations: list[FieldConfiguration] | None = None,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
     ) -> None:
-        super().__init__(
-            target_specs=target_specs,
-            additional_scan_types=additional_scan_types,
-            additional_channels=additional_channels,
-            additional_polarizations=additional_polarizations,
-            additional_field_configurations=additional_field_configurations,
-        )
+        ScanTypes.__init__(self, beam_groupings, scan_types, base_target_specs, array)
+        Channelization.__init__(self, channels)
+        Polarisations.__init__(self, polarizations)
+        Fields.__init__(self, field_configurations)
+        TargetSpecs.__init__(self, base_target_specs, array)
         if context is None:
             context = {}
         self._context = context
@@ -416,8 +439,6 @@ class ExecutionBlockSpecs(ScanTypes, Channelization, Polarisations, Fields):
         scan_types = self.scan_types
         beams = self.beams
         channels = self.channels
-        polarisations = self.get_polarisations_from_target_specs()
-        fields = self.get_fields_from_target_specs()
         return ExecutionBlockConfiguration(
             eb_id=self.eb_id,
             context=context,
@@ -425,14 +446,43 @@ class ExecutionBlockSpecs(ScanTypes, Channelization, Polarisations, Fields):
             beams=beams,
             scan_types=scan_types,
             channels=channels,
-            polarisations=polarisations,
-            fields=fields,
+            polarisations=self.polarizations,
+            fields=self.fields,
         )
 
 
 class SdpConfig(Dishes, ExecutionBlockSpecs, ProcessingBlockSpec):
+
     sdp_assign_resources_schema = "https://schema.skao.int/ska-sdp-assignres/0.4"
     sdp_configure_scan_schema = "https://schema.skao.int/ska-sdp-configure/0.3"
+
+    def __init__(
+        self,
+        context: dict[Any, Any] | None = None,
+        max_length: float = 100.0,
+        beam_groupings: list[Beamgrouping] | None = None,
+        scan_types: list[EBScanType] | None = None,
+        channels: list[ChannelConfiguration] | None = None,
+        polarizations: list[PolarisationConfiguration] | None = None,
+        field_configurations: list[FieldConfiguration] | None = None,
+        processing_specs: list[ProcessingSpec] | None = None,
+        base_target_specs: dict[str, BaseTargetSpec] | None = None,
+        array: ArraySpec | None = None,
+    ) -> None:
+        Dishes.__init__(self)
+        ExecutionBlockSpecs.__init__(
+            self,
+            context,
+            max_length,
+            beam_groupings,
+            scan_types,
+            channels,
+            polarizations,
+            field_configurations,
+            base_target_specs,
+            array,
+        )
+        ProcessingBlockSpec.__init__(self, processing_specs)
 
     def _generate_sdp_assign_resources_config(self):
         return SDPConfiguration(

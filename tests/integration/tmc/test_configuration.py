@@ -38,7 +38,6 @@ archiver_helper = ArchiverHelper(CONFIGURATION_MANAGER, EVENT_SUBSCRIBER)
 ARCHIVED_ATTRIBUTE = f"ska_{CONFIG}/tm_subarray_node/1/obsstate"
 
 
-@pytest.mark.skip(reason="Raised bug SKB-226")
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly
@@ -48,7 +47,6 @@ def test_archiver_configuration_in_mid():
     """Configure an EDA database instance for Mid"""
 
 
-@pytest.mark.skip(reason="Raised bug SKB-226")
 @pytest.mark.eda
 @pytest.mark.k8s
 @pytest.mark.k8sonly

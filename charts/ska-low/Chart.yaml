@@ -14,8 +14,8 @@ dependencies:
     version: 0.4.5
     repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-sdp
-    version: 0.16.1-dev.c6f5a6f6b
-    repository: https://gitlab.com/api/v4/projects/21141217/packages/helm/dev
+    version: 0.17.0
+    repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-sdp.enabled
   - name: ska-tmc-low
     version: 0.5.5
@@ -25,11 +25,11 @@ dependencies:
   #   version: 0.8.3
   #   repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-tango-taranta
-    version: 2.2.0
+    version: 2.4.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-taranta.enabled
   - name: ska-tango-tangogql
-    version: 1.3.6
+    version: 1.3.10
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-taranta.enabled
   - name: ska-ser-skuid
@@ -41,7 +41,7 @@ dependencies:
     repository: file://../ska-landingpage
     condition: ska-landingpage.enabled
   - name: ska-tango-archiver
-    version: 2.4.3
+    version: 2.5.2
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-tango-archiver.enabled
   - name: ska-csp-lmc-low

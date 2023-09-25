@@ -13,7 +13,7 @@ dependencies:
   - name: ska-tango-util
     version: 0.4.7
     repository: https://artefact.skao.int/repository/helm-internal
-  - name: ska-mid-cbf # CIPA team
+  - name: ska-mid-cbf-mcs # CIPA team
     version: 0.7.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-mid-cbf.enabled

@@ -25,7 +25,7 @@ global:
     ska-taranta:
       enabled: false
   retry:
-    - "--sleep=1"
+    - "--sleep=3"
     - "--tries=100"
   tango_host: databaseds-tango-base:10000
   device_server_port: 45450
@@ -43,7 +43,6 @@ global:
       image: ska-tango-images-tango-itango
       tag: 9.3.5
       pullPolicy: IfNotPresent
-  data-product-pvc-name: shared
 
 ska-landingpage:
   legacy_compatibility: true
@@ -113,7 +112,7 @@ ska-db-oda:
 
 #telescope control
 ## mid-cbf
-ska-mid-cbf:
+ska-mid-cbf-mcs:
   legacy_compatibility: true
   enabled: true
   global:
@@ -123,7 +122,8 @@ ska-mid-cbf:
 ska-csp-lmc-mid:
   legacy_compatibility: true
   enabled: true
-
+  dsconfig:
+    configuration_file: data/midcspconfigAA05.json
 ## sdp
 ska-sdp:
   legacy_compatibility: true

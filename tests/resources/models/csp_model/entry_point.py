@@ -150,12 +150,7 @@ class CspAssignResourcesStep(base.AssignResourcesStep, LogEnabled):
         elif self._tel.skamid:
             subarray_name = self._tel.skamid.csp.subarray(sub_array_id)
             subarray = con_config.get_device_proxy(subarray_name)
-<<<<<<< HEAD
-            config = self.observation.generate_assign_resources_config().as_json
-=======
-            # config = self.observation.generate_assign_resources_config().as_json
-            config = json.dumps(csp_mid_assign_resources_template)
->>>>>>> 0eb9411a (CT-1008: fix lint)
+
             self._log(f"commanding {subarray_name} with AssignResources: {config} ")
             subarray.set_timeout_millis(6000)
             subarray.command_inout("AssignResources", config)
@@ -634,14 +629,8 @@ class CSPEntryPoint(CompositeEntryPoint):
 csp_mid_assign_resources_template = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",
     "subarray_id": 1,
-<<<<<<< HEAD
-    "dish": {"receptor_ids": ["001", "002"]},
-}
-=======
     "dish": {"receptor_ids": ["MKT000", "MKT001", "MKT002", "MKT003"]},
 }
-
->>>>>>> 0eb9411a (CT-1008: fix lint)
 
 csp_mid_configure_scan_template = {
     "interface": "https://schema.skao.int/ska-csp-configure/2.0",

@@ -151,21 +151,28 @@ tmc-mid:
   telescope: SKA-mid
 
 ska-tango-archiver:
+  legacy_compatibility: true
   enabled: true
   dbname: default_mvp_archiver_db
-
-# EDA
-ska-tango-archiver:
-  enabled: true
-  # hostname: eda.ska-tango-archiver
-  dbname: mid_psi_eda
   dbuser: admin
   port: 5432
   telescope: SKA-mid
   telescope_environment: PSI-MID
   configuration_manager: mid-eda/cm/01
   event_subscriber: mid-eda/es/01
-  # archwizard_config: MyHDB=tango://tango-databaseds.ci-ska-mid-itf-at-1286-eda.svc.miditf.internal.skao.int:10000/mid-eda/cm/01
+
+# EDA
+# ska-tango-archiver:
+#   enabled: true
+#   # hostname: eda.ska-tango-archiver
+#   dbname: mid_psi_eda
+#   dbuser: admin
+#   port: 5432
+#   telescope: SKA-mid
+#   telescope_environment: PSI-MID
+#   configuration_manager: mid-eda/cm/01
+#   event_subscriber: mid-eda/es/01
+# archwizard_config: MyHDB=tango://tango-databaseds.ci-ska-mid-itf-at-1286-eda.svc.miditf.internal.skao.int:10000/mid-eda/cm/01
 
 ## dishmasters
 ska-sim-dishmaster:

@@ -21,4 +21,7 @@ dependencies:
     version: 0.10.15
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-mid-cbf-tmleafnode.enabled
-
+    # EDA
+  - name: ska-tango-archiver
+    version: 2.4.4
+    repository: https://artefact.skao.int/repository/helm-internal

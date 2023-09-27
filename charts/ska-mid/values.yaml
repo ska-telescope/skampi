@@ -70,3 +70,13 @@ ska-mid-cbf-mcs:
 ska-mid-cbf-tmleafnode:
   enabled: true
 
+ska-tango-archiver:
+  legacy_compatibility: true
+  enabled: true
+  dbname: default_mvp_archiver_db
+  dbuser: admin
+  port: 5432
+  telescope: SKA-mid
+  telescope_environment: PSI-MID
+  configuration_manager: mid-eda/cm/01
+  event_subscriber: mid-eda/es/01

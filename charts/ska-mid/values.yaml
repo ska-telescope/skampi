@@ -70,3 +70,7 @@ ska-mid-cbf-mcs:
 ska-mid-cbf-tmleafnode:
   enabled: true
 
+## mid-csp
+ska-csp-lmc-mid:
+  enabled: true
+

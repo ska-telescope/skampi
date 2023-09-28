@@ -78,3 +78,7 @@ ska-csp-lmc-mid:
       registry: registry.gitlab.com/ska-telescope/ska-csp-lmc-mid
       tag: 0.16.3-dev.c62cada06
 
+ska-taranta:
+  legacy_compatibility: true
+  enabled: true
+

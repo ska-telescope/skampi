@@ -25,4 +25,8 @@ dependencies:
     version: 0.16.3
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-csp-lmc-mid.enabled
+  - name: ska-tango-taranta
+    version: 2.4.0
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-taranta.enabled
 

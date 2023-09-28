@@ -110,7 +110,13 @@ ska-oso-oet:
 ska-db-oda:
   legacy_compatibility: true
   enabled: false
-
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 7500m
+      memory: 1024Mi
 #telescope control
 ## mid-cbf
 ska-mid-cbf-mcs:
@@ -121,12 +127,25 @@ ska-mid-cbf-mcs:
   deviceServers:
     talondxlogconsumer:
       instances: []
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 7500m
+      memory: 1024Mi
 
 ## mid-csp
 ska-csp-lmc-mid:
   legacy_compatibility: true
   enabled: true
-
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 7500m
+      memory: 1024Mi
 ## sdp
 ska-sdp:
   legacy_compatibility: true
@@ -165,22 +184,50 @@ tmc-mid:
   legacy_compatibility: true
   enabled: true
   telescope: SKA-mid
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 750m
+      memory: 1024Mi
 
 ska-tango-archiver:
   legacy_compatibility: true
   enabled: true
   telescope: SKA-mid
   dbname: default_mvp_archiver_db
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 7500m
+      memory: 1024Mi
 
 ## dishmasters
 ska-sim-dishmaster:
   legacy_compatibility: true
   enabled: true
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 7500m
+      memory: 1024Mi
 
 # alarm-handler
 ska-tango-alarmhandler:
   legacy_compatibility: true
   enabled: true
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 7500m
+      memory: 1024Mi
 
 ska-portal:
   enabled: true

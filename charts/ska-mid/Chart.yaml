@@ -29,4 +29,30 @@ dependencies:
     version: 2.4.0
     repository: https://artefact.skao.int/repository/helm-internal
     condition: ska-taranta.enabled
+  - name: ska-tango-tangogql
+    version: 1.3.10
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-taranta.enabled
+  - name: ska-tango-taranta-auth
+    version: 0.1.7
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: global.taranta_auth_enabled
+    tags:
+      - taranta_auth
+  - name: ska-tango-taranta-dashboard
+    version: 1.4.0
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: global.taranta_dashboard_enabled
+    tags:
+      - taranta_dashboard
+  - name: ska-tango-taranta-dashboard-pvc
+    version: 1.4.0
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: global.taranta_dashboard_enabled
+    tags:
+      - taranta_dashboard-pvc
+  - name: ska-ser-skuid
+    version: 3.3.3
+    repository: https://artefact.skao.int/repository/helm-internal
+    condition: ska-ser-skuid.enabled
 

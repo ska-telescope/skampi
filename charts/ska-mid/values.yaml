@@ -15,8 +15,8 @@ global:
     skampi: "true"
     app.gitlab.com/app: skampi
     app.gitlab.com/env: ska
-  taranta_auth_enabled: false
-  taranta_dashboard_enabled: false
+  taranta_auth_enabled: true
+  taranta_dashboard_enabled: true
   sub-system:
     tango-base:
       enabled: false

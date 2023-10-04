@@ -82,3 +82,8 @@ ska-taranta:
   legacy_compatibility: true
   enabled: true
 
+ska-landingpage:
+  legacy_compatibility: true
+  enabled: true
+  MVPInstance: ska-mid
+

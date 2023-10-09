@@ -67,7 +67,12 @@ COUNT ?= 1
 endif
 PYTHON_VARS_AFTER_PYTEST ?= -m "$(DASHMARK)" $(DASHCOUNT) --no-cov -v -r fEx## use to setup a particular pytest session
 CLUSTER_TEST_NAMESPACE ?= default## The Namespace used by the Infra cluster tests
-
+ifeq ($(CONFIG),mid)
+ARCHIVER_DB_PWD= $(ARCHIVER_DB_PWD_MID)
+endif
+ifeq ($(CONFIG),low)
+ARCHIVER_DB_PWD= $(ARCHIVER_DB_PWD_LOW)
+endif
 # Some environments need HTTP(s) requests to go through a proxy server. If http_proxy
 # is present we assume all proxy vars are set and pass them through. See
 # https://about.gitlab.com/blog/2021/01/27/we-need-to-talk-no-proxy/ for some
@@ -103,7 +108,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
-	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
+	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD_MID) \
 	--set ska-tango-archiver.telescope_environment=$(TELESCOPE_ENVIRONMENT)\
 	--set global.exposeAllDS=$(EXPOSE_All_DS) \
 	--set ska-tango-archiver.archwizard_config=$(ARCHWIZARD_CONFIG) \

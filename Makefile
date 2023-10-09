@@ -108,7 +108,7 @@ K8S_CHART_PARAMS = --set ska-tango-base.xauthority="$(XAUTHORITYx)" \
 	--set ska-tango-archiver.dbname=$(ARCHIVER_DBNAME) \
 	--set ska-tango-archiver.port=$(ARCHIVER_PORT) \
 	--set ska-tango-archiver.dbuser=$(ARCHIVER_DB_USER) \
-	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD_MID) \
+	--set ska-tango-archiver.dbpassword=$(ARCHIVER_DB_PWD) \
 	--set ska-tango-archiver.telescope_environment=$(TELESCOPE_ENVIRONMENT)\
 	--set global.exposeAllDS=$(EXPOSE_All_DS) \
 	--set ska-tango-archiver.archwizard_config=$(ARCHWIZARD_CONFIG) \

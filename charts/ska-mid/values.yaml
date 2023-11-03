@@ -86,10 +86,10 @@ ska-oso-oet:
   subarray: ska_mid/tm_subarray_node
   rest:
     ingress:
-      enabled: false
+      enabled: true
     oda:
       backendType: rest
-      url: http://ska-db-oda-rest-test.button-dev-ska-db-oda:5000/button-dev-ska-db-oda/api/v1
+      url: http://ska-db-oda-rest-test.ci-ska-skampi-nak-363-test-jupyter:5000/ska-db-oda/api/v1
   resources:
     requests:
       cpu: 200m
@@ -99,7 +99,7 @@ ska-oso-oet:
       memory: 1024Mi
 
 ska-db-oda:
-  enabled: false
+  enabled: true
 
 #telescope control
 ## mid-cbf

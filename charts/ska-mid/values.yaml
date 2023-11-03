@@ -100,6 +100,9 @@ ska-oso-oet:
 
 ska-db-oda:
   enabled: true
+  rest:
+    backend:
+      type: filesystem
 
 #telescope control
 ## mid-cbf

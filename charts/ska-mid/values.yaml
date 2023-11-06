@@ -89,7 +89,7 @@ ska-oso-oet:
       enabled: true
     oda:
       backendType: rest
-      url: http://ska-db-oda-rest-test.ci-ska-skampi-nak-363-test-jupyter:5000/ska-db-oda/api/v1
+      url: http://ingress-nginx-controller-lb-stfc-techops-production-k8s.ingress-nginx.svc.cluster.local/ci-ska-skampi-nak-363-test-jupyter-mid/api/v1
   resources:
     requests:
       cpu: 200m

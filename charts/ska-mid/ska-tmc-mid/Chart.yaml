@@ -20,4 +20,4 @@ dependencies:
     repository: https://artefact.skao.int/repository/helm-internal
   - name: ska-tmc-template
     version: 0.0.1
-    repository: file://../ska-tmc-template
+    repository: file://ska-tmc-template

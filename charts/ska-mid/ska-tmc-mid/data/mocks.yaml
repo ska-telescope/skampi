@@ -1,0 +1,41 @@
+name: "mocks-{{.Release.Name}}"
+function: testing
+domain: mocks
+instances: ["01"]
+entrypoints:
+  - name: "ska_tmc_common.test_helpers.helper_base_device.HelperBaseDevice"
+  - name: "ska_tmc_common.test_helpers.helper_dish_device.HelperDishDevice"
+  - name: "ska_tmc_common.test_helpers.helper_csp_subarray.HelperCspSubarray"
+  - name: "ska_tmc_common.test_helpers.helper_csp_master_device.HelperCspMasterDevice"
+  - name: "ska_tmc_common.test_helpers.helper_sdp_subarray.HelperSdpSubarray"
+server:
+  name: "mocks"
+  instances:
+    - name: "01"
+      classes:
+        - name: "HelperBaseDevice"
+          devices:
+          - name: "mid-sdp/control/0"
+        - name: "HelperCspMasterDevice"
+          devices:
+          - name: "mid-csp/control/0"
+        - name: "HelperCspSubarray"
+          devices:
+          - name: "mid-csp/subarray/01"
+          - name: "mid-csp/subarray/02"
+        - name: "HelperSdpSubarray"
+          devices:
+          - name: "mid-sdp/subarray/01"
+          - name: "mid-sdp/subarray/02"
+        - name: "HelperDishDevice"
+          devices:
+          {{- range .Values.deviceServers.dishleafnode.instances }}
+          - name: "ska{{ printf "%03s" . }}/dish/master"
+          {{- end }}
+depends_on:
+  - device: sys/database/2
+image:
+  registry: "{{.Values.dishleafnode.image.registry}}"
+  image: "{{.Values.dishleafnode.image.image}}"
+  tag: "{{.Values.dishleafnode.image.tag}}"
+  pullPolicy: "{{.Values.dishleafnode.image.pullPolicy}}"

@@ -1,0 +1,164 @@
+display: ":0"
+xauthority: "~/.Xauthority"
+
+enabled: true
+
+legacy_compatibility: true
+
+system: TM-mid
+telescope: SKA-mid
+subsystem: ska-tmc-mid
+
+labels:
+  app: ska-tmc-mid
+annotations:
+  app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+  app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+
+global:
+  minikube: true
+  tango_host: databaseds-tango-base.ska-mid.svc.cluster.local:10000
+
+  ##  Order of instances resolution ##
+  # .Values.global.dishes & .Values.global.subarray_count
+  # .Values.deviceServers.<device>.instances
+  # File, data/<device>.yaml, instances
+
+  # List the dishes, if set, then this list will be applied to instances of:
+  # deviceServers.dishmaster, deviceServers.dishleafnode
+  dish_devices: ["dishmaster", "dishleafnode"]
+  dishes: ["01", "02"]
+
+  # subarray_count, this will be expanded (1 to N inclusive) and applied to instances of:
+  # deviceServers.cspsubarrayleafnode, deviceServers.sdpsubarrayleafnode, deviceServers.subarraynode
+  subarray_devices:
+    - "cspsubarrayleafnode"
+    - "sdpsubarrayleafnode"
+    - "subarraynode"
+  subarray_count: 2
+
+  # fqdn for mid devices
+  tmc_subarray_prefix: "ska_mid/tm_subarray_node"
+  csp_subarray_ln_prefix: "ska_mid/tm_leaf_node/csp_subarray"
+  sdp_subarray_ln_prefix: "ska_mid/tm_leaf_node/sdp_subarray"
+  csp_master_ln_prefix: "ska_mid/tm_leaf_node/csp_master"
+  sdp_master_ln_prefix: "ska_mid/tm_leaf_node/sdp_master"
+  csp_subarray_prefix: "mid-csp/subarray"
+  sdp_subarray_prefix: "mid-sdp/subarray"
+  dish_suffix: "dish/master"
+  csp_master: "mid-csp/control/0"
+  sdp_master: "mid-sdp/control/0"
+
+dsconfig:
+  configuration_file: data/tmc-mid-config.json
+  image:
+    registry: artefact.skao.int
+    image: ska-tango-images-tango-dsconfig
+    tag: 1.5.7
+    pullPolicy: IfNotPresent
+
+itango:
+  image:
+    registry: artefact.skao.int
+    image: ska-tango-images-tango-itango
+    tag: 9.3.10
+    pullPolicy: IfNotPresent
+
+centralnode:
+  image:
+    registry: artefact.skao.int
+    image: ska-tmc-centralnode
+    tag: 0.10.4
+    pullPolicy: IfNotPresent
+
+subarraynode:
+  image:
+    registry: artefact.skao.int
+    image: ska-tmc-subarraynode
+    tag: 0.11.21
+    pullPolicy: IfNotPresent
+
+sdpleafnodes:
+  image:
+    registry: artefact.skao.int
+    image: ska-tmc-sdpleafnodes
+    tag: 0.13.2
+    pullPolicy: IfNotPresent
+
+cspmasterleafnode:
+  image:
+    registry: artefact.skao.int
+    image: ska-tmc-cspleafnodes
+    tag: 0.9.2
+    pullPolicy: IfNotPresent
+
+cspsubarrayleafnode:
+  image:
+    registry: artefact.skao.int
+    image: ska-tmc-cspleafnodes
+    tag: 0.9.2
+    pullPolicy: IfNotPresent
+
+dishleafnode:
+  image:
+    registry: artefact.skao.int
+    image: ska-tmc-dishleafnode
+    tag: 0.5.2
+    pullPolicy: IfNotPresent
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 500Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+    
+deviceServers:
+  centralnode:
+    enabled: true
+    instances: ["01"]
+    subarray_count: 2
+    file: "data/centralnode_mid.yaml"
+    DishLeafNodePrefix: "ska_mid/tm_leaf_node/d0"
+    DishIDs: ["SKA001", "SKA002", "SKA003", "SKA004"]
+
+  subarraynode:
+    enabled: true
+    instances: ["01" , "02"]
+    file: "data/subarraynode_mid.yaml"
+
+  sdpsubarrayleafnode:
+    enabled: true
+    instances: ["01","02"]
+    file: "data/sdpsubarrayleafnode.yaml"
+
+  sdpmasterleafnode:
+    enabled: true
+    instances: ["01"]
+    file: "data/sdpmasterleafnode.yaml"
+
+  cspmasterleafnode:
+    enabled: true
+    instances: ["01"]
+    file: "data/cspmasterleafnode.yaml"
+
+  cspsubarrayleafnode:
+    enabled: true
+    instances: ["01","02"]
+    file: "data/cspsubarrayleafnode.yaml"
+
+  dishleafnode:
+    enabled: true
+    instances: ["01", "02"]
+    file: "data/dishleafnode.yaml"
+
+  mocks:
+    enabled: false
+    file: "data/mocks.yaml"
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations: []

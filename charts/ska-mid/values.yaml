@@ -1,55 +1,33 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
-tags:
-  taranta_auth: false
-  taranta_dashboard: false
+legacy_compatibility: true
 
 global:
-  minikube: true
-  annotations:
-    skampi: "true"
-    app.gitlab.com/app: skampi
-    app.gitlab.com/env: ska
-  taranta_auth_enabled: false
-  taranta_dashboard_enabled: false
+  retry:
+  - "--sleep=1"
+  - "--tries=100"
   sub-system:
-    tango-base:
+    ska-tango-util:
       enabled: false
     ska-tango-base:
       enabled: false
-    ska-taranta:
+    ska-tango-taranta:
       enabled: false
-  retry:
-    - "--sleep=1"
-    - "--tries=100"
-  tango_host: databaseds-tango-base:10000
-  device_server_port: 45450
-  cluster_domain: cluster.local
+  tango_host: databaseds-tango-base-test:10000
   dsconfig:
     timeout: 300s
     image:
       registry: artefact.skao.int
       image: ska-tango-images-tango-dsconfig
-      tag: 1.5.1
+      tag: 1.5.7
       pullPolicy: IfNotPresent
   itango:
     image:
       registry: artefact.skao.int
       image: ska-tango-images-tango-itango
-      tag: 9.3.5
+      tag: 9.3.10
       pullPolicy: IfNotPresent
-
-ska-landingpage:
-  enabled: true
-  MVPInstance: ska-mid
-
-ska-ser-skuid:
-  enabled: true
-  skuid:
-    use_pv: false
-    config:
-      generator_id: mvp01
 
 ska-tango-base:
   enabled: true
@@ -63,7 +41,7 @@ ska-tango-base:
     use_pv: false
 
 ska-taranta:
-  enabled: true
+  enabled: false
   ingress:
     enabled: true
     nginx: true
@@ -104,61 +82,41 @@ ska-db-oda:
     backend:
       type: filesystem
 
-#telescope control
-## mid-cbf
-ska-mid-cbf:
-  enabled: true
-
-## mid-csp
-ska-csp-lmc-mid:
-  enabled: true
-
-## sdp
-ska-sdp:
-  enabled: true
-  lmc:
-    prefix: mid
-    nsubarray: 3
-  console:
-    enabled: true
-  data-pvc:
-    name: shared
-    create:
-      enabled: true
-      size: 20Gi
-      storageClassName: nfss1
-  ska-sdp-qa:
-    kafka:
-      resources:
-        limits:
-          cpu: 750m
-          memory: 1024Mi
-        requests:
-          cpu: 250m
-          memory: 500Mi
-      livenessProbe:
-        initialDelaySeconds: 30
-        failureThreshold: 5
-      zookeeper:
-        resources:
-          requests:
-            cpu: 100m
-  ska-tango-base:
-    enabled: false
-
-## tmc
+# Tmc-Mid
 tmc-mid:
+  labels:
+    app: ska-tmc-integration
   enabled: true
-  telescope: SKA-mid
+  deviceServers:
+    mocks:
+      enabled: true
 
-ska-tango-archiver:
+# SKUID
+ska-ser-skuid:
+  labels:
+    app: ska-tmc-integration
   enabled: true
-  dbname: default_mvp_archiver_db
+  skuid:
+    use_pv: false
+    config:
+      generator_id: mvp01
 
-## dishmasters
-ska-sim-dishmaster:
-  enabled: true
-
-# alarm-handler
 ska-tango-alarmhandler:
+  labels:
+    app: ska-tmc-integration
   enabled: true
+
+ska-tmc-simulators:
+  labels:
+    app: ska-tmc-integration
+  enabled: true
+  deviceServers:
+    cspmastersimulator:
+      enabled: false
+
+    weatherstation:
+      enabled: true
+
+    powersupplysimulator:
+      enabled: true
+

@@ -1,0 +1,40 @@
+name: "dishleafnode-test"
+function: telescope-monitoring
+domain: general-monitoring
+instances: ["01", "02", "03", "04"]
+entrypoints:
+  - name: "ska_tmc_dishleafnode.dish_leaf_node.DishLeafNode"
+server:
+  name: "dish_leaf_node"
+  instances:
+  {{ $dish_fqdn_suffix:= .Values.global.dish_suffix}}
+  {{- range  .Values.deviceServers.dishleafnode.instances }}
+    - name: "{{ . }}"
+      classes:
+      - name: "DishLeafNode"
+        devices:
+        - name: "ska_mid/tm_leaf_node/d0{{ printf "%03s" . }}"
+          properties:
+          - name: "DishMasterFQDN"
+            values:
+              - "ska{{ printf "%03s" . }}/{{ $dish_fqdn_suffix }}"
+          - name: "SkaLevel"
+            values:
+              - "3"
+          - name: "LoggingTargetsDefault"
+            values:
+              - "tango::logger"
+          - name: "LoggingLevelDefault"
+            values:
+              - "5"
+          - name: "CommandTimeOut"
+            values:
+              - "50"
+  {{- end }}
+depends_on:
+  - device: sys/database/2
+image:
+  registry: "{{.Values.dishleafnode.image.registry}}"
+  image: "{{.Values.dishleafnode.image.image}}"
+  tag: "{{.Values.dishleafnode.image.tag}}"
+  pullPolicy: "{{.Values.dishleafnode.image.pullPolicy}}"

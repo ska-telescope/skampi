@@ -1,0 +1,115 @@
+{{- define "ska-tmc.deviceservers.tpl" }}
+{{ $localchart := . }}
+
+{{- range $key, $deviceserver := .Values.deviceServers }}
+
+{{- if $deviceserver.enabled }}
+
+{{- if hasKey $deviceserver "file"}}
+
+# Determine which subarray instances to use
+## Unpack the subarray_count int into a list 1 to N (inclusive)
+{{- $unpacked_subarray_devices:=  ( regexSplit " " ((  $localchart.Values.global.subarray_count | int) | seq ) -1 ) }}
+## Prepend a zero to every subarray number by making use of a dictionary if N < 10
+{{ $prepended_subarray_devices := list  }}
+{{- range $unpacked_subarray_devices }}
+    {{ $prepended_subarray_devices = append $prepended_subarray_devices ( printf "%02s" . ) }}
+{{- end }}
+## Determine which instances to use
+{{- $_ := set  $localchart.Values "coalesced_subarray_devices" (coalesce $prepended_subarray_devices  $deviceserver.instances)  }}
+
+{{- $filedeviceserver := tpl ($.Files.Get $deviceserver.file) $ | fromYaml }}
+
+{{- $_ := set $filedeviceserver "instances" (coalesce $localchart.Values.global.instances $deviceserver.instances $filedeviceserver.instances) }}
+
+# If it's a subarray device, update the instances
+{{- if has $key $localchart.Values.global.subarray_devices }}
+{{- $_ := set $filedeviceserver "instances" $localchart.Values.coalesced_subarray_devices }}
+{{- end }}
+
+{{- $context := dict "name" $key "deviceserver" $filedeviceserver "image" $deviceserver.image "local" $localchart }}
+{{ template "ska-tango-util.multidevice-config.tpl" $context }}
+{{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
+{{ template "ska-tango-util.multidevice-job.tpl" $context }}
+{{ template "ska-tango-util.multidevice-svc.tpl" $context }}
+
+{{- else }}
+
+
+{{- if hasKey $deviceserver "mid"}}
+{{- $telescopeStr := printf "%s" $localchart.Values.telescope}}
+{{ if eq $telescopeStr "SKA-mid" }}
+
+# Determine which subarray instances to use
+## Unpack the subarray_count int into a list 1 to N (inclusive)
+{{- $unpacked_subarray_devices:=  ( regexSplit " " ((  $localchart.Values.global.subarray_count | int) | seq ) -1 ) }}
+## Prepend a zero to every subarray number by making use of a dictionary if N < 10
+{{ $prepended_subarray_devices := list  }}
+{{- range $unpacked_subarray_devices }}
+    {{ $prepended_subarray_devices = append $prepended_subarray_devices ( printf "%02s" . ) }}
+{{- end }}
+## Determine which instances to use
+{{- $_ := set  $localchart.Values "coalesced_subarray_devices" (coalesce $prepended_subarray_devices  $deviceserver.instances)  }}
+
+{{- $filedeviceserver := tpl ($.Files.Get $deviceserver.mid.file) $ | fromYaml }}
+
+{{- $_ := set $filedeviceserver "instances" (coalesce $localchart.Values.global.instances $deviceserver.instances $filedeviceserver.instances) }}
+
+# If it's a subarray device, update the instances
+{{- if has $key $localchart.Values.global.subarray_devices }}
+{{- $_ := set $filedeviceserver "instances" $localchart.Values.coalesced_subarray_devices }}
+{{- end }}
+
+{{- $context := dict "name" $key "deviceserver" $filedeviceserver "image" $deviceserver.image "local" $localchart }}
+{{ template "ska-tango-util.multidevice-config.tpl" $context }}
+{{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
+{{ template "ska-tango-util.multidevice-job.tpl" $context }}
+{{ template "ska-tango-util.multidevice-svc.tpl" $context }}
+
+{{- else }}
+
+# Determine which subarray instances to use
+## Unpack the subarray_count int into a list 1 to N (inclusive)
+{{- $unpacked_subarray_devices:=  ( regexSplit " " ((  $localchart.Values.global.subarray_count | int) | seq ) -1 ) }}
+## Prepend a zero to every subarray number by making use of a dictionary if N < 10
+{{ $prepended_subarray_devices := list  }}
+{{- range $unpacked_subarray_devices }}
+    {{ $prepended_subarray_devices = append $prepended_subarray_devices ( printf "%02s" . ) }}
+{{- end }}
+## Determine which instances to use
+{{- $_ := set  $localchart.Values "coalesced_subarray_devices" (coalesce $prepended_subarray_devices  $deviceserver.instances)  }}
+
+{{- $filedeviceserver := tpl ($.Files.Get $deviceserver.low.file) $ | fromYaml }}
+
+{{- $_ := set $filedeviceserver "instances" (coalesce $localchart.Values.global.instances $deviceserver.instances $filedeviceserver.instances) }}
+
+# If it's a subarray device, update the instances
+{{- if has $key $localchart.Values.global.subarray_devices }}
+{{- $_ := set $filedeviceserver "instances" $localchart.Values.coalesced_subarray_devices }}
+{{- end }}
+
+{{- $context := dict "name" $key "deviceserver" $filedeviceserver "image" $deviceserver.image "local" $localchart }}
+{{ template "ska-tango-util.multidevice-config.tpl" $context }}
+{{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
+{{ template "ska-tango-util.multidevice-job.tpl" $context }}
+{{ template "ska-tango-util.multidevice-svc.tpl" $context }}
+
+{{- end }}
+
+{{- else }}
+
+{{- $_ := set $deviceserver "instances" (coalesce $localchart.Values.global.instances $deviceserver.instances) }}
+{{- $context := dict "name" $key "deviceserver" $deviceserver "image" $deviceserver.image "local" $localchart }}
+{{ template "ska-tango-util.multidevice-config.tpl" $context }}
+{{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
+{{ template "ska-tango-util.multidevice-job.tpl" $context }}
+{{ template "ska-tango-util.multidevice-svc.tpl" $context }}
+
+{{- end }}
+
+{{- end }}
+
+{{- end }}
+
+{{- end }} # deviceservers
+{{- end }}

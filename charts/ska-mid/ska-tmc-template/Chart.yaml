@@ -1,0 +1,13 @@
+apiVersion: v2
+name: ska-tmc-template
+description: A subchart for ska-tmc-template deployment.
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+maintainers:
+  - name: Aditya Dange
+    email: adityadange.ska@gmail.com
+  - name: Shraddha Bajare
+    email: shraddhab.ska@gmail.com
+
